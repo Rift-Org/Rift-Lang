@@ -10,4 +10,5 @@ Some Ideas include
 - no such thing as references, only moves. (perf)
 - manual mm
 - language is very pure, almost everything will be implemented as a library
+- extremely modular language (embracing the micro-architecture)
 - ... more to come soon
