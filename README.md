@@ -1,11 +1,15 @@
 
-<h1 align="center"> <center> Rift </center> </h1>
-
-
-<!-- # align image center -->
-<p align="center">
-  <img src="assets/fox.webp" width="500" height="500" style="border-radius: 50%;"/>
+<div align="center" style="display:grid;place-items:center;">
+<p>
+    <a href="https://vlang.io/" target="_blank"><img width="250" src="assets/fox2.webp"></a>
 </p>
+<h1>Rift</h1>
+
+[website](https://localhost)
+| [Docs](https://localhost)
+| [Changelog](https://localhost)
+| [Contributing](https://localhost)
+
 
 
 # Roadmap
