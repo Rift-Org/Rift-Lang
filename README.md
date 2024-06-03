@@ -1,7 +1,7 @@
 
 <div align="center" style="display:grid;place-items:center;">
 <p>
-    <a href="https://vlang.io/" target="_blank"><img width="250" src="assets/fox2.webp"></a>
+    <a href="https://rift-lang.org/" target="_blank"><img width="500" src="media/fox2.png"></a>
 </p>
 <h1>Rift</h1>
 
@@ -17,14 +17,21 @@
 - Parser
 - Compiler
 - JIT
+- Symbol Table
+- Exception Handling
 - Standard Library
 - Testing
 - Documentation
 - Benchmarks
-- Profiling
+- LLVM Integration
+
 
 
 # Vision
+
+ - Have two forms of this langauge
+    - Rift main langauge which is a compiler that produces LLVM IR
+    - RiftI which is the transpiler (transpiles to C++ but as a scripting langauge)
 
  - Barebones language (no batteries included)
  - Seperate Libraries (Core, Security, Networking, GPU-Integration, ML, etc...)

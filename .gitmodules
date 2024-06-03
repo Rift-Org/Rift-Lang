@@ -1,6 +1,6 @@
-[submodule "Frontend"]
-	path = Frontend
-	url = https://github.com/Octa-Org/Frontend
-[submodule "Backend"]
-	path = Backend
-	url = https://github.com/Octa-Org/Backend
+# [submodule "Frontend"]
+# 	path = Frontend
+# 	url = https://github.com/Octa-Org/Frontend
+# [submodule "Backend"]
+# 	path = Backend
+# 	url = https://github.com/Octa-Org/Backend
