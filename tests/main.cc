@@ -7,18 +7,6 @@ namespace rift
 {
     namespace test
     {
-        static bool errorOccured = false;
-
-        void error(int line, std::string msg)
-        {
-            report(line, "", msg);
-        }
-
-        void report(int line, std::string where, std::string msg)
-        {
-            std::cout << "[line " << line << "] Error" << where << ": " + msg << std::endl;
-            errorOccured = true;
-        }
 
         void run(std::string lines, int n)
         {

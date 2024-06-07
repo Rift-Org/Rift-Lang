@@ -19,6 +19,7 @@
 - JIT
 - Symbol Table
 - Exception Handling
+- VSCode Syntax Extension
 - Standard Library
 - Testing
 - Documentation
