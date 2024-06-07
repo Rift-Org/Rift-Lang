@@ -7,4 +7,5 @@
 
 [submodule "docs"]
 	path = docs
-	url = https://github.com/Rift-Org/Rift-Lang/tree/gh-pages/docs
+	url = https://github.com/Rift-Org/Rift-Lang.git
+	branch = gh-pages
