@@ -4,3 +4,7 @@
 # [submodule "Backend"]
 # 	path = Backend
 # 	url = https://github.com/Octa-Org/Backend
+
+[submodule "docs"]
+	path = docs
+	url = https://github.com/Rift-Org/Rift-Lang/tree/gh-pages/docs

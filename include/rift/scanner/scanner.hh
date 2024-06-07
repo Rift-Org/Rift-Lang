@@ -19,36 +19,23 @@ namespace rift
             const std::string source;
             std::vector<Token> tokens = std::vector<Token>();
             std::unordered_map<std::string, Type> keywords;
-            int start=0, curr=0, line=1;
 
             Scanner(const std::string& source)
-            : source(source) {
-                keywords = {
-                {"and", Type::AND},
-                {"class", Type::CLASS},
-                {"else", Type::ELSE},
-                {"false", Type::FALSE},
-                {"fun", Type::FUN},
-                {"for", Type::FOR},
-                {"if", Type::IF},
-                {"nil", Type::NIL},
-                {"or", Type::OR},
-                {"print", Type::PRINT},
-                {"return", Type::RETURN},
-                {"super", Type::SUPER},
-                {"this", Type::THIS},
-                {"true", Type::TRUE},
-                {"var", Type::VAR},
-                {"while", Type::WHILE}
-            };
-            }
-            inline bool atEnd() {return this->curr >= source.size();}
-
+                : source(source), 
+                  keywords(std::unordered_map<std::string, Type>()){}
+            ~Scanner(){}
         private:
+            int start=0, curr=0, line=1;
+            inline bool atEnd() {return this->curr >= source.size();}
             static std::vector<Token> scanTokens(){};
             char advance() {return source.at(curr++);}
             void addToken(Type type) {addToken(type, NULL);};
+            void addToken(Type type, std::string literal) {
+                tokens.push_back(Token(type, source.substr(start, curr-start), literal, line));
+            }
             inline bool isDigit(char c) {return c>='0' && c<='9';}
+            inline bool isAlpha(char c) {return (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_';}
+            inline bool isAlphaNumeric(char c) {return isAlpha(c) || isDigit(c);}
             inline bool peek(char expected) {return curr<source.size() && source.at(curr) == expected;};
             inline char peekNext() {return curr+1<source.size() ? source.at(curr+1) : '\0';};
             inline bool peek3(char expected) {
@@ -95,6 +82,16 @@ namespace rift
                 }
                 addToken(Type::NUMERICLITERAL, source.substr(start, curr));
             }
+            
+            void identifier() {
+                while (isAlphaNumeric(advance()));
+                std::string text = source.substr(start, curr-start);
+                if (keywords.find(text)!= keywords.end()) {
+                    addToken(keywords.at(text));
+                } else {
+                    addToken(Type::IDENTIFIER, text);
+                }
+            }
 
             void scanToken() {
                 char c = advance();
@@ -124,9 +121,31 @@ namespace rift
 
                     default:
                         if (isDigit(c)) num();
+                        else if (isAlpha(c)) {
+                            identifier();
+                        }
                         else rift::error::report(line, "scanToken", "Unorthodox Character");break;
                 };
             };
+
+            void initalizeKeywords() {
+                keywords["and"] = Type::AND;
+                keywords["class"] = Type::CLASS;
+                keywords["else"] = Type::ELSE;
+                keywords["false"] = Type::FALSE;
+                keywords["for"] = Type::FOR;
+                keywords["fun"] = Type::FUN;
+                keywords["if"] = Type::IF;
+                keywords["nil"] = Type::NIL;
+                keywords["or"] = Type::OR;
+                keywords["print"] = Type::PRINT;
+                keywords["return"] = Type::RETURN;
+                keywords["super"] = Type::SUPER;
+                keywords["this"] = Type::THIS;
+                keywords["true"] = Type::TRUE;
+                keywords["var"] = Type::VAR;
+                keywords["while"] = Type::WHILE;
+            }
         };
     };
 }
