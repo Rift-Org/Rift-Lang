@@ -3,8 +3,8 @@
 #include <fstream> // file stream
 #include <sstream> // string stream
 #include <vector>
-#include "../../include/rift/driver/driver.hh"
-#include "../../include/rift/error/error.hh"
+#include "../../include/driver/driver.hh"
+#include "../../include/error/error.hh"
 
 using namespace rift::error;
 

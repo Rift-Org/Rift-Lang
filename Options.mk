@@ -1,0 +1,27 @@
+
+### Build Configuration Checks
+
+IF (WIN32)
+    add_definitions(-DOS_WINDOWS)
+ELSEIF (LINUX)
+    add_definitions(-DOS_LINUX)
+ELSEIF (BSD)
+    add_definitions(-DOS_BSD)
+ELSEIF (APPLE)
+    add_definitions(-DOS_APPLE)
+ELSE ()
+    message(FATAL_ERROR "Unsupported platform. Please compile for Windows or Unix-like systems.")
+ENDIF ()
+
+string(TOLOWER ${CMAKE_SYSTEM_PROCESSOR} SANITIZED_TARGET_ARCH)
+if (SANITIZED_TARGET_ARCH STREQUAL "x86_64" OR SANITIZED_TARGET_ARCH STREQUAL "amd64")
+    add_definitions(-DARCH_X64)
+elseif (SANITIZED_TARGET_ARCH STREQUAL "aarch64")
+    add_definitions(-DARCH_AARCH64)
+elseif (SANITIZED_TARGET_ARCH STREQUAL "arm")
+    add_definitions(-DARCH_ARM)
+elseif (SANITIZED_TARGET_ARCH STREQUAL "riscv64")
+    add_definitions(-DARCH_RISCV64)
+else ()
+    message(FATAL_ERROR "Unsupported architecture: ${CMAKE_SYSTEM_PROCESSOR}. Please compile for x86_64, arm or aarch64 architectures.")
+endif ()

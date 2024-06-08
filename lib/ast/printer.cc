@@ -1,4 +1,4 @@
-#include "../../include/rift/ast/printer.hh"
+#include "../../include/ast/printer.hh"
 
 #include <vector>
 #include <initializer_list>

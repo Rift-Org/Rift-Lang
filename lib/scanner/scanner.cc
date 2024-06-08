@@ -1,5 +1,5 @@
 
-#include "../../include/rift/scanner/scanner.hh"
+#include "../../include/scanner/scanner.hh"
 
 typedef rift::scanner::tokens::Token Token;
 typedef rift::scanner::tokens::Type Type;

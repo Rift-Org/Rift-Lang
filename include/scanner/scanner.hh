@@ -31,6 +31,7 @@ namespace rift
             /// @brief Scans the source code and returns a list of tokens
             /// @param cnt The number of tokens to scan
             void scan_tokens(unsigned cnt);
+
         private:
             static int start, curr, line;
 

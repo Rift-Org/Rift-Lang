@@ -3,7 +3,7 @@
 #include <string>
 #include "expr.hh"
 
-using namespace Expr;
+using namespace rift::ast::Expr;
 namespace rift
 {
     namespace ast
