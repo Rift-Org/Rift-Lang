@@ -1,12 +1,18 @@
+
 #include <iostream>
 #include <fstream> // file stream
 #include <sstream> // string stream
 #include <vector>
+#include "../../include/rift/driver/driver.hh"
+#include "../../include/rift/error/error.hh"
 
-namespace rift 
+using namespace rift::error;
+
+namespace rift
 {
-    namespace test
+    namespace driver
     {
+        # pragma mark - Driver Tools
 
         void run(std::string lines, int n)
         {
@@ -25,7 +31,7 @@ namespace rift
                 std::vector<char> buffer(size);
                 if (file.read(buffer.data(), size)) {
                     run(buffer.data(), size);                
-                    errorOccured = false;
+                    errorOccured = false; // reset error
                 }
             }   
         }
@@ -39,20 +45,23 @@ namespace rift
                 std::cin >> input;
                 if (input.empty()) break;
                 run(input, input.size());
+                errorOccured = false; // reset error
             }
         }
 
+        # pragma mark - Driver
+
+        void Driver::run(int argc, char **argv) 
+        {
+            if (argc > 2) {
+                std::cout << "Usage: rift" << std::endl;
+            } else if (argc == 2) {
+                // file
+                runFile(argv[1]);
+            } else {
+                // prompt
+                runPrompt();
+            }
+        }
     }
 }
-
-int main(char** argv, int argc)
-{
-    if (argc > 2) {
-        std::cout << "Usage: rift" << std::endl;
-    } else if (argc == 2) {
-        // file
-        rift::test::runFile(argv[1]);
-    } else {
-        // prompt
-    }
-}   

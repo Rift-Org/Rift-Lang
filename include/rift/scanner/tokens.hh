@@ -35,13 +35,13 @@ namespace rift
             struct Token
             {
                 Type type;
-                std::string text, mini, literal;
+                std::string text, lexeme, literal;
 
                 int line;
 
-                Token(Type type, std::string mini, std::string literal, int line)
+                Token(Type type, std::string lexeme, std::string literal, int line)
                 {
-                    this->type = type; this->mini = mini;
+                    this->type = type; this->lexeme = lexeme;
                     this->literal = literal; this->line = line;
                 }
 
@@ -94,7 +94,7 @@ namespace rift
 
                 std::string to_string()
                 {
-                    return std::string(convertTypeString(type) + " " + mini + " " + literal);
+                    return std::string(convertTypeString(type) + " " + lexeme + " " + literal);
                 }
 
             };

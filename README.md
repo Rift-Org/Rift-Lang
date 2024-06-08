@@ -7,12 +7,26 @@
 
 [website](https://localhost)
 | [Docs](https://localhost)
+| [Discord](https://localhost)
 | [Changelog](https://localhost)
 | [Contributing](https://localhost)
 
+# Building
 
+This is still in development, so the build process is not yet available.
+
+# Contributing
+
+This is still in development, so the contribution process is not yet available.
+Although any comments or suggestions are MORE than welcome =)
+
+# License
+
+The Rift Langauge is provided under SPDX-License-Identifier: GPL-2.0. 
+See `LICENSE` for more information.
 
 # Roadmap
+
 - Lexer
 - Parser
 - Compiler
@@ -26,8 +40,6 @@
 - Benchmarks
 - LLVM Integration
 
-
-
 # Vision
 
  - Have two forms of this langauge
@@ -37,5 +49,4 @@
  - Barebones language (no batteries included)
  - Seperate Libraries (Core, Security, Networking, GPU-Integration, ML, etc...)
  - Try new techniques from arxiv papers and measure benchmarks (possible make a paper)
-
 

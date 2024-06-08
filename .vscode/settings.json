@@ -55,6 +55,8 @@
         "typeinfo": "cpp",
         "unordered_map": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "deque": "cpp",
+        "queue": "cpp"
     }
 }
