@@ -6,12 +6,12 @@
 
 <h1>Rift</h1>
 
-[website](https://localhost)
-| [![Status](https://github.com/Rift-Org/Rift-Lang/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/Rift-Org/Rift-Lang/actions/workflows/cmake-single-platform.yml)
-| [Docs](https://localhost)
-| [Discord](https://localhost)
-| [Changelog](https://localhost)
-| [Contributing](https://localhost)
+![Rss](https://img.shields.io/badge/website-F88900?style=for-the-badge&logo=rss&logoColor=white)
+ <a target="_blank" href="https://discord.gg/jE4tRujtmn"><img src="https://dcbadge.limes.pink/api/server/jE4tRujtmn" alt="" /></a>
+![Wikipedia](https://img.shields.io/badge/Docs-%23000000.svg?style=for-the-badge&logo=wikipedia&logoColor=white)
+![Prezi](https://img.shields.io/badge/License-%23000000.svg?style=for-the-badge&logo=Prezi&logoColor=white)
+
+ [![status](https://github.com/Rift-Org/Rift-Lang/actions/workflows/main.yml/badge.svg)](https://github.com/Rift-Org/Rift-Lang/actions/workflows/main.yml)
 </div>
 <br>
 <br>
