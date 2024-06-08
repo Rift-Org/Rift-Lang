@@ -19,8 +19,9 @@ namespace rift
             std::string source;
             std::vector<Token> tokens = std::vector<Token>();
             std::unordered_map<std::string, Type> keywords;
+            static unsigned start, curr, line;
 
-            Scanner(const std::string& source){}
+            Scanner(const std::string& source);
             ~Scanner(){}
 
             /// @fn scan_token
@@ -33,7 +34,6 @@ namespace rift
             void scan_tokens(unsigned cnt);
 
         private:
-            static int start, curr, line;
 
             #pragma mark - Token Management
 

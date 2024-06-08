@@ -1,6 +1,7 @@
 
 #pragma once
 #include "../scanner/tokens.hh"
+#include "../utils/macros.hh"
 
 #include <iostream>
 #include <stdlib.h>
@@ -13,6 +14,17 @@ namespace rift
     {
         namespace Expr
         {
+            __DEFAULT_FORWARD_VA(
+                Visitor,
+                Binary,
+                Grouping,
+                Literal,
+                Unary
+            );
+
+            // template <typename T = void> 
+            // class Visitor;
+            // class Binary;
             /// @class Expr
             /// @brief Base class for all expressions 
             /// @details Types of expression include
@@ -28,21 +40,21 @@ namespace rift
             class Expr
             {
                 public:
-                    virtual T accept(Visitor& visitor) = 0;
+                    virtual T accept(const Visitor<T>& visitor) = 0;
                     virtual ~Expr() = default;
             };
 
 
             /// @class Visitor
             /// @brief This class is used to visit each type of expression
-            template <typename T = void>
+            template <typename T>
             class Visitor
             {
                 public:
-                    virtual T visitBinary(Binary *expr) = 0;
-                    virtual T visitGrouping(Grouping *expr) = 0;
-                    virtual T visitLiteral(Literal *expr) = 0;
-                    virtual T visitUnary(Unary *expr) = 0;
+                    virtual T visit_binary(Binary<T> *expr) = 0;
+                    virtual T visit_grouping(Grouping<T> *expr) = 0;
+                    virtual T visit_literal(Literal<T> *expr) = 0;
+                    virtual T visit_unary(Unary<T> *expr) = 0;
             };
 
             # pragma mark - Concrete Expressions
@@ -52,53 +64,53 @@ namespace rift
             /// @param op The operator
             /// @param right The right operand
             template <typename T = void>
-            class Binary : public Expr
+            class Binary : public Expr<T>
             {
                 public:
-                    Binary(Expr *left, Token op, Expr *right): left(std::move(left)), op(op), right(std::move(right)) {}
+                    Binary(Expr<T> *left, Token op, Expr<T> *right): left(std::move(left)), op(op), right(std::move(right)) {}
                     Token op;
-                    std::unique_ptr<Expr> left;
-                    std::unique_ptr<Expr> right;
+                    std::unique_ptr<Expr<T>> left;
+                    std::unique_ptr<Expr<T>> right;
 
-                    inline void accept(ExprVisitor& visitor) override {visitor.visitBinary(this);}
+                    inline T accept(const Visitor<T>& visitor) override {visitor.visit_binary(this);}
             };
 
             /// @class Grouping
             /// @param expr The subexpression
             template <typename T = void>
-            class Grouping : public Expr
+            class Grouping : public Expr<T>
             {
                 public:
-                    Grouping(Expr *expr): expr(std::move(expr)) {};
-                    std::unique_ptr<Expr> expr;
+                    Grouping(Expr<T> *expr): expr(std::move(expr)) {};
+                    std::unique_ptr<Expr<T>> expr;
 
-                    inline void accept(ExprVisitor& visitor) override {visitor.visitGrouping(this);}
+                    inline T accept(const Visitor<T>& visitor) override {visitor.visit_grouping(this);}
             };
 
             /// @class Literal
             /// @param value The value of the literal
             template <typename T = void>
-            class Literal: public Expr
+            class Literal: public Expr<T>
             {
                 public:
                     Literal(char* value): value(value) {};
                     char* value;
 
-                    inline void accept(ExprVisitor &visitor) override {visitor.visitLiteral(this);}
+                    inline T accept(const Visitor<T> &visitor) override {visitor.visit_literal(this);}
             };
 
             /// @class Unary
             /// @param op The operator
             /// @param expr The operand
             template <typename T = void>
-            class Unary : public Expr
+            class Unary : public Expr<T>
             {
                 public:
-                    Unary(Token op, Expr *expr): op(op), expr(std::move(expr)) {};
+                    Unary(Token op, Expr<T> *expr): op(op), expr(std::move(expr)) {};
                     Token op;
-                    std::unique_ptr<Expr> expr;
+                    std::unique_ptr<Expr<T>> expr;
 
-                    inline void accept(ExprVisitor& visitor) override {visitor.visitUnary(this);}
+                    inline T accept(const Visitor<T>& visitor) override {visitor.visit_unary(this);}
             };
         }
     }

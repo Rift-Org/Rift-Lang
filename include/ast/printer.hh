@@ -3,41 +3,56 @@
 #include <string>
 #include "expr.hh"
 
-using namespace rift::ast::Expr;
 namespace rift
 {
     namespace ast
     {
-        class Printer : public Expr<std::string>
+        using string = std::string;
+        using ExprStr  = rift::ast::Expr::Expr<string>;
+        using VisitStr = rift::ast::Expr::Visitor<string>;
+        using namespace rift::ast::Expr;
+
+        class VisitorPrinter;
+        
+        /// @class Printer
+        /// @brief This class is used to print the expression.
+        class Printer
         {
             public:
-                Printer() = default;
+                Printer();
                 ~Printer() = default;
+                friend class VisitorPrinter;
 
-                /// Prints the given expression as a string.
+                /// Prints the given expression string.
                 /// @param expr The expression to print.
-                /// @return The string representation of the expression.
-                std::string print(Expr<std::string> *expr);
+                /// @return string representation of the expression.
+                string print(ExprStr *expr);
 
                 /// @brief  Wraps the given expression in parentheses.
                 /// @param name The name of the expression.
                 /// @param exprs The expressions to wrap.
                 /// @return The wrapped expression.
-                std::string parenthesize(std::string name, std::vector<Expr> expr);
+                string parenthesize(string name, std::vector<ExprStr*> expr);
+                
+            private:
+                VisitorPrinter *visitor;
+        };
 
-                # pragma mark - Visitor Methods
+        /// @class Visitor
+        /// @brief This class is used to visit each type of expression
+        class VisitorPrinter : public VisitStr
+        {
+            public:
+                VisitorPrinter(Printer &printer);
+                ~VisitorPrinter() = default;
 
-                /// @brief Visits a binary expression.
-                std::string Printer::visit_binary_expr(Binary<std::string> *expr);
-
-                /// @brief Visits a grouping expression.
-                std::string Printer::visit_grouping_expr(Grouping<std::string> *expr);
-
-                /// @brief Visits a literal expression.
-                std::string Printer::visit_literal_expr(Literal<std::string> *expr);
-
-                /// @brief Visits a unary expression.
-                std::string Printer::visit_unary_expr(Unary<std::string> *expr);
+                string visit_binary(Binary<string> *expr);
+                string visit_grouping(Grouping<string> *expr);
+                string visit_literal(Literal<string> *expr);
+                string visit_unary(Unary<string> *expr);
+            
+            private:
+                Printer *printer;
         };
     }
 }

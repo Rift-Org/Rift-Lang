@@ -57,6 +57,9 @@
         "valarray": "cpp",
         "variant": "cpp",
         "deque": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "codecvt": "cpp",
+        "set": "cpp",
+        "__memory": "cpp"
     }
 }

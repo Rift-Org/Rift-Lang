@@ -1,45 +1,68 @@
-#include "../../include/ast/printer.hh"
+#include <ast/printer.hh>
 
 #include <vector>
 #include <initializer_list>
 
 using namespace rift::ast;
 using namespace rift::ast::Expr;
+using vec = std::__1::vector<ExprStr*>;
+using string = std::string;
+using ExprStr = rift::ast::Expr::Expr<string>;
 
 namespace rift
 {
     namespace ast
     {
-        std::string Printer::print(Expr<std::string> *expr)
+        #pragma mark - Printer
+
+        Printer::Printer()
         {
-            return expr->accept(this);
+            visitor = new VisitorPrinter(*this);
         }
 
-        std::string Printer::parenthesize(std::string name, std::vector<Expr> expr)
+        string Printer::print(ExprStr *expr)
         {
-            std::string result = "(" + name;
+            return expr->accept(*this->visitor);
+        }
+
+        string Printer::parenthesize(string name, vec expr)
+        {
+            string result = "(" + name;
             for (auto &e : expr)
-                result += " " + e.accept(this);
+                result += " " + e->accept(*this->visitor);
             result += ")";
             return result;
         }
 
-        std::string Printer::visit_binary_expr(Binary<std::string> *expr)
+        #pragma mark - Visitor
+        VisitorPrinter::VisitorPrinter(Printer &printer)
         {
-            return parenthesize(expr->op.lexeme, std::vector<Expr>{expr->left.get(), expr->right.get()});
+            this->printer = &printer;
         }
 
-        std::string Printer::visit_unary_expr(Unary<std::string> *expr)
+        string VisitorPrinter::visit_binary(Binary<string> *expr)
         {
-            return parenthesize(expr->op.lexeme, std::vector<Expr>{expr->expr.get()});
+            vec v;
+            v.push_back(expr->left.get());
+            v.push_back(expr->right.get());
+            return printer->parenthesize(expr->op.lexeme, v);
         }
 
-        std::string Printer::visit_grouping_expr(Grouping<std::string> *expr)
+        string VisitorPrinter::visit_unary(Unary<string> *expr)
         {
-            return parenthesize("group", std::vector<Expr>{expr->expr.get()});
+            vec v;
+            v.push_back(expr->expr.get());
+            return printer->parenthesize(expr->op.lexeme, v);
         }
 
-        std::string Printer::visit_literal_expr(Literal<std::string> *expr)
+        string VisitorPrinter::visit_grouping(Grouping<string> *expr)
+        {
+            vec v;
+            v.push_back(expr->expr.get());
+            return printer->parenthesize("group", v);
+        }
+
+        string VisitorPrinter::visit_literal(Literal<string> *expr)
         {
             return expr->value;
         }

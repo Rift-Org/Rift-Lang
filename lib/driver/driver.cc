@@ -3,8 +3,8 @@
 #include <fstream> // file stream
 #include <sstream> // string stream
 #include <vector>
-#include "../../include/driver/driver.hh"
-#include "../../include/error/error.hh"
+#include <driver/driver.hh>
+#include <error/error.hh>
 
 using namespace rift::error;
 
@@ -14,7 +14,7 @@ namespace rift
     {
         # pragma mark - Driver Tools
 
-        void run(std::string lines, int n)
+        void run(std::string lines)
         {
             std::istringstream scanner(lines);
             std::cout << lines << std::endl;
@@ -30,7 +30,7 @@ namespace rift
 
                 std::vector<char> buffer(size);
                 if (file.read(buffer.data(), size)) {
-                    run(buffer.data(), size);                
+                    run(buffer.data());                
                     errorOccured = false; // reset error
                 }
             }   
@@ -44,7 +44,7 @@ namespace rift
                 std::cout << "> " << std::endl;
                 std::cin >> input;
                 if (input.empty()) break;
-                run(input, input.size());
+                run(input);
                 errorOccured = false; // reset error
             }
         }

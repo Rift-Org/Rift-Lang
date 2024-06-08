@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 # sets targets
 include(Options.mk)
 
-# directories
+# "#includes"
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/external)
 

@@ -1,5 +1,5 @@
 
-#include "../../include/scanner/scanner.hh"
+#include <scanner/scanner.hh>
 
 typedef rift::scanner::tokens::Token Token;
 typedef rift::scanner::tokens::Type Type;
@@ -9,14 +9,15 @@ namespace rift
     namespace scanner
     {
         
-        #pragma mark - Initializer
+        #pragma mark - Initializers
+
+        // static members
+        unsigned Scanner::start = 0;
+        unsigned Scanner::curr = 0;
+        unsigned Scanner::line = 1;
         
         Scanner::Scanner(const std::string& source) {
             this->source = source;
-
-            this->start = 0;
-            this->curr = 0;
-            this->line = 1;
 
             keywords = std::unordered_map<std::string, Type>();
             keywords["and"] = Type::AND;
@@ -127,4 +128,5 @@ namespace rift
                     else rift::error::report(line, "scanToken", "Unorthodox Character");break;
             };
         }
+    }
 }

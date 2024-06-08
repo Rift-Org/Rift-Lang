@@ -9,10 +9,7 @@ namespace rift
     {
         static bool errorOccured = false;
 
-        void report(int line, std::string where, std::string msg)
-        {
-            std::cout << "[line " << line << "] Error" << where << ": " + msg << std::endl;
-            errorOccured = true;
-        }
+        /// @brief Used to report an error.
+        void report(int line, std::string where, std::string msg);
     }
 }

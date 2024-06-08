@@ -7,11 +7,11 @@ namespace rift
     {
         void Driver::version()
         {
-            std::string versionString = "Rift version " + "0.0.1" + "\n\n(c) Aman 2024";
+            std::string versionString = std::string("Rift version ") + "0.0.1" + "\n\n(c) Aman 2024";
             app.set_version_flag("--version,-v", versionString);
             app.footer("(c) Aman 2024");
         }
-        void Driver::run(int argc, char **argv)
+        int Driver::run(int argc, char **argv)
         {
             try {
                 app.parse(argc, argv);

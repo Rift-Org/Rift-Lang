@@ -1,5 +1,5 @@
 #pragma once
-#include "../../external/CLI11.hpp"
+#include <cli.hh>
 
 namespace rift
 {
@@ -11,10 +11,11 @@ namespace rift
                 Driver() = default;
                 ~Driver() = default;
 
-                /// @brief  Runs the driver.
+                /// @fn run
                 /// @param argc The number of arguments.
                 /// @param argv The arguments.
-                void run(int argc, char **argv);
+                /// @return 0 if the program exits successfully
+                int run(int argc, char **argv);
             private:
                 CLI::App app{"rift"};
                 void version();

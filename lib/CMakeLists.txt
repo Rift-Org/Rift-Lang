@@ -1,13 +1,20 @@
 set( SOURCES
+
+    # Main
+    main.cc
+
+    # Scanner
+    scanner/scanner.cc
+    scanner/tokens.cc
+
     # AST
     ast/printer.cc
 
     # Driver
     driver/driver.cc
 
-    # Scanner
-    scanner/scanner.cc
-    scanner/tokens.cc
+    # Utils
+    error/error.cc
 )
 
 
