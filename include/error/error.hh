@@ -7,7 +7,7 @@ namespace rift
 {
     namespace error
     {
-        static bool errorOccured = false;
+        [[maybe_unused]] static bool errorOccured = false;
 
         /// @brief Used to report an error.
         void report(int line, std::string where, std::string msg);
