@@ -125,7 +125,8 @@ namespace rift
                 default:
                     if (isDigit(c)) num();
                     else if (isAlpha(c)) identifier();
-                    else rift::error::report(line, "scanToken", "Unorthodox Character");break;
+                    else rift::error::report(line, "scanToken", "Unorthodox Character");
+                    break;
             };
         }
     }

@@ -6,7 +6,8 @@
 #include <stdlib.h>
 #include <map>
 
-#include <vector> // Include the necessary header file
+#include <unordered_map>
+#include <vector>
 
 typedef rift::scanner::tokens::Token Token;
 typedef rift::scanner::tokens::Type Type;

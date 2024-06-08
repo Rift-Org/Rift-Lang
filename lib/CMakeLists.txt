@@ -22,5 +22,5 @@ add_executable(
     riftlang 
     ${SOURCES}
 )
-target_compile_options(riftlang PRIVATE -Wpedantic -Wall -Wextra -Werror)
+target_compile_options(riftlang PRIVATE -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation)
 

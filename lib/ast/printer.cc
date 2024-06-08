@@ -5,7 +5,7 @@
 
 using namespace rift::ast;
 using namespace rift::ast::Expr;
-using vec = std::__1::vector<ExprStr*>;
+using vec = std::vector<ExprStr*>;
 using string = std::string;
 using ExprStr = rift::ast::Expr::Expr<string>;
 

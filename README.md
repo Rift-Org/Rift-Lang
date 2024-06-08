@@ -7,6 +7,7 @@
 <h1>Rift</h1>
 
 [website](https://localhost)
+| [![Status](https://github.com/Rift-Org/Rift-Lang/actions/workflows/cmake-single-platform.yml/badge.svg)](https://github.com/Rift-Org/Rift-Lang/actions/workflows/cmake-single-platform.yml)
 | [Docs](https://localhost)
 | [Discord](https://localhost)
 | [Changelog](https://localhost)

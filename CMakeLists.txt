@@ -1,4 +1,22 @@
 cmake_minimum_required(VERSION 3.0)
+
+# Built using Clang 🐐
+set(CMAKE_CXX_COMPILER_ID "Clang")
+set(CMAKE_C_COMPILER_ID "Clang")
+
+# Find the Clang compiler
+find_program(CMAKE_CXX_COMPILER NAMES clang++ clang++-14 clang++-13 clang++-12 clang++-11 clang++-10 clang++-9 clang++-8 clang++-7 clang++-6.0 clang++)
+find_program(CMAKE_C_COMPILER NAMES clang clang-14 clang-13 clang-12 clang-11 clang-10 clang-9 clang-8 clang-7 clang-6.0 clang)
+
+# Double Check
+if(NOT CMAKE_CXX_COMPILER)
+    message(FATAL_ERROR "Clang++ not found")
+endif()
+
+if(NOT CMAKE_C_COMPILER)
+    message(FATAL_ERROR "Clang not found")
+endif()
+
 project(RiftLang)
 
 # C++17 for now might switch to 20

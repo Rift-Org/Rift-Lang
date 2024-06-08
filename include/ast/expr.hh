@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <memory>
 
 typedef rift::scanner::tokens::Token Token;
 
