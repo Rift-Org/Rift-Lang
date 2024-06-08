@@ -3,6 +3,7 @@
 <p>
     <a href="https://rift-lang.org/" target="_blank"><img width="500" src="media/fox2.png"></a>
 </p>
+
 <h1>Rift</h1>
 
 [website](https://localhost)
@@ -10,6 +11,9 @@
 | [Discord](https://localhost)
 | [Changelog](https://localhost)
 | [Contributing](https://localhost)
+</div>
+<br>
+<br>
 
 # Building
 
