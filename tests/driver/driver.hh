@@ -1,5 +1,5 @@
 #pragma once
-#include <cli.hh>
+#include <cli/cli.hh>
 
 namespace rift
 {

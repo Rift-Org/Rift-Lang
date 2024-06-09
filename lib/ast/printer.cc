@@ -35,12 +35,13 @@ namespace rift
         }
 
         #pragma mark - Visitor
+
         VisitorPrinter::VisitorPrinter(Printer &printer)
         {
             this->printer = &printer;
         }
 
-        string VisitorPrinter::visit_binary(Binary<string> *expr)
+        string VisitorPrinter::visit_binary(Binary<string> *expr) const
         {
             vec v;
             v.push_back(expr->left.get());
@@ -48,21 +49,21 @@ namespace rift
             return printer->parenthesize(expr->op.lexeme, v);
         }
 
-        string VisitorPrinter::visit_unary(Unary<string> *expr)
+        string VisitorPrinter::visit_unary(Unary<string> *expr) const
         {
             vec v;
             v.push_back(expr->expr.get());
             return printer->parenthesize(expr->op.lexeme, v);
         }
 
-        string VisitorPrinter::visit_grouping(Grouping<string> *expr)
+        string VisitorPrinter::visit_grouping(Grouping<string> *expr) const
         {
             vec v;
             v.push_back(expr->expr.get());
             return printer->parenthesize("group", v);
         }
 
-        string VisitorPrinter::visit_literal(Literal<string> *expr)
+        string VisitorPrinter::visit_literal(Literal<string> *expr) const
         {
             return expr->value;
         }

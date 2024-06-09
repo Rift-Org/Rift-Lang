@@ -9,8 +9,8 @@
 #include <unordered_map>
 #include <vector>
 
-typedef rift::scanner::tokens::Token Token;
-typedef rift::scanner::tokens::Type Type;
+typedef rift::scanner::Token Token;
+typedef rift::scanner::TokenType Type;
 namespace rift
 {
     namespace scanner

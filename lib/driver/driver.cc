@@ -6,7 +6,13 @@
 #include <driver/driver.hh>
 #include <error/error.hh>
 
+// REMOVE
+#include <ast/expr.hh>
+#include <ast/printer.hh>
+#include <string>
+
 using namespace rift::error;
+using namespace rift::scanner;
 
 namespace rift
 {
@@ -38,10 +44,24 @@ namespace rift
 
         void runPrompt()
         {
+            // left, op, right
+            rift::scanner::Token token = rift::scanner::Token(TokenType::PLUS,"+", "", 1);
+            rift::ast::Expr::Binary<std::string> expr = rift::ast::Expr::Binary<std::string>(
+                std::make_unique<rift::ast::Expr::Unary<std::string>>(
+                    rift::scanner::Token(TokenType::MINUS,"-", "", 1),
+                    std::make_unique<rift::ast::Expr::Literal<std::string>>("1")
+                ),
+                rift::scanner::Token(TokenType::PLUS,"+", "", 1),
+                std::make_unique<rift::ast::Expr::Literal<std::string>>("2")
+            );
+
+            rift::ast::Printer printer = rift::ast::Printer();
+            std::cout << printer.print(&expr) << std::endl;
+
             while(true)
             {
                 std::string input = "";
-                std::cout << "> " << std::endl;
+                std::cout << "> ";
                 std::cin >> input;
                 if (input.empty()) break;
                 run(input);

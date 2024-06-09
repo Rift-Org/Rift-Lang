@@ -22,6 +22,9 @@ project(RiftLang)
 # C++17 for now might switch to 20
 set(CMAKE_CXX_STANDARD 17)
 
+# Set Debug Mode
+set(CMAKE_BUILD_TYPE Debug)
+
 # sets targets
 include(Options.mk)
 
