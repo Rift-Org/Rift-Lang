@@ -11,7 +11,8 @@
 ![Wikipedia](https://img.shields.io/badge/Docs-%23000000.svg?style=for-the-badge&logo=wikipedia&logoColor=white)
 ![Prezi](https://img.shields.io/badge/License-%23000000.svg?style=for-the-badge&logo=Prezi&logoColor=white)
 
- [![status](https://github.com/Rift-Org/Rift-Lang/actions/workflows/main.yml/badge.svg)](https://github.com/Rift-Org/Rift-Lang/actions/workflows/main.yml)
+[![build](https://github.com/Rift-Org/Rift-Lang/actions/workflows/build.yml/badge.svg)](https://github.com/Rift-Org/Rift-Lang/actions/workflows/build.yml)
+[![g-test](https://github.com/Rift-Org/Rift-Lang/actions/workflows/g-test.yml/badge.svg)](https://github.com/Rift-Org/Rift-Lang/actions/workflows/g-test.yml)
 </div>
 <br>
 <br>
