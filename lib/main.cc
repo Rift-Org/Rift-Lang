@@ -5,6 +5,6 @@
 int main(int argc, char **argv)
 {
     rift::driver::Driver driver;
-    driver.run(argc, argv);
-    return 0;
+    driver.init();
+    return driver.parse(argc, argv);
 }

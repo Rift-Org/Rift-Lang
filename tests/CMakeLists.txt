@@ -2,9 +2,12 @@ set(
     SOURCES
     main.cc
 
-    # Driver
-    driver/driver.cc
-    driver/driver.hh
+    # Unit Tests
+    test/parser.cc
+    test/scanner.cc
+
+    # Mock Tests
+    mock/parser.cc
 )
 
 add_executable(
@@ -14,3 +17,6 @@ add_executable(
 
 target_compile_options(riftlangtest PRIVATE -Wpedantic -Wall -Wextra -Werror)
 add_test(NAME riftlangtest COMMAND riftlangtest)
+
+# Link against all libs
+target_link_libraries(riftlangtest gtest gmock riftlib)

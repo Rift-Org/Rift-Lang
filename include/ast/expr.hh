@@ -15,6 +15,7 @@ namespace rift
     {
         namespace Expr
         {
+            /// @note forward declrations
             __DEFAULT_FORWARD_VA(
                 Visitor,
                 Binary,
@@ -73,7 +74,9 @@ namespace rift
                     std::unique_ptr<Expr<T>> left;
                     std::unique_ptr<Expr<T>> right;
 
-                    inline T accept(const Visitor<T>& visitor) override {return visitor.visit_binary(this);}
+                    inline T accept(const Visitor<T>& visitor) override {
+                        return visitor.visit_binary(this);
+                    }
             };
 
             /// @class Grouping

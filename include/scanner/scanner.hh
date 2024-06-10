@@ -18,7 +18,7 @@ namespace rift
         struct Scanner
         {
             std::string source;
-            std::vector<Token> tokens = std::vector<Token>();
+            std::vector<Token> tokens;
             std::unordered_map<std::string, Type> keywords;
             static unsigned start, curr, line;
 
@@ -34,11 +34,14 @@ namespace rift
             /// @param cnt The number of tokens to scan
             void scan_tokens(unsigned cnt);
 
+            /// @fn scan_source
+            /// @brief Scans the source code and returns a list of tokens
+            void scan_source();
         private:
 
             #pragma mark - Token Management
 
-            void addToken(Type type) {addToken(type, NULL);};
+            void addToken(Type type) { addToken(type, ""); };
             void addToken(Type type, std::string literal) {
                 tokens.push_back(Token(type, source.substr(start, curr-start), literal, line));
             }
@@ -46,15 +49,17 @@ namespace rift
             #pragma mark - Helper Functions (Inline)
 
             inline bool atEnd() { return this->curr >= source.size(); }
-            inline char advance() { return source.at(curr++); }
+            inline char advance() { return (!atEnd()) ? source.at(curr++) : '\0'; }
             inline bool isDigit(char c) { return c>='0' && c<='9'; }
             inline bool isAlpha(char c) { return (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_'; }
             inline bool isAlphaNumeric(char c) { return isAlpha(c) || isDigit(c); }
 
             /// @brief Peeks at the current character 
-            inline bool peek(char expected) { return curr<source.size() && source.at(curr) == expected; };
+            inline bool peek(char expected) { return !atEnd() && source.at(curr) == expected; };
             /// @brief Peeks at the current character with an offset
             inline bool peek_off(char expected, int offset) { return curr+offset<source.size() && source.at(curr+offset) == expected; };
+            /// @brief Peeks at the current character
+            inline char peek() { return !atEnd() ? source.at(curr) : '\0'; };
             /// @brief Peeks at the next character 
             inline char peekNext() { return curr+1<source.size() ? source.at(curr+1) : '\0'; };
             /// @brief Peeks at the next 2 characters

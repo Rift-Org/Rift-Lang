@@ -24,3 +24,4 @@ add_executable(
 )
 target_compile_options(riftlang PRIVATE -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation)
 
+add_library(riftlib STATIC ${SOURCES})

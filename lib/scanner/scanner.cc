@@ -17,7 +17,8 @@ namespace rift
         unsigned Scanner::line = 1;
         
         Scanner::Scanner(const std::string& source) {
-            this->source = source;
+            this->source = std::string(source);
+            this->tokens = std::vector<Token>();
 
             keywords = std::unordered_map<std::string, Type>();
             keywords["and"] = Type::AND;
@@ -66,7 +67,7 @@ namespace rift
         }
 
         void Scanner::num() {
-            while (isDigit(advance()));
+            while (isDigit(peek())) advance();
             if (peek('.') && isDigit(peekNext())) {
                 advance();
                 while (isDigit(advance()));
@@ -86,18 +87,10 @@ namespace rift
 
         #pragma mark - Public API
 
-        void Scanner::scan_tokens(unsigned cnt)
-        {
-            while (cnt) {
-                start = curr;
-                scan_token();
-                cnt-=1;
-            }
-        }
-
         void Scanner::scan_token()
         {
             char c = advance();
+            // if(c == ' ') return;
             switch(c) {
                 case '(': addToken(Type::LEFT_PAREN);break;
                 case ')': addToken(Type::RIGHT_PAREN);break;
@@ -128,6 +121,22 @@ namespace rift
                     else rift::error::report(line, "scanToken", "Unorthodox Character");
                     break;
             };
+        }
+
+        void Scanner::scan_tokens(unsigned cnt)
+        {
+            while (cnt--) {
+                start = curr;
+                scan_token();
+            }
+        }
+
+        void Scanner::scan_source()
+        {
+            while (!atEnd()) {
+                start = curr;
+                scan_token();
+            }
         }
     }
 }

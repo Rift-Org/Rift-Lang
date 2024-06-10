@@ -11,3 +11,8 @@ build/
 # executables
 tests/riftlangtest
 lib/riftlang
+
+# libraries
+*.a
+*.so
+*.so.*

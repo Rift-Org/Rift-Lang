@@ -26,8 +26,18 @@ namespace rift
             std::cout << lines << std::endl;
         }
 
-        void runFile(char* path)
+        void Driver::runFile()
         {
+            CLI::results_t args = app.remaining();
+            std::string path;
+
+            if (!args.empty()) {
+                for (auto arg : args) path = arg;
+            } else {
+                std::cout << "File flag provided without arguments." << std::endl;
+                return;
+            }
+
             std::ifstream file(std::string(path), std::ios::binary | std::ios::ate);
 
             if (file) {
@@ -42,22 +52,8 @@ namespace rift
             }   
         }
 
-        void runPrompt()
+        void Driver::runPrompt()
         {
-            // left, op, right
-            rift::scanner::Token token = rift::scanner::Token(TokenType::PLUS,"+", "", 1);
-            rift::ast::Expr::Binary<std::string> expr = rift::ast::Expr::Binary<std::string>(
-                std::make_unique<rift::ast::Expr::Unary<std::string>>(
-                    rift::scanner::Token(TokenType::MINUS,"-", "", 1),
-                    std::make_unique<rift::ast::Expr::Literal<std::string>>("1")
-                ),
-                rift::scanner::Token(TokenType::PLUS,"+", "", 1),
-                std::make_unique<rift::ast::Expr::Literal<std::string>>("2")
-            );
-
-            rift::ast::Printer printer = rift::ast::Printer();
-            std::cout << printer.print(&expr) << std::endl;
-
             while(true)
             {
                 std::string input = "";
@@ -69,19 +65,40 @@ namespace rift
             }
         }
 
+        void Driver::version()
+        {
+            std::string versionString = std::string("Rift version ") + "0.0.1" + "\n\n(c) Aman 2024";
+            app.set_version_flag("--version,-v", versionString);
+            app.footer("(c) Aman 2024");
+        }
+
         # pragma mark - Driver
 
-        void Driver::run(int argc, char **argv) 
+        int Driver::parse(int argc, char **argv) 
         {
-            if (argc > 2) {
-                std::cout << "Usage: rift" << std::endl;
-            } else if (argc == 2) {
-                // file
-                runFile(argv[1]);
-            } else {
-                // prompt
-                runPrompt();
+            try {
+                app.parse(argc, argv);
+            } catch (const CLI::ParseError &parseError) {
+                return app.exit(parseError);
             }
+            // return 0;
+            // if (argc > 2) {
+            //     std::cout << "Usage: rift" << std::endl;
+            // } else if (argc == 2) {
+            //     // file
+            //     runFile(argv[1]);
+            // } else {
+            //     // prompt
+            //     runPrompt();
+            // }
+            return 0;
+        }
+
+        void Driver::init()
+        {
+            app.add_flag_callback("--version,-v", [this]() { version(); }, "Print the version of the Rift language");
+            app.add_flag_callback("--prompt,-p", [this]() { runPrompt(); }, "Run the Rift prompt");
+            app.add_flag_callback("--file,-f", [this]() { runFile(); }, "Run a Rift source file");
         }
     }
 }

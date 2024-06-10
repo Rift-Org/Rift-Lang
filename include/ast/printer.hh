@@ -28,14 +28,20 @@ namespace rift
                 /// @param expr The expression to print.
                 /// @return string representation of the expression.
                 string print(ExprStr *expr);
+                
+            private:
 
                 /// @brief  Wraps the given expression in parentheses.
                 /// @param name The name of the expression.
                 /// @param exprs The expressions to wrap.
                 /// @return The wrapped expression.
                 string parenthesize(string name, std::vector<ExprStr*> expr);
-                
-            private:
+
+                /// @brief  Wraps the given expression in square brackets.
+                /// @param exprs The expressions to wrap.
+                /// @return The wrapped expression.
+                string group(std::vector<ExprStr*> expr);
+
                 VisitorPrinter *visitor;
         };
 
@@ -45,14 +51,13 @@ namespace rift
         {
             public:
                 VisitorPrinter(Printer &printer);
-                ~VisitorPrinter() = default;
+                virtual ~VisitorPrinter() = default;
 
                 string visit_binary(Binary<string> *expr) const;
                 string visit_grouping(Grouping<string> *expr) const;
                 string visit_literal(Literal<string> *expr) const;
                 string visit_unary(Unary<string> *expr) const;
-            
-            private:
+
                 Printer *printer;
         };
     }

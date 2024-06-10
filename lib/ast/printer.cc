@@ -34,6 +34,15 @@ namespace rift
             return result;
         }
 
+        string Printer::group(vec expr)
+        {
+            string result = "[";
+            for (auto &e : expr)
+                result += " " + e->accept(*this->visitor);
+            result += "]";
+            return result;
+        }
+
         #pragma mark - Visitor
 
         VisitorPrinter::VisitorPrinter(Printer &printer)
@@ -60,7 +69,7 @@ namespace rift
         {
             vec v;
             v.push_back(expr->expr.get());
-            return printer->parenthesize("group", v);
+            return printer->group(v);
         }
 
         string VisitorPrinter::visit_literal(Literal<string> *expr) const

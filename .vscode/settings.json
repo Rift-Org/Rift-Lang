@@ -60,6 +60,10 @@
         "queue": "cpp",
         "codecvt": "cpp",
         "set": "cpp",
-        "__memory": "cpp"
+        "__memory": "cpp",
+        "condition_variable": "cpp",
+        "memory": "cpp",
+        "print": "cpp",
+        "stack": "cpp"
     }
 }

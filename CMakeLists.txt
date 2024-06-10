@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 
 # Built using Clang 🐐
 set(CMAKE_CXX_COMPILER_ID "Clang")
@@ -35,3 +35,8 @@ include_directories(${CMAKE_SOURCE_DIR}/external)
 add_subdirectory(lib)
 enable_testing()
 add_subdirectory(tests)
+
+# Google {Test&Mock}
+add_subdirectory(external/googletest)
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
