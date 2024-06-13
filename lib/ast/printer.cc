@@ -72,36 +72,36 @@ namespace rift
             return printer->parenthesize(expr.op.lexeme, v);
         }
 
-        string VisitorPrinter::visit_unary(Unary<string> *expr) const
+        string VisitorPrinter::visit_unary(Unary<string>& expr) const
         {
             vec v;
-            v.push_back(expr->expr.get());
-            return printer->parenthesize(expr->op.lexeme, v);
+            v.push_back(expr.expr.get());
+            return printer->parenthesize(expr.op.lexeme, v);
         }
 
-        string VisitorPrinter::visit_grouping(Grouping<string> *expr) const
+        string VisitorPrinter::visit_grouping(Grouping<string>& expr) const
         {
             vec v;
-            v.push_back(expr->expr.get());
+            v.push_back(expr.expr.get());
             return printer->group(v);
         }
 
-        string VisitorPrinter::visit_literal(Literal<string> *expr) const
+        string VisitorPrinter::visit_literal(Literal<string>& expr) const
         {
-            if (expr->value.type() == typeid(std::string))
-                return std::any_cast<std::string>(expr->value);
-            else if (expr->value.type() == typeid(double))
-                return std::to_string(std::any_cast<double>(expr->value));
-            else if (expr->value.type() == typeid(int))
-                return std::to_string(std::any_cast<int>(expr->value));
-            else if (expr->value.type() == typeid(char**))
+            if (expr.value.type() == typeid(std::string))
+                return std::any_cast<std::string>(expr.value);
+            else if (expr.value.type() == typeid(double))
+                return std::to_string(std::any_cast<double>(expr.value));
+            else if (expr.value.type() == typeid(int))
+                return std::to_string(std::any_cast<int>(expr.value));
+            else if (expr.value.type() == typeid(char**))
                 return "";
-            else if (expr->value.type() == typeid(char*))
-                return std::string(std::any_cast<char*>(expr->value));
-            else if (expr->value.type() == typeid(char))
-                return std::string(1, std::any_cast<char>(expr->value));
-            else if (expr->value.type() == typeid(const char*))
-                return std::string(std::any_cast<const char*>(expr->value));
+            else if (expr.value.type() == typeid(char*))
+                return std::string(std::any_cast<char*>(expr.value));
+            else if (expr.value.type() == typeid(char))
+                return std::string(1, std::any_cast<char>(expr.value));
+            else if (expr.value.type() == typeid(const char*))
+                return std::string(std::any_cast<const char*>(expr.value));
 
             return "";
         }
