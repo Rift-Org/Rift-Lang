@@ -33,7 +33,7 @@ See `LICENSE` for more information.
 
 # Roadmap
 
-- Lexer
+- Le
 - Parser
 - Compiler
 - JIT

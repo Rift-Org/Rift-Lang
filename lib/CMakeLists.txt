@@ -2,12 +2,14 @@ set( SOURCES
 
     # Main
     main.cc
-
+    
     # Scanner
     scanner/scanner.cc
     scanner/tokens.cc
+    reader/reader.cc
 
-    # AST
+    # Parsing
+    parser/parser.cc
     ast/printer.cc
 
     # Driver

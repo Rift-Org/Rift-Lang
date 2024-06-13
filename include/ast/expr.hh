@@ -1,8 +1,9 @@
 
 #pragma once
-#include "../scanner/tokens.hh"
-#include "../utils/macros.hh"
+#include <scanner/tokens.hh>
+#include <utils/macros.hh>
 
+#include <any>
 #include <iostream>
 #include <stdlib.h>
 #include <memory>
@@ -24,9 +25,6 @@ namespace rift
                 Unary
             );
 
-            // template <typename T = void> 
-            // class Visitor;
-            // class Binary;
             /// @class Expr
             /// @brief Base class for all expressions 
             /// @details Types of expression include
@@ -97,8 +95,8 @@ namespace rift
             class Literal: public Expr<T>
             {
                 public:
-                    Literal(const char* value): value(value) {};
-                    const char* value;
+                    Literal(std::any value): value(value) {};
+                    std::any value;
 
                     inline T accept(const Visitor<T> &visitor) override {return visitor.visit_literal(this);}
             };

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "tokens.hh"
-#include "../error/error.hh"
+#include <error/error.hh>
+#include <reader/reader.hh>
 #include <string>
 #include <stdlib.h>
 #include <map>
@@ -9,20 +10,21 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace rift::reader;
 typedef rift::scanner::Token Token;
 typedef rift::scanner::TokenType Type;
 namespace rift
 {
     namespace scanner
     {
-        struct Scanner
+        struct Scanner : public Reader<char>
         {
-            std::string source;
+            std::vector<char> source;
             std::vector<Token> tokens;
             std::unordered_map<std::string, Type> keywords;
             static unsigned start, curr, line;
 
-            Scanner(const std::string& source);
+            Scanner(const std::vector<char>& source);
             ~Scanner(){}
 
             /// @fn scan_token
@@ -43,32 +45,14 @@ namespace rift
 
             void addToken(Type type) { addToken(type, ""); };
             void addToken(Type type, std::string literal) {
-                tokens.push_back(Token(type, source.substr(start, curr-start), literal, line));
+                tokens.push_back(Token(type, std::string(source.begin()+start, source.begin()+curr), literal, line));
             }
 
             #pragma mark - Helper Functions (Inline)
 
-            inline bool atEnd() { return this->curr >= source.size(); }
-            inline char advance() { return (!atEnd()) ? source.at(curr++) : '\0'; }
             inline bool isDigit(char c) { return c>='0' && c<='9'; }
             inline bool isAlpha(char c) { return (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_'; }
             inline bool isAlphaNumeric(char c) { return isAlpha(c) || isDigit(c); }
-
-            /// @brief Peeks at the current character 
-            inline bool peek(char expected) { return !atEnd() && source.at(curr) == expected; };
-            /// @brief Peeks at the current character with an offset
-            inline bool peek_off(char expected, int offset) { return curr+offset<source.size() && source.at(curr+offset) == expected; };
-            /// @brief Peeks at the current character
-            inline char peek() { return !atEnd() ? source.at(curr) : '\0'; };
-            /// @brief Peeks at the next character 
-            inline char peekNext() { return curr+1<source.size() ? source.at(curr+1) : '\0'; };
-            /// @brief Peeks at the next 2 characters
-            inline bool peek3(char expected) { return peek_off(expected, 0) && peek_off(expected, 1) && peek_off(expected, 2); }
-
-            /// @brief Scans a comment and advances the cursor
-            inline void scanComment() { while (peek('\n')) advance();};
-            /// @brief Matches a character and advances the cursor
-            inline bool match(char expected) { return !atEnd() && (source.at(curr)==expected ? curr++ : false); }
 
             #pragma mark - Token Scanners
 

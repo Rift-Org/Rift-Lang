@@ -7,7 +7,6 @@ set(
     test/scanner.cc
 
     # Mock Tests
-    mock/parser.cc
 )
 
 add_executable(

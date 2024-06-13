@@ -1,3 +1,4 @@
+#include <ostream>
 #include <scanner/tokens.hh>
 
 using namespace rift::scanner;
@@ -49,7 +50,22 @@ std::string Token::convertTypeString(TokenType type) {
     }
 }
 
-std::string Token::to_string()
+std::string Token::to_string() const
 {
-    return std::string(convertTypeString(type) + " " + lexeme + " " + literal);
+    return std::string(convertTypeString(type) + " " + lexeme);
+}
+
+#pragma mark - Operators
+
+std::ostream& operator<<(std::ostream& os, const rift::scanner::Token& token) {
+    os << "Token(Type=" << static_cast<int>(token.type)
+       << ", Lexeme=\"" << token.lexeme
+       << "\", Literal=" << token.literal.type().name()
+       << ", Line=" << token.line << ")";
+    return os;
+}
+
+bool Token::operator==(const Token &token)
+{
+    return this->type == token.type;
 }
