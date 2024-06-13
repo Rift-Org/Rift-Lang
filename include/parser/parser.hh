@@ -20,10 +20,10 @@ namespace rift
         class Parser : public Reader<Token>
         {
             public:
-                Parser(const std::vector<Token> &tokens) : Reader<Token>(tokens), tokens(tokens)  {};
+                Parser(std::shared_ptr<std::vector<Token>> &tokens) : Reader<Token>(tokens), tokens(tokens)  {};
                 ~Parser() = default;
             protected:
-                std::vector<Token> tokens;
+                std::shared_ptr<std::vector<Token>> tokens;
                 std::exception exception;
 
             private:

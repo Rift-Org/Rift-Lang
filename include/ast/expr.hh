@@ -51,7 +51,7 @@ namespace rift
             class Visitor
             {
                 public:
-                    virtual T visit_binary(Binary<T> *expr) const = 0;
+                    virtual T visit_binary(Binary<T>& expr) const = 0;
                     virtual T visit_grouping(Grouping<T> *expr) const = 0;
                     virtual T visit_literal(Literal<T> *expr) const = 0;
                     virtual T visit_unary(Unary<T> *expr) const = 0;
@@ -72,9 +72,7 @@ namespace rift
                     std::unique_ptr<Expr<T>> left;
                     std::unique_ptr<Expr<T>> right;
 
-                    inline T accept(const Visitor<T>& visitor) override {
-                        return visitor.visit_binary(this);
-                    }
+                    inline T accept(const Visitor<T>& visitor) override { return visitor.visit_binary(*this); }
             };
 
             /// @class Grouping

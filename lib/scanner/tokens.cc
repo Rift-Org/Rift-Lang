@@ -56,15 +56,6 @@ std::string Token::to_string() const
 }
 
 #pragma mark - Operators
-
-std::ostream& operator<<(std::ostream& os, const rift::scanner::Token& token) {
-    os << "Token(Type=" << static_cast<int>(token.type)
-       << ", Lexeme=\"" << token.lexeme
-       << "\", Literal=" << token.literal.type().name()
-       << ", Line=" << token.line << ")";
-    return os;
-}
-
 bool Token::operator==(const Token &token)
 {
     return this->type == token.type;

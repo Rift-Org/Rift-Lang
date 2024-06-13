@@ -15,7 +15,7 @@ class RiftScanner : public ::testing::Test {
     protected:
         RiftScanner() {}
         ~RiftScanner() override {}
-        void SetUp() override { this->scanner = new Scanner({}); }
+        void SetUp() override { this->scanner = new Scanner(std::make_shared<std::vector<char>>()); }
         void TearDown() override { delete this->scanner; }
         Scanner *scanner;
 };
@@ -24,10 +24,10 @@ class RiftScanner : public ::testing::Test {
 
 TEST_F(RiftScanner, simpleScanner)
 {
-    scanner->source = {};
-    scanner->source.push_back('1');
-    scanner->source.push_back('+');
-    scanner->source.push_back('2');
+    scanner->source->clear();
+    scanner->source->push_back('1');
+    scanner->source->push_back('+');
+    scanner->source->push_back('2');
     scanner->scan_source();
     auto &tokens = scanner->tokens;
 

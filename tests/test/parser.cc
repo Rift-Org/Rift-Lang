@@ -27,12 +27,11 @@ TEST_F(RiftPrinter, simpleParseExpr) {
     rift::ast::Expr::Binary<string> expr = rift::ast::Expr::Binary<string>(
         std::make_unique<rift::ast::Expr::Unary<string>>(
             rift::scanner::Token(TokenType::MINUS,"-", "", 1),
-            std::make_unique<rift::ast::Expr::Literal<string>>("1")
+            std::make_unique<rift::ast::Expr::Literal<string>>(static_cast<const char*>("1"))
         ),
         rift::scanner::Token(TokenType::PLUS,"+", "", 1),
         std::make_unique<rift::ast::Expr::Literal<std::string>>("2")
     );
-
     EXPECT_EQ(printer->print(&expr), "(+ (- 1) 2)");
 }
 

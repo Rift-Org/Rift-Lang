@@ -53,7 +53,7 @@ namespace rift
                 VisitorPrinter(Printer &printer);
                 virtual ~VisitorPrinter() = default;
 
-                string visit_binary(Binary<string> *expr) const;
+                string visit_binary(Binary<string>& expr) const;
                 string visit_grouping(Grouping<string> *expr) const;
                 string visit_literal(Literal<string> *expr) const;
                 string visit_unary(Unary<string> *expr) const;

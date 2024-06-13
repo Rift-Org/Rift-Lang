@@ -18,32 +18,32 @@ namespace rift
         class Reader
         {
             public:
-                Reader(const std::vector<T> &source): source(source) {start=0;curr=0;line=1;};
+                Reader(std::shared_ptr<std::vector<T>> &source): source(source) {start=0;curr=0;line=1;};
                 ~Reader() = default;
 
             protected:
-                std::vector<T> source;
+                std::shared_ptr<std::vector<T>> source;
                 unsigned start, curr, line;
 
                 #pragma mark - Reader Methods
 
-                inline bool atEnd() { return this->curr >= source.size(); }
-                inline T advance() { return (!atEnd()) ? source.at(curr++) : T(); }
-                // inline typename std::enable_if<std::is_same<T, char>::value, T>::type advance() { return (!atEnd()) ? source.at(curr++) : '\0'; }
-                // inline typename std::enable_if<!std::is_same<T, char>::value, T>::type advance() { return (!atEnd()) ? source.at(curr++) : nullptr; }
+                inline bool atEnd() { return this->curr >= source->size(); }
+                inline T advance() { return (!atEnd()) ? source->at(curr++) : T(); }
+                // inline typename std::enable_if<std::is_same<T, char>::value, T>::type advance() { return (!atEnd()) ? source->at(curr++) : '\0'; }
+                // inline typename std::enable_if<!std::is_same<T, char>::value, T>::type advance() { return (!atEnd()) ? source->at(curr++) : nullptr; }
 
                 /// @brief Peeks at the current character 
-                inline bool peek(T expected) { return !atEnd() && source.at(curr) == expected; };
+                inline bool peek(T expected) { return !atEnd() && source->at(curr) == expected; };
                 /// @brief Peeks at the current character with an offset
-                inline bool peek_off(T expected, int offset) { return curr+offset<source.size() && source.at(curr+offset) == expected; };
+                inline bool peek_off(T expected, int offset) { return curr+offset<source->size() && source->at(curr+offset) == expected; };
                 /// @brief Peeks at the current character
-                inline T peek() { return !atEnd() ? source.at(curr) : T(); };
+                inline T peek() { return !atEnd() ? source->at(curr) : T(); };
                 /// @brief Peeks at the next character 
-                inline T peekNext() { return curr+1<source.size() ? source.at(curr+1) : T(); };
+                inline T peekNext() { return curr+1<source->size() ? source->at(curr+1) : T(); };
                 /// @brief Peeks at the next 2 characters
                 inline bool peek3(T expected) { return peek_off(expected, 0) && peek_off(expected, 1) && peek_off(expected, 2); }
                 /// @brief Peeks the previous character
-                inline T peekPrev() { return curr-1>=0 ? source.at(curr-1) : T(); };
+                inline T peekPrev() { return curr-1>=0 ? source->at(curr-1) : T(); };
 
                 /// @brief Scans a comment and advances the cursor
                 inline void scanComment() { while (peek('\n')) advance();};

@@ -1,5 +1,6 @@
 
 #include <scanner/scanner.hh>
+#include <iostream>
 
 typedef rift::scanner::Token Token;
 typedef rift::scanner::TokenType Type;
@@ -11,13 +12,8 @@ namespace rift
     {
         
         #pragma mark - Initializers
-
-        // static members
-        unsigned Scanner::start = 0;
-        unsigned Scanner::curr = 0;
-        unsigned Scanner::line = 1;
         
-        Scanner::Scanner(const std::vector<char>& source) : Reader<char>(source) {
+        Scanner::Scanner(std::shared_ptr<std::vector<char>> source) : Reader<char>(source) {
             this->source = source;
             this->tokens = std::vector<Token>();
 
@@ -61,11 +57,11 @@ namespace rift
             }
 
             if (peek3('"')) {
-                addToken(Type::STRINGLITERAL, std::string(source.begin()+start+3, source.begin()+curr));
+                addToken(Type::STRINGLITERAL, std::string(source->begin()+start+3, source->begin()+curr));
                 advance(); advance(); advance();
             }
             else {
-                addToken(Type::STRINGLITERAL, std::string(source.begin()+start+1, source.begin()+curr));
+                addToken(Type::STRINGLITERAL, std::string(source->begin()+start+1, source->begin()+curr));
                 advance();
             }
         }
@@ -76,12 +72,13 @@ namespace rift
                 advance();
                 while (isDigit(advance()));
             }
-            addToken(Type::NUMERICLITERAL, std::string(source.begin()+start, source.begin()+curr));
+
+            addToken(Type::NUMERICLITERAL, std::string(source->begin()+start, source->begin()+curr));
         }
         
         void Scanner::identifier() {
             while (isAlphaNumeric(advance()));
-            std::string text = std::string(source.begin()+start, source.begin()+curr);
+            std::string text = std::string(source->begin()+start, source->begin()+curr);
             if (keywords.find(text)!= keywords.end()) {
                 addToken(keywords.at(text));
             } else {

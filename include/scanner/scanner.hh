@@ -19,12 +19,11 @@ namespace rift
     {
         struct Scanner : public Reader<char>
         {
-            std::vector<char> source;
+            std::shared_ptr<std::vector<char>> source;
             std::vector<Token> tokens;
             std::unordered_map<std::string, Type> keywords;
-            static unsigned start, curr, line;
 
-            Scanner(const std::vector<char>& source);
+            Scanner(std::shared_ptr<std::vector<char>> source);
             ~Scanner(){}
 
             /// @fn scan_token
@@ -45,7 +44,7 @@ namespace rift
 
             void addToken(Type type) { addToken(type, ""); };
             void addToken(Type type, std::string literal) {
-                tokens.push_back(Token(type, std::string(source.begin()+start, source.begin()+curr), literal, line));
+                tokens.push_back(Token(type, std::string(source->begin()+start, source->begin()+curr), literal, line));
             }
 
             #pragma mark - Helper Functions (Inline)
