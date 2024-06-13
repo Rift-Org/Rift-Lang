@@ -50,8 +50,9 @@ namespace rift
                 /// @brief Consumes a T and advances the cursor (Error if not found)
                 inline T consume (T expected, std::unique_ptr<ReaderException> error) { 
                     if (peek(expected)) return advance();
-                    rift::error::report(line, "consume", "expected " << expected);
+                    rift::error::report(line, "consume", "expected token not found", expected);
                     if (error) throw error;
+                    return T();
                 }
                 /// @brief Matches a T from a set of T's{token, character} and advances the cursor
                 inline bool match(std::vector<T> expected) {
@@ -73,7 +74,7 @@ namespace rift
         {
             public:
                 ReaderException() = default;
-                ~ReaderException() = default;
+                virtual ~ReaderException() = default;
                 virtual const char* what() const noexcept { return "BaseException"; }
         };
     }

@@ -1,3 +1,4 @@
+#include <initializer_list>
 #include <scanner/scanner.hh>
 #include <ast/expr.hh>
 #include <ast/printer.hh>
@@ -14,19 +15,23 @@ class RiftScanner : public ::testing::Test {
     protected:
         RiftScanner() {}
         ~RiftScanner() override {}
-        void SetUp() override { this->scanner = new Scanner(""); }
+        void SetUp() override { this->scanner = new Scanner({}); }
         void TearDown() override { delete this->scanner; }
         Scanner *scanner;
 };
 
 #pragma mark - Rift Scanner (Tests)
 
-TEST_F(RiftScanner, simpleScanner) { 
-    scanner->source = "1 + 2";
+TEST_F(RiftScanner, simpleScanner)
+{
+    scanner->source = {};
+    scanner->source.push_back('1');
+    scanner->source.push_back('+');
+    scanner->source.push_back('2');
     scanner->scan_source();
-    auto token = scanner->tokens;
+    auto &tokens = scanner->tokens;
 
-    EXPECT_EQ(token[0].lexeme, "1");
-    EXPECT_EQ(token[1].lexeme, "+");
-    EXPECT_EQ(token[2].lexeme, "2");
+    EXPECT_EQ(tokens[0].lexeme, "1");
+    EXPECT_EQ(tokens[1].lexeme, "+");
+    EXPECT_EQ(tokens[2].lexeme, "2");
 }

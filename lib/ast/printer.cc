@@ -74,7 +74,7 @@ namespace rift
 
         string VisitorPrinter::visit_literal(Literal<string> *expr) const
         {
-            return expr->value;
+            return expr->value.type().name();
         }
     }
 }

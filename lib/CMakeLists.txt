@@ -4,8 +4,8 @@ set( SOURCES
     main.cc
     
     # Scanner
-    scanner/scanner.cc
     scanner/tokens.cc
+    scanner/scanner.cc
     reader/reader.cc
 
     # Parsing

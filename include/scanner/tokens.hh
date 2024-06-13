@@ -88,16 +88,15 @@ namespace rift
             /// @brief Converts a Token to a string
             std::string to_string() const;
 
-            // friend std::ostream &operator<<(std::ostream &os, const Token &token);
+            friend std::ostream &operator<<(std::ostream &os, const Token &token) {
+                os << std::string("Token(Type=") << token.convertTypeString(token.type)
+                /*<< ", Lexeme=\"" << token.lexeme
+                << "\", Literal=" << token.literal.type().name()
+                << ", Line=" << token.line << ")"*/;
+                return os;
+            }
             bool operator==(const Token &token);
         };
 
-        // std::ostream& operator<<(std::ostream& os, const Token& token) {
-        //     os << std::string("Token(Type=") << token.convertTypeString(token.type)
-        //     /*<< ", Lexeme=\"" << token.lexeme
-        //     << "\", Literal=" << token.literal.type().name()
-        //     << ", Line=" << token.line << ")"*/;
-        //     return os;
-        // }
-
     }
+}
