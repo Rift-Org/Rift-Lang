@@ -13,17 +13,15 @@
 # /////////////////////////////////////////////////////////////
 
 set( SOURCES
-
-    # Main
-    main.cc
     
     # Scanner
     scanner/tokens.cc
     scanner/scanner.cc
     reader/reader.cc
 
-    # Parsing
-    parser/parser.cc
+    # AST
+    ast/eval.cc
+    ast/parser.cc
     ast/printer.cc
 
     # Driver
@@ -31,6 +29,9 @@ set( SOURCES
 
     # Utils
     error/error.cc
+
+    # Main
+    main.cc
 )
 
 

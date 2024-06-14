@@ -1,18 +1,4 @@
-/////////////////////////////////////////////////////////////
-///                                                       ///
-///     ██████╗ ██╗███████╗████████╗                      ///
-///     ██╔══██╗██║██╔════╝╚══██╔══╝                      ///
-///     ██████╔╝██║█████╗     ██║                         ///
-///     ██╔══██╗██║██╔══╝     ██║                         ///
-///     ██║  ██║██║██║        ██║                         ///
-///     ╚═╝  ╚═╝╚═╝╚═╝        ╚═╝                         ///
-///     * RIFT CORE - The official compiler for Rift.     ///
-///     * Copyright (c) 2024, Rift-Org                    ///
-///     * License terms may be found in the LICENSE file. ///
-///                                                       ///
-/////////////////////////////////////////////////////////////
-
-#include <parser/parser.hh>
+#include <ast/parser.hh>
 #include <memory>
 
 using namespace rift::scanner;
@@ -21,7 +7,7 @@ using GenExpr = rift::ast::Expr::Expr<rift::scanner::Token>;
 
 namespace rift
 {
-    namespace parser
+    namespace ast
     {
         #pragma mark - Grammar Evaluators
 

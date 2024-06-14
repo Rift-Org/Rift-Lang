@@ -23,8 +23,11 @@ namespace rift
     namespace error
     {
         [[maybe_unused]] static bool errorOccured = false;
+        [[maybe_unused]] static bool runtimeErrorOccured = false;
 
         /// @brief Used to report an error.
         void report(int line, const std::string& where, const std::string& msg, const rift::scanner::Token& token);
+        /// @brief Used to report an runtime error.
+        void runTimeError(const std::string& msg);
     }
 }

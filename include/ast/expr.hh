@@ -54,7 +54,7 @@ namespace rift
             class Expr
             {
                 public:
-                    virtual T accept(const Visitor<T>& visitor) = 0;
+                    virtual T accept(const Visitor<T>& visitor) const = 0;
                     virtual ~Expr() = default;
             };
 
@@ -65,10 +65,10 @@ namespace rift
             class Visitor
             {
                 public:
-                    virtual T visit_binary(Binary<T>& expr) const = 0;
-                    virtual T visit_grouping(Grouping<T>& expr) const = 0;
-                    virtual T visit_literal(Literal<T>& expr) const = 0;
-                    virtual T visit_unary(Unary<T>& expr) const = 0;
+                    virtual T visit_binary(const Binary<T>& expr) const = 0;
+                    virtual T visit_grouping(const Grouping<T>& expr) const = 0;
+                    virtual T visit_literal(const Literal<T>& expr) const = 0;
+                    virtual T visit_unary(const Unary<T>& expr) const = 0;
             };
 
             # pragma mark - Concrete Expressions
@@ -86,7 +86,7 @@ namespace rift
                     std::unique_ptr<Expr<T>> left;
                     std::unique_ptr<Expr<T>> right;
 
-                    inline T accept(const Visitor<T>& visitor) override { return visitor.visit_binary(*this); }
+                    inline T accept(const Visitor<T>& visitor) const override { return visitor.visit_binary(*this); }
             };
 
             /// @class Grouping
@@ -98,7 +98,7 @@ namespace rift
                     Grouping(std::unique_ptr<Expr<T>> expr): expr(std::move(expr)) {};
                     std::unique_ptr<Expr<T>> expr;
 
-                    inline T accept(const Visitor<T>& visitor) override {return visitor.visit_grouping(*this);}
+                    inline T accept(const Visitor<T>& visitor) const override {return visitor.visit_grouping(*this);}
             };
 
             /// @class Literal
@@ -110,7 +110,7 @@ namespace rift
                     Literal(std::any value): value(value) {};
                     std::any value;
 
-                    inline T accept(const Visitor<T> &visitor) override {return visitor.visit_literal(*this);}
+                    inline T accept(const Visitor<T> &visitor) const override {return visitor.visit_literal(*this);}
             };
 
             /// @class Unary
@@ -124,7 +124,7 @@ namespace rift
                     Token op;
                     std::unique_ptr<Expr<T>> expr;
 
-                    inline T accept(const Visitor<T>& visitor) override {return visitor.visit_unary(*this);}
+                    inline T accept(const Visitor<T>& visitor) const override {return visitor.visit_unary(*this);}
             };
         }
     }

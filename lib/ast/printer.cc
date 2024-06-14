@@ -64,7 +64,7 @@ namespace rift
             this->printer = &printer;
         }
 
-        string VisitorPrinter::visit_binary(Binary<string>& expr) const
+        string VisitorPrinter::visit_binary(const Binary<string>& expr) const
         {
             vec v;
             v.push_back(expr.left.get());
@@ -72,21 +72,21 @@ namespace rift
             return printer->parenthesize(expr.op.lexeme, v);
         }
 
-        string VisitorPrinter::visit_unary(Unary<string>& expr) const
+        string VisitorPrinter::visit_unary(const Unary<string>& expr) const
         {
             vec v;
             v.push_back(expr.expr.get());
             return printer->parenthesize(expr.op.lexeme, v);
         }
 
-        string VisitorPrinter::visit_grouping(Grouping<string>& expr) const
+        string VisitorPrinter::visit_grouping(const Grouping<string>& expr) const
         {
             vec v;
             v.push_back(expr.expr.get());
             return printer->group(v);
         }
 
-        string VisitorPrinter::visit_literal(Literal<string>& expr) const
+        string VisitorPrinter::visit_literal(const Literal<string>& expr) const
         {
             if (expr.value.type() == typeid(std::string))
                 return std::any_cast<std::string>(expr.value);

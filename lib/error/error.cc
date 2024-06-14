@@ -18,7 +18,7 @@ namespace rift
 {
     namespace error
     {
-        /// @brief Used to report an error.
+
         void report(int line, const std::string& where, const std::string& msg, const rift::scanner::Token& token) {
             std::cout << "[line " << line << "] Error " << where << ": " << msg;
             if (token.type != rift::scanner::TokenType::EOFF) {
@@ -26,6 +26,12 @@ namespace rift
             }
             std::cout << ")" << std::endl;
             errorOccured = true;
+        }
+
+        void runTimeError(const std::string& msg)
+        {
+            std::cout << "⛔️ Runtime Error: " << msg << std::endl;
+            runtimeErrorOccured = true;
         }
     }
 }

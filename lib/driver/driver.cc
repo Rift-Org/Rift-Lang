@@ -20,35 +20,17 @@
 #include <driver/driver.hh>
 #include <error/error.hh>
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////
-///                                                                                                      ///
-///    ██████████████████████████████████████████████████████████████████████████████████████████████    ///
-///   ████████▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██████   ///
-///   ██████▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀█████   ///
-///   ████▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀████   ///
-///   ██▀░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀██   ///
-///   █░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█   ///
-///   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ///
-///   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-///   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   ///
-///                                                                                                      ///
-///     ██████████████████████████████████████████████████████████████████████████████████████████████    ///
-///    ████████████████████████████████████████████████████████████████████████████████████████████████   ///
-///   ██████   ▀██████████████████▀   ▀██████████████████▀   ▀██████████████████▀   ▀█████████████████   ///
-///   ████▀   ░░░▀██████████████▀   ░░░▀██████████████▀   ░░░▀██████████████▀   ░░░▀██████████████████   ///
-///   ██▀   ░░░░░░░▀██████████▀   ░░░░░░░▀██████████▀   ░░░░░░░▀██████████▀   ░░░░░░░▀████████████████   ///
-///   █   ░░░░░░░░░░░▀██████▀   ░░░░░░░░░░░▀██████▀   ░░░░░░░░░░░▀██████▀   ░░░░░░░░░░░▀██████████████   ///
-///   ░░░░░░░░░░░░░░░░░████░░░░░░░░░░░░░░░░░░░███░░░░░░░░░░░░░░░░░░███░░░░░░░░░░░░░░░░░░▀█████████████   ///
-///   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▀████████████   ///
-///     
 
-// REMOVE
 #include <ast/expr.hh>
+#include <ast/parser.hh>
 #include <ast/printer.hh>
+#include <scanner/scanner.hh>
+#include <ast/eval.hh>
 #include <string>
 
 using namespace rift::error;
 using namespace rift::scanner;
+using namespace rift::ast;
 
 namespace rift
 {
@@ -59,7 +41,18 @@ namespace rift
         void run(std::string lines)
         {
             std::istringstream scanner(lines);
-            std::cout << lines << std::endl;
+            std::shared_ptr<std::vector<char>> source = std::make_shared<std::vector<char>>(std::istreambuf_iterator<char>(scanner), std::istreambuf_iterator<char>()); 
+            
+            Scanner riftScanner(source);
+            riftScanner.scan_source();
+
+            // Parser riftParser(riftScanner.tokens);
+            std::shared_ptr<std::vector<Token>> tokensPtr = std::make_shared<std::vector<Token>>(riftScanner.tokens);
+            Parser riftParser(tokensPtr);
+            std::unique_ptr<GenExpr> statements = riftParser.parse(); 
+
+            Eval<Token> riftEvaluator;
+            // riftEvaluator.evaluate(*statements);
         }
 
         void Driver::runFile()
@@ -82,8 +75,12 @@ namespace rift
 
                 std::vector<char> buffer(size);
                 if (file.read(buffer.data(), size)) {
-                    run(buffer.data());                
-                    errorOccured = false; // reset error
+                    run(buffer.data());
+                    if (errorOccured) exit(42);
+                    if (runtimeErrorOccured) exit(69);
+                    // reset
+                    errorOccured = false; 
+                    runtimeErrorOccured = false;
                 }
             }   
         }
