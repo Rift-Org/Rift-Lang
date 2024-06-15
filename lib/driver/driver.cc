@@ -51,8 +51,8 @@ namespace rift
             Parser riftParser(tokensPtr);
             std::unique_ptr<GenExpr> statements = riftParser.parse(); 
 
-            Eval<Token> riftEvaluator;
-            // riftEvaluator.evaluate(*statements);
+            Eval riftEvaluator;
+            riftEvaluator.evaluate(*statements);
         }
 
         void Driver::runFile()

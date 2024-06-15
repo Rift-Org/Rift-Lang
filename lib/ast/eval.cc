@@ -21,17 +21,37 @@ namespace rift
     {
         #pragma mark - Eval
 
+        Eval::Eval()
+        {
+            visitor = new EvalVisitor(*this);
+        }
+
+        Eval::~Eval()
+        {
+            delete visitor;
+        }
+
+        EvalVisitor::EvalVisitor(Eval& eval)
+        {
+            this->eval = &eval;
+        }
+
+        EvalVisitor::~EvalVisitor()
+        {
+            this->eval = nullptr;
+        }
+
         void Eval::evaluate(const rift::ast::Expr::Expr<Token>& expr)
         {
             try {
-                T val = expr.accept(*visitor);
-                if (this->visitor->isNumber(val)) {
-                    std::cout << this->visitor->castNumber(val) << std::endl;
-                } else if (this->visitor->isString(val)) {
-                    std::cout << this->visitor->castString(val) << std::endl;
-                } else if (val.type() == typeid(bool)) {
-                    std::cout << std::any_cast<bool>(val) << std::endl;
-                } else if (val.type() == typeid(std::nullptr_t)) {
+                Token tok = expr.accept(*visitor);
+                if (this->visitor->isNumber(tok.literal)) {
+                    std::cout << this->visitor->castNumber(tok.literal) << std::endl;
+                } else if (this->visitor->isString(tok.literal)) {
+                    std::cout << this->visitor->castString(tok.literal) << std::endl;
+                } else if (tok.literal.type() == typeid(bool)) {
+                    std::cout << std::any_cast<bool>(tok.literal) << std::endl;
+                } else if (tok.literal.type() == typeid(std::nullptr_t)) {
                     std::cout << "null" << std::endl;
                 } else {
                     std::cout << "undefined" << std::endl;
@@ -41,56 +61,74 @@ namespace rift
             }
         }
 
-
         #pragma mark - Eval Visitor
 
         Token EvalVisitor::visit_binary(const BinaryExpr& expr) const
         {
-            Token left = expr.left.get();
-            Token right = expr.right.get();
+            Token left = expr.left.get()->accept(*this);
+            Token right = expr.right.get()->accept(*this);
+            double resDouble;
+            bool resBool;
 
             switch (expr.op.type) {
                 /* arthimetic ops */
                 case TokenType::MINUS:
                     if (!isNumber(left.literal) && !isNumber(right.literal))
                         throw std::runtime_error("Expected a number for '-' operator");
-                    return castNumber(left.literal) - castNumber(right.literal);
+                    resDouble = castNumber(left.literal) - castNumber(right.literal);
+                    return Token(TokenType::NUMERICLITERAL, std::to_string(resDouble), resDouble, expr.op.line);
                 case TokenType::PLUS:
                     if ((!isNumber(left.literal) && !isNumber(right.literal)) && (!isString(left) && !isString(right)))
                         throw std::runtime_error("Expected a number or string for '+' operator");
-                    if (isNumber(left.literal) && isNumber(right.literal)) return castNumber(left.literal) + castNumber(right.literal);
-                    if (isString(left) && isString(right)) return castString(left) + castString(right);
+                    if (isNumber(left.literal) && isNumber(right.literal)) {
+                        resDouble = castNumber(left.literal) + castNumber(right.literal);
+                        return Token(TokenType::NUMERICLITERAL, std::to_string(resDouble), resDouble, expr.op.line);
+                    } else if (isString(left) && isString(right)) {
+                        return Token(TokenType::STRINGLITERAL, castString(left.literal) + castString(right.literal), 0, expr.op.line);
+                    } else if (isString(left) && isNumber(right.literal)) {
+                        return Token(TokenType::STRINGLITERAL, castString(left.literal) + std::to_string(castNumber(right.literal)), 0, expr.op.line);
+                    } else if (isNumber(left.literal) && isString(right)) {
+                        return Token(TokenType::STRINGLITERAL, std::to_string(castNumber(left.literal)) + castString(right.literal), 0, expr.op.line);
+                    }
+                    throw std::runtime_error("Expected a number or string for '+' operator");
                 case TokenType::SLASH:
                     if (!isNumber(left.literal) && !isNumber(right.literal))
                         throw std::runtime_error("Expected a number for '-' operator");
-                    return castNumber(left.literal) / castNumber(right.literal);
+                    resDouble = castNumber(left.literal) / castNumber(right.literal);
+                    return Token(TokenType::NUMERICLITERAL, std::to_string(resDouble), resDouble, expr.op.line);
                 case TokenType::STAR:
                     if (!isNumber(left.literal) && !isNumber(right.literal))
                         throw std::runtime_error("Expected a number for '*' operator");
-                    return castNumber(left.literal) * castNumber(right.literal);
+                    resDouble = castNumber(left.literal) * castNumber(right.literal);
+                    return Token(TokenType::NUMERICLITERAL, std::to_string(resDouble), resDouble, expr.op.line);
 
                 /* comparison ops */
                 case TokenType::GREATER:
                     if (!isNumber(left.literal) && !isNumber(right.literal))
                         throw std::runtime_error("Expected a number for '>' operator");
-                    return castNumber(left.literal) > castNumber(right.literal);
+                    resBool = castNumber(left.literal) > castNumber(right.literal);
+                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
                 case TokenType::GREATER_EQUAL:
                     if (!isNumber(left.literal) && !isNumber(right.literal))
                         throw std::runtime_error("Expected a number for '>=' operator");
-                    return castNumber(left.literal) >= castNumber(right.literal);
+                    resBool = castNumber(left.literal) >= castNumber(right.literal);
+                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
                 case TokenType::LESS:
                     if (!isNumber(left.literal) && !isNumber(right.literal))
                         throw std::runtime_error("Expected a number for '<' operator");
-                    return castNumber(left.literal) < castNumber(right.literal);
+                    resBool = castNumber(left.literal) < castNumber(right.literal);
+                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
                 case TokenType::LESS_EQUAL:
                     if (!isNumber(left.literal) && !isNumber(right.literal))
                         throw std::runtime_error("Expected a number for '<=' operator");
-                    return castNumber(left.literal) <= castNumber(right.literal);
+                    resBool = castNumber(left.literal) <= castNumber(right.literal);
+                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
                 case TokenType::BANG_EQUAL:
-                    return !equal(left, right);
+                    resBool = !equal(left, right);
+                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
                 case TokenType::EQUAL_EQUAL:
-                    return equal(left, right);
-                
+                    resBool = equal(left, right);
+                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
                 default:
                     throw std::runtime_error("Unknown operator for a binary expression");
             }
@@ -103,20 +141,23 @@ namespace rift
 
         Token EvalVisitor::visit_literal(const LiteralExpr& expr) const
         {
-            return expr.value;
+            return expr.accept(*this);
         }
 
         Token EvalVisitor::visit_unary(const UnaryExpr& expr) const
         {
-            T right = expr.expr.get();
-
+            Token right = expr.expr.get()->accept(*this);
+            bool res;
+ 
             switch (expr.op.type) {
                 case TokenType::MINUS:
                     if (!isNumber(right))
                         throw std::runtime_error("Expected a number after '-' operator");
-                    return -castNumber(right);
+                    res = castNumber(right.literal);
+                    return Token(TokenType::NUMERICLITERAL, std::to_string(-res), res, expr.op.line);
                 case TokenType::BANG:
-                    return !truthy(right);
+                res = truthy(right.literal);
+                return Token(res?TokenType::TRUE:TokenType::FALSE, std::to_string(!res), !res, expr.op.line);
                 default:
                     throw std::runtime_error("Unknown operator for a unary expression");
             }
