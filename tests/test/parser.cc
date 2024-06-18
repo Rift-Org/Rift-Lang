@@ -27,10 +27,10 @@ TEST_F(RiftPrinter, simpleParseExpr) {
     rift::ast::Expr::Binary<string> expr = rift::ast::Expr::Binary<string>(
         std::make_unique<rift::ast::Expr::Unary<string>>(
             rift::scanner::Token(TokenType::MINUS,"-", "", 1),
-            std::make_unique<rift::ast::Expr::Literal<string>>(static_cast<const char*>("1"))
+            std::make_unique<rift::ast::Expr::Literal<string>>(Token(TokenType::NUMERICLITERAL, "1", 1, 1))
         ),
         rift::scanner::Token(TokenType::PLUS,"+", "", 1),
-        std::make_unique<rift::ast::Expr::Literal<std::string>>("2")
+        std::make_unique<rift::ast::Expr::Literal<std::string>>(Token(TokenType::NUMERICLITERAL, "2", 2, 1))
     );
     EXPECT_EQ(printer->print(&expr), "(+ (- 1) 2)");
 }
@@ -42,16 +42,16 @@ TEST_F(RiftPrinter, simpleParseExprGroup) {
     // [1*2]
     rift::ast::Expr::Grouping<string> expr = rift::ast::Expr::Grouping<string>(
         std::make_unique<rift::ast::Expr::Binary<string>>(
-            std::make_unique<rift::ast::Expr::Literal<string>>("1"),
+            std::make_unique<rift::ast::Expr::Literal<string>>(Token(TokenType::NUMERICLITERAL, "1", 1, 1)),
             rift::scanner::Token(TokenType::STAR,"*", "", 1),
-            std::make_unique<rift::ast::Expr::Literal<string>>("2")
+            std::make_unique<rift::ast::Expr::Literal<string>>(Token(TokenType::NUMERICLITERAL, "2", 2, 1))
         )
     );
 
     EXPECT_EQ(printer->print(&expr), "[ (* 1 2)]");
 
     // 3
-    rift::ast::Expr::Literal<string> expr2 = rift::ast::Expr::Literal<string>("3");
+    rift::ast::Expr::Literal<string> expr2 = rift::ast::Expr::Literal<string>(Token(TokenType::NUMERICLITERAL, "3", 3, 1));
     EXPECT_EQ(printer->print(&expr2), "3");
 
     // ([1*2] + 3)

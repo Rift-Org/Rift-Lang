@@ -5,6 +5,7 @@ set(
     # Unit Tests
     test/parser.cc
     test/scanner.cc
+    test/eval.cc
 
     # Mock Tests
 )
