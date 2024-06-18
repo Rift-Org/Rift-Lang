@@ -87,6 +87,8 @@ namespace rift
 
             int line;
 
+            Token() : type(TokenType::EOFF), lexeme(""), literal(0), line(0) {}
+
             Token(TokenType type, std::string lexeme, std::any literal, int line)
             {
                 this->type = type;
@@ -95,7 +97,12 @@ namespace rift
                 this->line = line;
             }
 
-            Token() : type(TokenType::EOFF), lexeme(""), literal(0), line(0) {}
+            Token(const Token& other) {
+                this->type = other.type;
+                this->lexeme = other.lexeme;
+                this->literal = other.literal;
+                this->line = other.line;
+            }
 
             /// @brief Converts a TokenType to a string
             static std::string convertTypeString(TokenType type);
@@ -110,6 +117,8 @@ namespace rift
                 return os;
             }
             bool operator==(const Token &token);
+
+            std::any getLiteral();
         };
 
     }

@@ -27,8 +27,8 @@ namespace rift
         class Eval
         {
             public:
-                Eval(): visitor(new EvalVisitor(this)) {};
-                ~Eval() { delete visitor; };
+                Eval();
+                ~Eval();
                 friend class EvalVisitor;
 
                 /// @brief Evaluates the given expression. 
@@ -46,8 +46,8 @@ namespace rift
             using LiteralExpr = rift::ast::Expr::Literal<Token>;
             using UnaryExpr = rift::ast::Expr::Unary<Token>;
             public:
-                EvalVisitor(Eval *eval) : eval(eval) {};
-                virtual ~EvalVisitor() { delete eval; }
+                EvalVisitor(Eval &eval);
+                virtual ~EvalVisitor();
                 Eval* eval;
 
                 Token visit_binary(const BinaryExpr& expr) const override;
@@ -56,12 +56,12 @@ namespace rift
                 Token visit_unary(const UnaryExpr& expr) const override;
 
                 /* helpers */
-                bool truthy(any val) const;
-                bool equal(any left, any right) const;
-                bool isNumber(any val) const;
-                bool isString(any val) const;
-                double castNumber(any val) const;
-                std::string castString(any val) const;
+                bool truthy(Token val) const;
+                bool equal(Token left, Token right) const;
+                bool isNumber(Token val) const;
+                bool isString(Token val) const;
+                double castNumber(Token val) const;
+                std::string castString(Token val) const;
         };
     }
 }

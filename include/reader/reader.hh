@@ -52,19 +52,24 @@ namespace rift
                 inline bool peek_off(T expected, int offset) { return curr+offset<source->size() && source->at(curr+offset) == expected; };
                 /// @brief Peeks at the current character
                 inline T peek() { return !atEnd() ? source->at(curr) : T(); };
+                /// @brief Peeks at the current character with an offset
+                inline T peek(int offset) { return curr+offset<source->size() ? source->at(curr+offset) : T(); };
                 /// @brief Peeks at the next character 
                 inline T peekNext() { return curr+1<source->size() ? source->at(curr+1) : T(); };
                 /// @brief Peeks at the next 2 characters
                 inline bool peek3(T expected) { return peek_off(expected, 0) && peek_off(expected, 1) && peek_off(expected, 2); }
                 /// @brief Peeks the previous character
                 inline T peekPrev() { return curr-1>=0 ? source->at(curr-1) : T(); };
+                /// @brief Peeks previous with offset
+                inline T peekPrev(int offset) { return curr-offset>=0 ? source->at(curr-offset) : T(); };
+
 
                 /// @brief Scans a comment and advances the cursor
                 inline void scanComment() { while (peek('\n')) advance();};
                 /// @brief Consumes a T and advances the cursor (Error if not found)
                 inline T consume (T expected, std::unique_ptr<ReaderException> error) { 
                     if (peek(expected)) return advance();
-                    rift::error::report(line, "consume", "expected token not found", expected);
+                    rift::error::report(line, "consume", "expected token not found", expected, std::exception());
                     if (error) throw error;
                     return T();
                 }
@@ -84,7 +89,7 @@ namespace rift
 
         /// @class ReaderException
         /// @brief The base exception for the reader (implement in derived classes)
-        class ReaderException
+        class ReaderException: public std::exception
         {
             public:
                 ReaderException() = default;

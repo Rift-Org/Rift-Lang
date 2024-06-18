@@ -66,7 +66,7 @@ namespace rift
             }
 
             if (atEnd()) {
-                rift::error::report(line, "string", "Unterminated String", Token());
+                rift::error::report(line, "string", "Unterminated String", Token(), std::exception());
                 return;
             }
 
@@ -133,7 +133,7 @@ namespace rift
                 default:
                     if (isDigit(c)) num();
                     else if (isAlpha(c)) identifier();
-                    else rift::error::report(line, "scanToken", "Unorthodox Character", Token());
+                    else rift::error::report(line, "scanToken", "Unorthodox Character", Token(), std::exception());
                     break;
             };
         }

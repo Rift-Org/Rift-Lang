@@ -46,7 +46,6 @@ namespace rift
             Scanner riftScanner(source);
             riftScanner.scan_source();
 
-            // Parser riftParser(riftScanner.tokens);
             std::shared_ptr<std::vector<Token>> tokensPtr = std::make_shared<std::vector<Token>>(riftScanner.tokens);
             Parser riftParser(tokensPtr);
             std::unique_ptr<GenExpr> statements = riftParser.parse(); 
@@ -114,6 +113,7 @@ namespace rift
             } catch (const CLI::ParseError &parseError) {
                 return app.exit(parseError);
             }
+            runPrompt();
             // return 0;
             // if (argc > 2) {
             //     std::cout << "Usage: rift" << std::endl;

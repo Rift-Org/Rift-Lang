@@ -1,4 +1,5 @@
 #include <ast/parser.hh>
+#include <error/error.hh>
 #include <memory>
 
 using namespace rift::scanner;
@@ -14,16 +15,18 @@ namespace rift
         std::unique_ptr<GenExpr> Parser::primary()
         {
             if (match({Token(TokenType::FALSE, "false", "", line)}))
-                return std::unique_ptr<Literal<Token>>(new Literal<Token>(false));
+                return std::unique_ptr<Literal<Token>>(new Literal<Token>(Token(TokenType::FALSE, "false", "", line)));
             if (match({Token(TokenType::TRUE, "true", "", line)}))
-                return std::unique_ptr<Literal<Token>>(new Literal<Token>(true));
+                return std::unique_ptr<Literal<Token>>(new Literal<Token>(Token(TokenType::TRUE, "true", "", line)));
             if (match({Token(TokenType::NIL, "nil", "", line)}))
-                return std::unique_ptr<Literal<Token>>(new Literal<Token>(nullptr));
+                return std::unique_ptr<Literal<Token>>(new Literal<Token>(Token(TokenType::NIL, "nil", "", line)));
 
-            if (match({Token(TokenType::NUMERICLITERAL, "", "", line)}))
-                return std::unique_ptr<Literal<Token>>(new Literal<Token>(peekPrev().literal));
+            if (match({Token(TokenType::NUMERICLITERAL, "", "", line)})) {
+                Token tok = peekPrev(1);
+                return std::unique_ptr<Literal<Token>>(new Literal<Token>(tok));
+            }
             if (match({Token(TokenType::STRINGLITERAL, "", "", line)}))
-                return std::unique_ptr<Literal<Token>>(new Literal<Token>(peekPrev().literal));
+                return std::unique_ptr<Literal<Token>>(new Literal<Token>(Token(peekPrev(1))));
 
             if (match({Token(TokenType::LEFT_PAREN, "(", "", line)})) { 
                 auto expr = expression();
@@ -31,7 +34,7 @@ namespace rift
                 return expr;
             }
 
-            throw ParserException("Expected expression");
+            return nullptr;
         }
 
         std::unique_ptr<GenExpr> Parser::unary()
@@ -39,12 +42,14 @@ namespace rift
             if (match({Token(TokenType::BANG, "!", "", line)})) {
                 auto op = peekPrev();
                 auto right = unary();
+                if (right == nullptr) rift::error::report(line, "unary", "Expected expression after unary operator", op, ParserException("Expected expression after unary operator"));
                 return std::unique_ptr<ast::Expr::Unary<Token>>(new ast::Expr::Unary<Token>(op, std::move(right)));
             }
 
             if (match({Token(TokenType::MINUS, "-", "", line)})) {
                 auto op = peekPrev();
                 auto right = unary();
+                if (right == nullptr) rift::error::report(line, "unary", "Expected expression after unary operator", op, ParserException("Expected expression after unary operator"));
                 return std::unique_ptr<ast::Expr::Unary<Token>>(new ast::Expr::Unary<Token>(op, std::move(right)));
             }
 
@@ -58,6 +63,8 @@ namespace rift
             while (match({Token(TokenType::STAR, "*", "", line)}) || match({Token(TokenType::SLASH, "/", "", line)})) {
                 auto op = peekPrev();
                 auto right = unary();
+                if (expr == nullptr) rift::error::report(line, "factor", "Expected number before factor operator", op, ParserException("Expected number before factor operator"));
+                if (right == nullptr) rift::error::report(line, "factor", "Expected number after factor operator", op, ParserException("Expected number after factor operator"));
                 expr = std::unique_ptr<ast::Expr::Binary<Token>>(new ast::Expr::Binary<Token>(std::move(expr), op, std::move(right)));
             }
 
@@ -71,6 +78,8 @@ namespace rift
             while (match({Token(TokenType::MINUS, "-", "", line)}) || match({Token(TokenType::PLUS, "+", "", line)})) {
                 auto op = peekPrev();
                 auto right = factor();
+                if (expr == nullptr) rift::error::report(line, "term", "Expected number before term operator", op, ParserException("Expected number before term operator"));
+                if (right == nullptr) rift::error::report(line, "term", "Expected number after term operator", op, ParserException("Expected number after term operator"));
                 expr = std::unique_ptr<ast::Expr::Binary<Token>>(new ast::Expr::Binary<Token>(std::move(expr), op, std::move(right)));
             }
 
@@ -84,6 +93,8 @@ namespace rift
             while (match({Token(TokenType::GREATER, ">", "", line)}) || match({Token(TokenType::GREATER_EQUAL, ">=", "", line)}) || match({Token(TokenType::LESS, "<", "", line)}) || match({Token(TokenType::LESS_EQUAL, "<=", "", line)}) ) {
                 auto op = peekPrev();
                 auto right = term();
+                if (expr == nullptr) rift::error::report(line, "comparison", "Expected expression before comparison operator", op, ParserException("Expected expression before comparison operator"));
+                if (right == nullptr) rift::error::report(line, "comparison", "Expected expression after comparison operator", op, ParserException("Expected expression after comparison operator"));
                 expr = std::unique_ptr<ast::Expr::Binary<Token>>(new ast::Expr::Binary<Token>(std::move(expr), op, std::move(right)));
             }
 
@@ -97,6 +108,8 @@ namespace rift
             while (match({Token(TokenType::BANG_EQUAL, "!=", "", line)}) || match({Token(TokenType::EQUAL_EQUAL, "==", "", line)})) {
                 auto op = peekPrev();
                 auto right = comparison();
+                if (expr == nullptr) rift::error::report(line, "equality", "Expected expression before equality operator", op, ParserException("Expected expression before equality operator"));
+                if (right == nullptr) rift::error::report(line, "equality", "Expected expression after equality operator", op, ParserException("Expected expression after equality operator"));
                 expr = std::unique_ptr<ast::Expr::Binary<Token>>(new ast::Expr::Binary<Token>(std::move(expr), op, std::move(right)));
             }
 

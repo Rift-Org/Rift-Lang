@@ -88,19 +88,19 @@ namespace rift
 
         string VisitorPrinter::visit_literal(const Literal<string>& expr) const
         {
-            if (expr.value.type() == typeid(std::string))
+            if (expr.value.literal.type() == typeid(std::string))
                 return std::any_cast<std::string>(expr.value);
-            else if (expr.value.type() == typeid(double))
+            else if (expr.value.literal.type() == typeid(double))
                 return std::to_string(std::any_cast<double>(expr.value));
-            else if (expr.value.type() == typeid(int))
+            else if (expr.value.literal.type() == typeid(int))
                 return std::to_string(std::any_cast<int>(expr.value));
-            else if (expr.value.type() == typeid(char**))
+            else if (expr.value.literal.type() == typeid(char**))
                 return "";
-            else if (expr.value.type() == typeid(char*))
+            else if (expr.value.literal.type() == typeid(char*))
                 return std::string(std::any_cast<char*>(expr.value));
-            else if (expr.value.type() == typeid(char))
+            else if (expr.value.literal.type() == typeid(char))
                 return std::string(1, std::any_cast<char>(expr.value));
-            else if (expr.value.type() == typeid(const char*))
+            else if (expr.value.literal.type() == typeid(const char*))
                 return std::string(std::any_cast<const char*>(expr.value));
 
             return "";
