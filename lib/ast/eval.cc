@@ -14,6 +14,7 @@
 
 #include <ast/eval.hh>
 #include <error/error.hh>
+#include <utils/macros.hh>
 
 namespace rift
 {
@@ -41,25 +42,30 @@ namespace rift
             this->eval = nullptr;
         }
 
-        void Eval::evaluate(const rift::ast::Expr::Expr<Token>& expr)
+        std::string Eval::evaluate(const rift::ast::Expr::Expr<Token>& expr)
         {
+            std::string res;
+
             try {
                 Token tok = expr.accept(*visitor);
                 any val = tok.getLiteral();
                 if (this->visitor->isNumber(tok)) {
-                    std::cout << this->visitor->castNumber(tok) << std::endl;
+                    res = std::to_string(this->visitor->castNumber(tok));
                 } else if (this->visitor->isString(tok)) {
-                    std::cout << this->visitor->castString(tok) << std::endl;
+                    res = this->visitor->castString(tok);
                 } else if (val.type() == typeid(bool)) {
-                    std::cout << std::any_cast<bool>(val) << std::endl;
+                    res = std::any_cast<bool>(val) ? "true" : "false";
                 } else if (val.type() == typeid(std::nullptr_t)) {
-                    std::cout << "null" << std::endl;
+                    res = "null";
                 } else {
-                    std::cout << "undefined" << std::endl;
+                    res = "undefined";
                 }
             } catch (const std::runtime_error& e) {
                 error::runTimeError(e.what());
             }
+
+            std::cout << res << std::endl;
+            return res;
         }
 
         #pragma mark - Eval Visitor
@@ -68,6 +74,7 @@ namespace rift
         {
             Token left = expr.left.get()->accept(*this);
             Token right = expr.right.get()->accept(*this);
+            any resAny;
             double resDouble;
             bool resBool;
 
@@ -76,6 +83,8 @@ namespace rift
                 case TokenType::MINUS:
                     if (!isNumber(left) && !isNumber(right))
                         throw std::runtime_error("Expected a number for '-' operator");
+
+                    resAny = any_arithmetic(left.literal, right.literal, expr.op);
                     resDouble = castNumber(left) - castNumber(right);
                     return Token(TokenType::NUMERICLITERAL, std::to_string(resDouble), resDouble, expr.op.line);
                 case TokenType::PLUS:
@@ -147,9 +156,9 @@ namespace rift
 
             if (literal.type() == typeid(std::string)) 
                 return Token(TokenType::STRINGLITERAL, std::any_cast<std::string>(literal), 0, expr.value.line);
-            else if (literal.type() == typeid(double))
 
             /* Numeric Literals */
+            else if (literal.type() == typeid(double))
                 return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<double>(literal)), std::any_cast<double>(literal), expr.value.line);
             else if (literal.type() == typeid(int))
                 return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<int>(literal)), std::any_cast<int>(literal), expr.value.line);
@@ -231,28 +240,28 @@ namespace rift
                     val.type() == typeid(char) || val.type() == typeid(unsigned char) || val.type() == typeid(signed char);
         }
 
-        double EvalVisitor::castNumber(Token tok) const {
+        any EvalVisitor::castNumber(Token tok) const {
             any val = tok.getLiteral();
             if (val.type() == typeid(double)) {
                 return std::any_cast<double>(val);
             } else if (val.type() == typeid(float)) {
-                return static_cast<double>(std::any_cast<float>(val));
+                return std::any_cast<float>(val);
             } else if (val.type() == typeid(int)) {
-                return static_cast<double>(std::any_cast<int>(val));
+                return std::any_cast<int>(val);
             } else if (val.type() == typeid(long)) {
-                return static_cast<double>(std::any_cast<long>(val));
+                return std::any_cast<long>(val);
             } else if (val.type() == typeid(unsigned)) {
-                return static_cast<double>(std::any_cast<unsigned>(val));
+                return std::any_cast<unsigned>(val);
             } else if (val.type() == typeid(short)) {
-                return static_cast<double>(std::any_cast<short>(val));
+                return std::any_cast<short>(val);
             } else if (val.type() == typeid(unsigned long)) {
-                return static_cast<double>(std::any_cast<unsigned long>(val));
+                return std::any_cast<unsigned long>(val);
             } else if (val.type() == typeid(unsigned short)) {
-                return static_cast<double>(std::any_cast<unsigned short>(val));
+                return std::any_cast<unsigned short>(val);
             } else if (val.type() == typeid(unsigned long long)) {
-                return static_cast<double>(std::any_cast<unsigned long long>(val));
+                return std::any_cast<unsigned long long>(val);
             } else if (val.type() == typeid(long long)) {
-                return static_cast<double>(std::any_cast<long long>(val));
+                return std::any_cast<long long>(val);
             } 
 
             throw std::runtime_error("Expected a number");
@@ -275,6 +284,26 @@ namespace rift
             }
 
             throw std::runtime_error("Expected a string");
+        }
+
+        #pragma mark - Arithmetic Ops
+
+        // for now don't allow different types (although we should be able to add diff types for example: int and double)
+        std::any EvalVisitor::any_arithmetic(any left, any right, Token op)
+        {
+            if (left.type() != right.type())
+                rift::error::report(op.line, "any_arithmetic", "not able to do arithmetic ops on different types (future work)", Token(), EvaluatorException("unable to do arithmetic ops on different types (future work)"));
+            if (op.type == TokenType::PLUS) {
+                _ANY_ARITHMETIC(left,right,+);
+            } else if (op.type == TokenType::MINUS) {    
+                _ANY_ARITHMETIC(left,right,-);            
+            } else if (op.type == TokenType::STAR) {
+                _ANY_ARITHMETIC(left,right,*);
+            } else if (op.type == TokenType::SLASH) {
+                _ANY_ARITHMETIC(left,right,/);  
+            } else {
+                rift::error::report(op.line, "any_arithmetic", "unsupported operand (future work)", Token(), EvaluatorException("unsupported operand (future work)"));
+            }
         }
     }
 }

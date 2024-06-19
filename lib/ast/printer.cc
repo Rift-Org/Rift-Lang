@@ -88,20 +88,22 @@ namespace rift
 
         string VisitorPrinter::visit_literal(const Literal<string>& expr) const
         {
-            if (expr.value.literal.type() == typeid(std::string))
-                return std::any_cast<std::string>(expr.value);
-            else if (expr.value.literal.type() == typeid(double))
-                return std::to_string(std::any_cast<double>(expr.value));
-            else if (expr.value.literal.type() == typeid(int))
-                return std::to_string(std::any_cast<int>(expr.value));
-            else if (expr.value.literal.type() == typeid(char**))
+            Token val = expr.value;
+            std::any literal = val.getLiteral();
+            if (literal.type() == typeid(std::string))
+                return std::any_cast<std::string>(literal);
+            else if (literal.type() == typeid(double))
+                return std::to_string(std::any_cast<double>(literal));
+            else if (literal.type() == typeid(int))
+                return std::to_string(std::any_cast<int>(literal));
+            else if (literal.type() == typeid(char**))
                 return "";
-            else if (expr.value.literal.type() == typeid(char*))
-                return std::string(std::any_cast<char*>(expr.value));
-            else if (expr.value.literal.type() == typeid(char))
-                return std::string(1, std::any_cast<char>(expr.value));
-            else if (expr.value.literal.type() == typeid(const char*))
-                return std::string(std::any_cast<const char*>(expr.value));
+            else if (literal.type() == typeid(char*))
+                return std::string(std::any_cast<char*>(literal));
+            else if (literal.type() == typeid(char))
+                return std::string(1, std::any_cast<char>(literal));
+            else if (literal.type() == typeid(const char*))
+                return std::string(std::any_cast<const char*>(literal));
 
             return "";
         }

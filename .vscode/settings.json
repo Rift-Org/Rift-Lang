@@ -67,6 +67,13 @@
         "stack": "cpp",
         "list": "cpp",
         "unordered_set": "cpp",
-        "__availability": "cpp"
+        "__availability": "cpp",
+        "__debug": "cpp",
+        "__errc": "cpp",
+        "__mutex_base": "cpp",
+        "atomic": "cpp",
+        "exception": "cpp",
+        "system_error": "cpp",
+        "thread": "cpp"
     }
 }

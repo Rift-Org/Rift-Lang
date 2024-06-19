@@ -53,3 +53,26 @@
             __SELECT_FORWARD(__VA_ARGS__, __DEFAULT_FORWARD_MULTI_6, __DEFAULT_FORWARD_MULTI_5, \
                                 __DEFAULT_FORWARD_MULTI_4, __DEFAULT_FORWARD_MULTI_3, \
                                     __DEFAULT_FORWARD_MULTI_2, __DEFAULT_FORWARD_MULTI_1) (__VA_ARGS__)
+
+
+#pragma mark - Arithmetic
+
+#define _ANY_ARITHMETIC(left, right, op) \
+    if (left.type() == typeid(double)) \
+        return std::any_cast<double>(left) op std::any_cast<double>(right); \
+    else if (left.type() == typeid(int)) \
+        return std::any_cast<int>(left) op std::any_cast<int>(right); \
+    else if (left.type() == typeid(unsigned)) \
+        return std::any_cast<unsigned>(left) op std::any_cast<unsigned>(right); \
+    else if (left.type() == typeid(short)) \
+        return std::any_cast<short>(left) op std::any_cast<short>(right); \
+    else if (left.type() == typeid(unsigned long)) \
+        return std::any_cast<unsigned long>(left) op std::any_cast<unsigned long>(right); \
+    else if (left.type() == typeid(unsigned short)) \
+        return std::any_cast<unsigned short>(left) op std::any_cast<unsigned short>(right); \
+    else if (left.type() == typeid(unsigned long long)) \
+        return std::any_cast<unsigned long long>(left) op std::any_cast<unsigned long long>(right); \
+    else if (left.type() == typeid(long long)) \
+        return std::any_cast<long long>(left) op std::any_cast<long long>(right); \
+    else \
+        throw std::invalid_argument("unsupported number type");

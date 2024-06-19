@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <exception>
 #include <ast/expr.hh>
 
 using any = std::any;
@@ -32,7 +33,7 @@ namespace rift
                 friend class EvalVisitor;
 
                 /// @brief Evaluates the given expression. 
-                void evaluate(const rift::ast::Expr::Expr<Token>& expr);
+                std::string evaluate(const rift::ast::Expr::Expr<Token>& expr);
 
             private:
                 EvalVisitor *visitor;
@@ -60,8 +61,23 @@ namespace rift
                 bool equal(Token left, Token right) const;
                 bool isNumber(Token val) const;
                 bool isString(Token val) const;
-                double castNumber(Token val) const;
+                any castNumber(Token val) const;
                 std::string castString(Token val) const;
+                std::any any_arithmetic(any left, any right, Token type);
+        };
+
+        /// @class EvaluatorException
+        /// @brief The base exception for the evaluator
+        class EvaluatorException: public std::exception
+        {
+            public:
+                EvaluatorException(const std::string &message) : message(message) {}
+                ~EvaluatorException() = default;
+
+                const char *what() const noexcept override { return message.c_str(); }
+
+            private:
+                std::string message;
         };
     }
 }
