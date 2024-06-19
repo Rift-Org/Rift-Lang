@@ -76,3 +76,15 @@
         return std::any_cast<long long>(left) op std::any_cast<long long>(right); \
     else \
         throw std::invalid_argument("unsupported number type");
+
+
+#pragma mark  - Specific Codebase
+
+#define _BOOL_LOGIC(op) if (isNumber(left) && isNumber(right)) {\
+            resBool = std::any_cast<bool>(any_arithmetic(left, right, op));\
+            return Token(resBool?TokenType::TRUE:TokenType::FALSE, resBool?"true":"false", resBool, op.line);\
+        } else if (isString(left) && isString(right)) {\
+            resBool = castString(left) > castString(right);\
+            return Token(resBool?TokenType::TRUE:TokenType::FALSE, resBool?"true":"false", resBool, op.line);\
+        }\
+                

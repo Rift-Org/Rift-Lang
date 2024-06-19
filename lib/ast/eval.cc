@@ -50,7 +50,7 @@ namespace rift
                 Token tok = expr.accept(*visitor);
                 any val = tok.getLiteral();
                 if (this->visitor->isNumber(tok)) {
-                    res = std::to_string(this->visitor->castNumber(tok));
+                    res = this->visitor->castNumberString(tok);
                 } else if (this->visitor->isString(tok)) {
                     res = this->visitor->castString(tok);
                 } else if (val.type() == typeid(bool)) {
@@ -75,7 +75,6 @@ namespace rift
             Token left = expr.left.get()->accept(*this);
             Token right = expr.right.get()->accept(*this);
             any resAny;
-            double resDouble;
             bool resBool;
 
             switch (expr.op.type) {
@@ -83,62 +82,52 @@ namespace rift
                 case TokenType::MINUS:
                     if (!isNumber(left) && !isNumber(right))
                         throw std::runtime_error("Expected a number for '-' operator");
-
-                    resAny = any_arithmetic(left.literal, right.literal, expr.op);
-                    resDouble = castNumber(left) - castNumber(right);
-                    return Token(TokenType::NUMERICLITERAL, std::to_string(resDouble), resDouble, expr.op.line);
+                    resAny = any_arithmetic(left, right, expr.op);
+                    return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
                 case TokenType::PLUS:
                     if ((!isNumber(left) && !isNumber(right)) && (!isString(left) && !isString(right)))
                         throw std::runtime_error("Expected a number or string for '+' operator");
                     if (isNumber(left) && isNumber(right)) {
-                        resDouble = castNumber(left) + castNumber(right);
-                        return Token(TokenType::NUMERICLITERAL, std::to_string(resDouble), resDouble, expr.op.line);
+                        resAny = any_arithmetic(left, right, expr.op);
+                        return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
                     } else if (isString(left) && isString(right)) {
                         return Token(TokenType::STRINGLITERAL, castString(left) + castString(right), 0, expr.op.line);
                     } else if (isString(left) && isNumber(right)) {
-                        return Token(TokenType::STRINGLITERAL, castString(left) + std::to_string(castNumber(right)), 0, expr.op.line);
+                        return Token(TokenType::STRINGLITERAL, castString(left) + castNumberString(right), 0, expr.op.line);
                     } else if (isNumber(left) && isString(right)) {
-                        return Token(TokenType::STRINGLITERAL, std::to_string(castNumber(left)) + castString(right), 0, expr.op.line);
+                        return Token(TokenType::STRINGLITERAL, castNumberString(left) + castString(right), 0, expr.op.line);
                     }
                     throw std::runtime_error("Expected a number or string for '+' operator");
                 case TokenType::SLASH:
                     if (!isNumber(left) && !isNumber(right))
                         throw std::runtime_error("Expected a number for '-' operator");
-                    resDouble = castNumber(left) / castNumber(right);
-                    return Token(TokenType::NUMERICLITERAL, std::to_string(resDouble), resDouble, expr.op.line);
+                    resAny = any_arithmetic(left, right, expr.op);
+                    return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
                 case TokenType::STAR:
                     if (!isNumber(left) && !isNumber(right))
                         throw std::runtime_error("Expected a number for '*' operator");
-                    resDouble = castNumber(left) * castNumber(right);
-                    return Token(TokenType::NUMERICLITERAL, std::to_string(resDouble), resDouble, expr.op.line);
+                    resAny = any_arithmetic(left, right, expr.op);
+                    return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
 
                 /* comparison ops */
                 case TokenType::GREATER:
-                    if (!isNumber(left) && !isNumber(right))
-                        throw std::runtime_error("Expected a number for '>' operator");
-                    resBool = castNumber(left) > castNumber(right);
-                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
+                    _BOOL_LOGIC(expr.op);
+                    throw std::runtime_error("Expected a number or string for '>' operator");
                 case TokenType::GREATER_EQUAL:
-                    if (!isNumber(left) && !isNumber(right))
-                        throw std::runtime_error("Expected a number for '>=' operator");
-                    resBool = castNumber(left) >= castNumber(right);
-                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
+                    _BOOL_LOGIC(expr.op);
+                    throw std::runtime_error("Expected a number or string for '>=' operator");
                 case TokenType::LESS:
-                    if (!isNumber(left) && !isNumber(right))
-                        throw std::runtime_error("Expected a number for '<' operator");
-                    resBool = castNumber(left) < castNumber(right);
-                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
+                    _BOOL_LOGIC(expr.op);
+                    throw std::runtime_error("Expected a number or string for '<' operator");
                 case TokenType::LESS_EQUAL:
-                    if (!isNumber(left) && !isNumber(right))
-                        throw std::runtime_error("Expected a number for '<=' operator");
-                    resBool = castNumber(left) <= castNumber(right);
-                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
+                    _BOOL_LOGIC(expr.op);
+                    throw std::runtime_error("Expected a number or string for '<=' operator");
                 case TokenType::BANG_EQUAL:
-                    resBool = !equal(left, right);
-                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
+                    _BOOL_LOGIC(expr.op);
+                    throw std::runtime_error("Expected a number or string for '!=' operator");
                 case TokenType::EQUAL_EQUAL:
-                    resBool = equal(left, right);
-                    return Token(resBool?TokenType::TRUE:TokenType::FALSE, std::to_string(resBool), resBool, expr.op.line);
+                    _BOOL_LOGIC(expr.op);
+                    throw std::runtime_error("Expected a number or string for '==' operator");
                 default:
                     throw std::runtime_error("Unknown operator for a binary expression");
             }
@@ -190,16 +179,26 @@ namespace rift
         {
             Token right = expr.expr.get()->accept(*this);
             bool res;
+            any resAny;
  
             switch (expr.op.type) {
                 case TokenType::MINUS:
                     if (!isNumber(right))
                         throw std::runtime_error("Expected a number after '-' operator");
-                    res = castNumber(right);
-                    return Token(TokenType::NUMERICLITERAL, std::to_string(-res), res, expr.op.line);
+
+                resAny = any_arithmetic(right, -1, Token(TokenType::STAR, "-", "", expr.op.line));
+                return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
+
                 case TokenType::BANG:
-                res = truthy(right);
-                return Token(res?TokenType::TRUE:TokenType::FALSE, std::to_string(!res), !res, expr.op.line);
+                    if (right.type == TokenType::TRUE || right.type == TokenType::FALSE)
+                        res = truthy(right);
+                    else if (isNumber(right))
+                        res = std::any_cast<bool>(any_arithmetic(right, 0, Token(TokenType::EQUAL_EQUAL, "==", "", expr.op.line)));
+                    else if (isString(right))
+                        res = castString(right).empty();
+                    else
+                        throw std::runtime_error("Expected a number or string after '!' operator");
+                    return Token(res?TokenType::TRUE:TokenType::FALSE, std::to_string(!res), !res, expr.op.line);
                 default:
                     throw std::runtime_error("Unknown operator for a unary expression");
             }
@@ -263,7 +262,31 @@ namespace rift
             } else if (val.type() == typeid(long long)) {
                 return std::any_cast<long long>(val);
             } 
+            throw std::runtime_error("Expected a number");
+        }
 
+        std::string EvalVisitor::castNumberString(any val) const {
+            if (val.type() == typeid(double)) {
+                return std::to_string(std::any_cast<double>(val));
+            } else if (val.type() == typeid(float)) {
+                return std::to_string(std::any_cast<float>(val));
+            } else if (val.type() == typeid(int)) {
+                return std::to_string(std::any_cast<int>(val));
+            } else if (val.type() == typeid(long)) {
+                return std::to_string(std::any_cast<long>(val));
+            } else if (val.type() == typeid(unsigned)) {
+                return std::to_string(std::any_cast<unsigned>(val));
+            } else if (val.type() == typeid(short)) {
+                return std::to_string(std::any_cast<short>(val));
+            } else if (val.type() == typeid(unsigned long)) {
+                return std::to_string(std::any_cast<unsigned long>(val));
+            } else if (val.type() == typeid(unsigned short)) {
+                return std::to_string(std::any_cast<unsigned short>(val));
+            } else if (val.type() == typeid(unsigned long long)) {
+                return std::to_string(std::any_cast<unsigned long long>(val));
+            } else if (val.type() == typeid(long long)) {
+                return std::to_string(std::any_cast<long long>(val));
+            } 
             throw std::runtime_error("Expected a number");
         }
 
@@ -289,7 +312,7 @@ namespace rift
         #pragma mark - Arithmetic Ops
 
         // for now don't allow different types (although we should be able to add diff types for example: int and double)
-        std::any EvalVisitor::any_arithmetic(any left, any right, Token op)
+        std::any EvalVisitor::any_arithmetic(any left, any right, Token op) const
         {
             if (left.type() != right.type())
                 rift::error::report(op.line, "any_arithmetic", "not able to do arithmetic ops on different types (future work)", Token(), EvaluatorException("unable to do arithmetic ops on different types (future work)"));
@@ -301,8 +324,21 @@ namespace rift
                 _ANY_ARITHMETIC(left,right,*);
             } else if (op.type == TokenType::SLASH) {
                 _ANY_ARITHMETIC(left,right,/);  
+            } else if (op.type == TokenType::LESS) {
+                _ANY_ARITHMETIC(left,right,<);
+            } else if (op.type == TokenType::LESS_EQUAL) {
+                _ANY_ARITHMETIC(left,right,<=);
+            } else if (op.type == TokenType::GREATER) {
+                _ANY_ARITHMETIC(left,right,>);
+            } else if (op.type == TokenType::GREATER_EQUAL) {
+                _ANY_ARITHMETIC(left,right,>=);
+            } else if (op.type == TokenType::BANG_EQUAL) {
+                _ANY_ARITHMETIC(left,right,!=);
+            } else if (op.type == TokenType::EQUAL_EQUAL) {
+                _ANY_ARITHMETIC(left,right,==);
             } else {
                 rift::error::report(op.line, "any_arithmetic", "unsupported operand (future work)", Token(), EvaluatorException("unsupported operand (future work)"));
+                return any();
             }
         }
     }

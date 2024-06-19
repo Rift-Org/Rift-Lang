@@ -63,7 +63,8 @@ namespace rift
                 bool isString(Token val) const;
                 any castNumber(Token val) const;
                 std::string castString(Token val) const;
-                std::any any_arithmetic(any left, any right, Token type);
+                std::string castNumberString(any val) const;
+                std::any any_arithmetic(any left, any right, Token type) const;
         };
 
         /// @class EvaluatorException

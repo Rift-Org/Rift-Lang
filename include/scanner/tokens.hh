@@ -84,10 +84,11 @@ namespace rift
             TokenType type;
             std::string text, lexeme;
             std::any literal;
+            const std::type_info* l_type;
 
             int line;
 
-            Token() : type(TokenType::EOFF), lexeme(""), literal(0), line(0) {}
+            Token() : type(TokenType::EOFF), lexeme(""), literal(0), l_type(&typeid(void)), line(0) {}
 
             Token(TokenType type, std::string lexeme, std::any literal, int line)
             {
@@ -95,6 +96,7 @@ namespace rift
                 this->lexeme = lexeme;
                 this->literal = literal;
                 this->line = line;
+                this->l_type = &typeid(literal);
             }
 
             Token(const Token& other) {
@@ -102,7 +104,10 @@ namespace rift
                 this->lexeme = other.lexeme;
                 this->literal = other.literal;
                 this->line = other.line;
+                this->l_type = other.l_type;
             }
+
+            ~Token() { delete this->l_type; }
 
             /// @brief Converts a TokenType to a string
             static std::string convertTypeString(TokenType type);
