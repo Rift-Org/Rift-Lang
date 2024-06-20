@@ -91,7 +91,7 @@ namespace rift
                         resAny = any_arithmetic(left, right, expr.op);
                         return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
                     } else if (isString(left) && isString(right)) {
-                        return Token(TokenType::STRINGLITERAL, castString(left) + castString(right), 0, expr.op.line);
+                        return Token(TokenType::STRINGLITERAL, castString(left)+castString(right) , 0, expr.op.line);
                     } else if (isString(left) && isNumber(right)) {
                         return Token(TokenType::STRINGLITERAL, castString(left) + castNumberString(right), 0, expr.op.line);
                     } else if (isNumber(left) && isString(right)) {
@@ -186,14 +186,14 @@ namespace rift
                     if (!isNumber(right))
                         throw std::runtime_error("Expected a number after '-' operator");
 
-                resAny = any_arithmetic(right, -1, Token(TokenType::STAR, "-", "", expr.op.line));
+                resAny = any_arithmetic(right, Token(TokenType::NUMERICLITERAL, "-1", -1, expr.op.line), Token(TokenType::STAR, "-", "", expr.op.line));
                 return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
 
                 case TokenType::BANG:
                     if (right.type == TokenType::TRUE || right.type == TokenType::FALSE)
                         res = truthy(right);
                     else if (isNumber(right))
-                        res = std::any_cast<bool>(any_arithmetic(right, 0, Token(TokenType::EQUAL_EQUAL, "==", "", expr.op.line)));
+                        res = std::any_cast<bool>(any_arithmetic(right, Token(TokenType::NUMERICLITERAL, "0", 0, expr.op.line), Token(TokenType::EQUAL_EQUAL, "==", "", expr.op.line)));
                     else if (isString(right))
                         res = castString(right).empty();
                     else
@@ -235,6 +235,7 @@ namespace rift
 
         bool EvalVisitor::isString(Token tok) const {
             any val = tok.getLiteral();
+            if(val.type() == typeid(Token)) return isString(std::any_cast<Token>(val));
             return val.type() == typeid(std::string) || val.type() == typeid(char*) || val.type() == typeid(const char*) ||
                     val.type() == typeid(char) || val.type() == typeid(unsigned char) || val.type() == typeid(signed char);
         }
@@ -261,8 +262,10 @@ namespace rift
                 return std::any_cast<unsigned long long>(val);
             } else if (val.type() == typeid(long long)) {
                 return std::any_cast<long long>(val);
-            } 
-            throw std::runtime_error("Expected a number");
+            }
+
+            rift::error::runTimeError("Expected a number");
+            return "";
         }
 
         std::string EvalVisitor::castNumberString(any val) const {
@@ -286,8 +289,12 @@ namespace rift
                 return std::to_string(std::any_cast<unsigned long long>(val));
             } else if (val.type() == typeid(long long)) {
                 return std::to_string(std::any_cast<long long>(val));
-            } 
-            throw std::runtime_error("Expected a number");
+            } else if (val.type() == typeid(Token)) {
+                return castNumberString(std::any_cast<Token>(val).getLiteral());
+            }
+
+            rift::error::runTimeError("Expected a number or token");
+            return "";
         }
 
         std::string EvalVisitor::castString(Token tok) const {
@@ -305,8 +312,9 @@ namespace rift
             } else if (val.type() == typeid(signed char)) {
                 return std::string(1, std::any_cast<signed char>(val));
             }
-
-            throw std::runtime_error("Expected a string");
+            
+            rift::error::runTimeError("Expected a string");
+            return "";
         }
 
         #pragma mark - Arithmetic Ops
@@ -316,30 +324,31 @@ namespace rift
         {
             if (left.type() != right.type())
                 rift::error::report(op.line, "any_arithmetic", "not able to do arithmetic ops on different types (future work)", Token(), EvaluatorException("unable to do arithmetic ops on different types (future work)"));
+
             if (op.type == TokenType::PLUS) {
-                _ANY_ARITHMETIC(left,right,+);
+                _ANY_ARITHMETIC(left,right,+, op);
             } else if (op.type == TokenType::MINUS) {    
-                _ANY_ARITHMETIC(left,right,-);            
+                _ANY_ARITHMETIC(left,right,-, op);
             } else if (op.type == TokenType::STAR) {
-                _ANY_ARITHMETIC(left,right,*);
+                _ANY_ARITHMETIC(left,right,*, op);
             } else if (op.type == TokenType::SLASH) {
-                _ANY_ARITHMETIC(left,right,/);  
+                _ANY_ARITHMETIC(left,right,/, op); 
             } else if (op.type == TokenType::LESS) {
-                _ANY_ARITHMETIC(left,right,<);
+                _ANY_ARITHMETIC(left,right,<, op);
             } else if (op.type == TokenType::LESS_EQUAL) {
-                _ANY_ARITHMETIC(left,right,<=);
+                _ANY_ARITHMETIC(left,right,<=, op);
             } else if (op.type == TokenType::GREATER) {
-                _ANY_ARITHMETIC(left,right,>);
+                _ANY_ARITHMETIC(left,right,>, op);
             } else if (op.type == TokenType::GREATER_EQUAL) {
-                _ANY_ARITHMETIC(left,right,>=);
+                _ANY_ARITHMETIC(left,right,>=, op);
             } else if (op.type == TokenType::BANG_EQUAL) {
-                _ANY_ARITHMETIC(left,right,!=);
+                _ANY_ARITHMETIC(left,right,!=, op);
             } else if (op.type == TokenType::EQUAL_EQUAL) {
-                _ANY_ARITHMETIC(left,right,==);
+                _ANY_ARITHMETIC(left,right,==, op);
             } else {
                 rift::error::report(op.line, "any_arithmetic", "unsupported operand (future work)", Token(), EvaluatorException("unsupported operand (future work)"));
-                return any();
             }
+            return any();
         }
     }
 }

@@ -12,9 +12,21 @@
         },
         {
             "name": "(lldb) Launch",
-            "type": "cppdbg",
+            "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/lib/riftlang",
+            "args": ["-p"],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "lldb"
+        },
+        {
+            "name": "(lldb) Launch Test",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests/riftlangtest",
             "args": ["-p"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

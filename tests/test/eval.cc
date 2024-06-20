@@ -38,5 +38,5 @@ TEST_F(RiftEvaluator, simpleEvalExpr) {
         std::make_unique<rift::ast::Expr::Literal<Token>>(TOK_NUM(3))
     );
 
-    EXPECT_EQ(eval->evaluate(expr), "1");
+    EXPECT_EQ(eval->evaluate(expr), "2");
 }

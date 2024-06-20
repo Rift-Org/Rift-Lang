@@ -16,3 +16,6 @@ lib/riftlang
 *.a
 *.so
 *.so.*
+
+.cache/*
+.cache

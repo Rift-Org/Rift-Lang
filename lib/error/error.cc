@@ -20,7 +20,7 @@ namespace rift
     {
 
         void report(int line, const std::string& where, const std::string& msg, const rift::scanner::Token& token, std::exception e) {
-            std::cout << "[line " << line << "] Error " << where << ": " << msg;
+            std::cout << "🛑 [line " << line << "] Error " << where << ": " << msg;
             if (token.type != rift::scanner::TokenType::EOFF) {
                 std::cout << " (token: " << token.to_string();
             }

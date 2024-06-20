@@ -25,6 +25,9 @@ set(CMAKE_CXX_STANDARD 17)
 # Set Debug Mode
 set(CMAKE_BUILD_TYPE Debug)
 
+# add -DCMAKE_EXPORT_COMPILE_COMMANDS=ON to generate compile_commands.json
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # sets targets
 include(Options.mk)
 

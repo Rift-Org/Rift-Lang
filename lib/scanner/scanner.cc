@@ -54,11 +54,14 @@ namespace rift
 
         /// if three quotes then its a multiline string
         void Scanner::string() {
+            prevance();
             if (peek3('"')) {
+                advance();
                 while (!peek3('"') && !atEnd()) {
                     line++; advance();
                 }
             } else if (peek('"')) {
+                advance();
                 while (!peek('"') && !atEnd()) {
                     if (peek('\n')) line++;
                     advance();
@@ -71,11 +74,11 @@ namespace rift
             }
 
             if (peek3('"')) {
-                addToken(Type::STRINGLITERAL, std::string(source->begin()+start+3, source->begin()+curr));
+                addToken(Type::STRINGLITERAL, std::string(source->begin()+start, source->begin()+curr+3));
                 advance(); advance(); advance();
             }
             else {
-                addToken(Type::STRINGLITERAL, std::string(source->begin()+start+1, source->begin()+curr));
+                addToken(Type::STRINGLITERAL, std::string(source->begin()+start, source->begin()+curr+1));
                 advance();
             }
         }

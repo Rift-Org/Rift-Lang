@@ -157,6 +157,9 @@ bool isChar(const char* str) {
 
 std::any Token::getLiteral()
 {
+    if (type == STRINGLITERAL) {
+        return std::any{std::string(lexeme)};
+    }
     if (isInteger(lexeme.c_str()))
         return std::any{std::stoi(lexeme.c_str())};
     if (isUnsignedInteger(lexeme.c_str()))

@@ -38,11 +38,13 @@ namespace rift
             protected:
                 std::shared_ptr<std::vector<T>> source;
                 unsigned start, curr, line;
+                unsigned long long match_length;
 
                 #pragma mark - Reader Methods
 
                 inline bool atEnd() { return this->curr >= source->size(); }
                 inline T advance() { return (!atEnd()) ? source->at(curr++) : T(); }
+                inline void prevance() { if (curr>0) curr--; }
                 // inline typename std::enable_if<std::is_same<T, char>::value, T>::type advance() { return (!atEnd()) ? source->at(curr++) : '\0'; }
                 // inline typename std::enable_if<!std::is_same<T, char>::value, T>::type advance() { return (!atEnd()) ? source->at(curr++) : nullptr; }
 
@@ -75,6 +77,7 @@ namespace rift
                 }
                 /// @brief Matches a T from a set of T's{token, character} and advances the cursor
                 inline bool match(std::vector<T> expected) {
+                    match_length = 0;
                     for (auto &c : expected) {
                         if (peek(c)) {
                             advance();

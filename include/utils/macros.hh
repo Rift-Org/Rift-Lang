@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <error/error.hh>
+
 #pragma mark - Forward Declarations
 
 // for one class
@@ -57,7 +59,7 @@
 
 #pragma mark - Arithmetic
 
-#define _ANY_ARITHMETIC(left, right, op) \
+#define _ANY_ARITHMETIC(left, right, op, op_tok) \
     if (left.type() == typeid(double)) \
         return std::any_cast<double>(left) op std::any_cast<double>(right); \
     else if (left.type() == typeid(int)) \
@@ -74,8 +76,10 @@
         return std::any_cast<unsigned long long>(left) op std::any_cast<unsigned long long>(right); \
     else if (left.type() == typeid(long long)) \
         return std::any_cast<long long>(left) op std::any_cast<long long>(right); \
+    else if (left.type() == typeid(Token))\
+        return any_arithmetic(std::any_cast<Token>(left).getLiteral(), std::any_cast<Token>(right).getLiteral(), op_tok);\
     else \
-        throw std::invalid_argument("unsupported number type");
+        rift::error::report(op_tok.line, "Arithmetic Error", "Invalid operands for arithmetic operation", Token(), std::exception());
 
 
 #pragma mark  - Specific Codebase

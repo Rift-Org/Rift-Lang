@@ -107,7 +107,7 @@ namespace rift
                 this->l_type = other.l_type;
             }
 
-            ~Token() { delete this->l_type; }
+            ~Token() { }
 
             /// @brief Converts a TokenType to a string
             static std::string convertTypeString(TokenType type);

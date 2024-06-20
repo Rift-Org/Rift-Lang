@@ -21,6 +21,18 @@ namespace rift
             if (match({Token(TokenType::NIL, "nil", "", line)}))
                 return std::unique_ptr<Literal<Token>>(new Literal<Token>(Token(TokenType::NIL, "nil", "", line)));
 
+            // if (peek({Token(TokenType::NUMERICLITERAL, "", "", line)})) {
+            //     std::vector<Token> tokens = {};
+            //     while (!match({Token(TokenType::NUMERICLITERAL, "", "", line)})) tokens.push_back(peekPrev(1));
+            //     // collace token by multiplying by 10 and adding the next token
+
+            // }
+
+            // if (peek({Token(TokenType::STRINGLITERAL, "", "", line)})) {
+            //     std::vector<Token> tokens = {};
+            //     while (!match({Token(TokenType::STRINGLITERAL, "", "", line)})) tokens.push_back(peekPrev(1));
+                
+            // }
             if (match({Token(TokenType::NUMERICLITERAL, "", "", line)})) {
                 Token tok = peekPrev(1);
                 return std::unique_ptr<Literal<Token>>(new Literal<Token>(tok));

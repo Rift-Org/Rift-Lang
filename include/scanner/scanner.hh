@@ -58,7 +58,7 @@ namespace rift
 
             void addToken(Type type) { addToken(type, ""); };
             void addToken(Type type, std::string literal) {
-                tokens.push_back(Token(type, std::string(source->begin()+start, source->begin()+curr), literal, line));
+                tokens.push_back(Token(type, literal, literal, line));
             }
 
             #pragma mark - Helper Functions (Inline)
