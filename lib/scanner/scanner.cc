@@ -110,23 +110,23 @@ namespace rift
             char c = advance();
             // if(c == ' ') return;
             switch(c) {
-                case '(': addToken(Type::LEFT_PAREN);break;
-                case ')': addToken(Type::RIGHT_PAREN);break;
-                case '{': addToken(Type::LEFT_BRACE);break;
-                case '}': addToken(Type::RIGHT_BRACE);break;
-                case ',': addToken(Type::COMMA);break;
+                case '(': addToken(Type::LEFT_PAREN, "(");break;
+                case ')': addToken(Type::RIGHT_PAREN, ")");break;
+                case '{': addToken(Type::LEFT_BRACE, "{");break;
+                case '}': addToken(Type::RIGHT_BRACE, "}");break;
+                case ',': addToken(Type::COMMA, ",");break;
                 case '.': 
                     if(isDigit(peekNext())) num();
                     else addToken(Type::DOT);break;
-                case '-': addToken(Type::MINUS);break;
-                case '+': addToken(Type::PLUS);break;
-                case ';': addToken(Type::SEMICOLON);break;
-                case '*': addToken(Type::STAR);break;
-                case '!': addToken(match_one('=') ? Type::BANG_EQUAL : Type::BANG);break;
-                case '=': addToken(match_one('=') ? Type::EQUAL_EQUAL : Type::EQUAL);break;
-                case '<': addToken(match_one('=') ? Type::LESS_EQUAL : Type::LESS);break;
-                case '>': addToken(match_one('=') ? Type::GREATER_EQUAL : Type::GREATER);break;
-                case '/': match_one('/') ? scanComment() : addToken(Type::SLASH);break;
+                case '-': addToken(Type::MINUS, "-");break;
+                case '+': addToken(Type::PLUS, "+");break;
+                case ';': addToken(Type::SEMICOLON, ";");break;
+                case '*': addToken(Type::STAR, "*");break;
+                case '!': addToken(match_one('=') ? Type::BANG_EQUAL : Type::BANG, "!");break;
+                case '=': addToken(match_one('=') ? Type::EQUAL_EQUAL : Type::EQUAL, "=");break;
+                case '<': addToken(match_one('=') ? Type::LESS_EQUAL : Type::LESS, "<");break;
+                case '>': addToken(match_one('=') ? Type::GREATER_EQUAL : Type::GREATER, ">");break;
+                case '/': match_one('/') ? scanComment() : addToken(Type::SLASH, "/");break;
                 case '"': string(); break;
                 case ' ': break;
                 case '\r': break;

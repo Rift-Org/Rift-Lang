@@ -18,6 +18,7 @@
 #include <ast/expr.hh>
 
 using any = std::any;
+using string = std::string;
 
 namespace rift
 {

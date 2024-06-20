@@ -74,6 +74,7 @@ namespace rift
         {
             Token left = expr.left.get()->accept(*this);
             Token right = expr.right.get()->accept(*this);
+            string l_s, r_s;
             any resAny;
             bool resBool;
 
@@ -81,56 +82,61 @@ namespace rift
                 /* arthimetic ops */
                 case TokenType::MINUS:
                     if (!isNumber(left) && !isNumber(right))
-                        throw std::runtime_error("Expected a number for '-' operator");
+                        rift::error::runTimeError("Expected a number for '-' operator");
                     resAny = any_arithmetic(left, right, expr.op);
                     return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
                 case TokenType::PLUS:
                     if ((!isNumber(left) && !isNumber(right)) && (!isString(left) && !isString(right)))
-                        throw std::runtime_error("Expected a number or string for '+' operator");
+                        rift::error::runTimeError("Expected a number or string for '+' operator");
                     if (isNumber(left) && isNumber(right)) {
                         resAny = any_arithmetic(left, right, expr.op);
                         return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
                     } else if (isString(left) && isString(right)) {
-                        return Token(TokenType::STRINGLITERAL, castString(left)+castString(right) , 0, expr.op.line);
+                        l_s = castString(left), r_s = castString(right);
+                        if (l_s[0] == '"' && l_s[l_s.size()-1] == '"') l_s = l_s.substr(1, l_s.size()-2);
+                        if (r_s[0] == '"' && r_s[r_s.size()-1] == '"') r_s = r_s.substr(1, r_s.size()-2);
+                        return Token(TokenType::STRINGLITERAL, l_s + r_s, 0, expr.op.line);
                     } else if (isString(left) && isNumber(right)) {
                         return Token(TokenType::STRINGLITERAL, castString(left) + castNumberString(right), 0, expr.op.line);
                     } else if (isNumber(left) && isString(right)) {
                         return Token(TokenType::STRINGLITERAL, castNumberString(left) + castString(right), 0, expr.op.line);
                     }
-                    throw std::runtime_error("Expected a number or string for '+' operator");
+                    rift::error::runTimeError("Expected a number or string for '+' operator");
                 case TokenType::SLASH:
                     if (!isNumber(left) && !isNumber(right))
-                        throw std::runtime_error("Expected a number for '-' operator");
+                        rift::error::runTimeError("Expected a number for '-' operator");
                     resAny = any_arithmetic(left, right, expr.op);
                     return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
                 case TokenType::STAR:
                     if (!isNumber(left) && !isNumber(right))
-                        throw std::runtime_error("Expected a number for '*' operator");
+                        rift::error::runTimeError("Expected a number for '*' operator");
                     resAny = any_arithmetic(left, right, expr.op);
                     return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
 
                 /* comparison ops */
                 case TokenType::GREATER:
                     _BOOL_LOGIC(expr.op);
-                    throw std::runtime_error("Expected a number or string for '>' operator");
+                    rift::error::runTimeError("Expected a number or string for '>' operator");
                 case TokenType::GREATER_EQUAL:
                     _BOOL_LOGIC(expr.op);
-                    throw std::runtime_error("Expected a number or string for '>=' operator");
+                    rift::error::runTimeError("Expected a number or string for '>=' operator");
                 case TokenType::LESS:
                     _BOOL_LOGIC(expr.op);
-                    throw std::runtime_error("Expected a number or string for '<' operator");
+                    rift::error::runTimeError("Expected a number or string for '<' operator");
                 case TokenType::LESS_EQUAL:
                     _BOOL_LOGIC(expr.op);
-                    throw std::runtime_error("Expected a number or string for '<=' operator");
+                    rift::error::runTimeError("Expected a number or string for '<=' operator");
                 case TokenType::BANG_EQUAL:
                     _BOOL_LOGIC(expr.op);
-                    throw std::runtime_error("Expected a number or string for '!=' operator");
+                    rift::error::runTimeError("Expected a number or string for '!=' operator");
                 case TokenType::EQUAL_EQUAL:
                     _BOOL_LOGIC(expr.op);
-                    throw std::runtime_error("Expected a number or string for '==' operator");
+                    rift::error::runTimeError("Expected a number or string for '==' operator");
                 default:
-                    throw std::runtime_error("Unknown operator for a binary expression");
+                    rift::error::runTimeError("Unknown operator for a binary expression");
             }
+
+            return Token();
         }
 
         Token EvalVisitor::visit_grouping(const GroupingExpr& expr) const
@@ -172,19 +178,20 @@ namespace rift
             else if (literal.type() == typeid(std::nullptr_t))
                 return Token(TokenType::NIL, "null", nullptr, expr.value.line);
             else
-                throw std::runtime_error("Unknown literal type");
+                rift::error::runTimeError("Unknown literal type");
+            return Token();
         }
 
         Token EvalVisitor::visit_unary(const UnaryExpr& expr) const
         {
             Token right = expr.expr.get()->accept(*this);
-            bool res;
+            bool res = false;
             any resAny;
  
             switch (expr.op.type) {
                 case TokenType::MINUS:
                     if (!isNumber(right))
-                        throw std::runtime_error("Expected a number after '-' operator");
+                        rift::error::runTimeError("Expected a number after '-' operator");
 
                 resAny = any_arithmetic(right, Token(TokenType::NUMERICLITERAL, "-1", -1, expr.op.line), Token(TokenType::STAR, "-", "", expr.op.line));
                 return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
@@ -197,11 +204,12 @@ namespace rift
                     else if (isString(right))
                         res = castString(right).empty();
                     else
-                        throw std::runtime_error("Expected a number or string after '!' operator");
+                        rift::error::runTimeError("Expected a number or string after '!' operator");
                     return Token(res?TokenType::TRUE:TokenType::FALSE, std::to_string(!res), !res, expr.op.line);
                 default:
-                    throw std::runtime_error("Unknown operator for a unary expression");
+                    rift::error::runTimeError("Unknown operator for a unary expression");
             }
+            return Token();
         }
 
         #pragma mark - Helpers

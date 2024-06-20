@@ -71,8 +71,7 @@ namespace rift
                 /// @brief Consumes a T and advances the cursor (Error if not found)
                 inline T consume (T expected, std::unique_ptr<ReaderException> error) { 
                     if (peek(expected)) return advance();
-                    rift::error::report(line, "consume", "expected token not found", expected, std::exception());
-                    if (error) throw error;
+                    if (error) rift::error::report(line, "consume", "expected token not found", expected, *error);
                     return T();
                 }
                 /// @brief Matches a T from a set of T's{token, character} and advances the cursor

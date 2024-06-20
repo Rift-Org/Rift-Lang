@@ -19,3 +19,5 @@ lib/riftlang
 
 .cache/*
 .cache
+
+compile_commands.json
