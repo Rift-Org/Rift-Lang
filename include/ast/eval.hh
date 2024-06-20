@@ -33,8 +33,10 @@ namespace rift
                 ~Eval();
                 friend class EvalVisitor;
 
-                /// @brief Evaluates the given expression. 
+                /// @brief Evaluates the given *expression*
                 std::string evaluate(const rift::ast::Expr::Expr<Token>& expr);
+                /// @brief Evaluates the given *statement*
+                void evaluate(const rift::ast::Expr::Expr<void>& expr);
 
             private:
                 EvalVisitor *visitor;
