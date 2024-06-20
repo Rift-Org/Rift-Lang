@@ -15,13 +15,19 @@
 #pragma once
 
 #include <ast/expr.hh>
+#include <ast/parser.hh>
+#include <utils/macros.hh>
 
 namespace rift
 {
     namespace ast
     {
 
-        class StmtVisitor;
+        __DEFAULT_FORWARD_NONE_VA(
+            StmtVisitor,
+            StmtPrint,
+            StmtVar
+        );
 
         class Stmt
         {
@@ -31,33 +37,29 @@ namespace rift
         
         class StmtVisitor
         {
-
             public:
-                void visit_expression_stmt(const Stmt& expr) const;
-                void visit_print_stmt(const Stmt& expr) const;
-                void visit_var_stmt(const Stmt& expr) const;
+                virtual void visit_print_stmt(const StmtPrint& expr) const = 0;
+                virtual void visit_var_stmt(const StmtVar& expr) const = 0;
         };
 
-        using VoidExpr = rift::ast::Expr::Expr<void>;
-        class Expression : public Stmt
+        class StmtPrint : public Stmt
         {
             public:
-                Expression(VoidExpr *expr) : expr(expr) {};
-                ~Expression() = default;
-                VoidExpr *expr;
-
-                void accept(StmtVisitor &visitor) override { visitor.visit_expression_stmt(*this); };
-
-        };
-
-        class Print : public Stmt
-        {
-            public:
-                Print(VoidExpr *expr) : expr(expr) {};
-                ~Print() = default;
-                VoidExpr *expr;
+                StmtPrint(GenExpr *expr) : expr(expr) {};
+                ~StmtPrint() = default;
+                GenExpr *expr;
 
                 void accept(StmtVisitor &visitor) override { visitor.visit_print_stmt(*this); };
+        };
+
+        class StmtVar : public Stmt
+        {
+            public:
+                StmtVar(GenExpr *expr) : expr(expr) {};
+                ~StmtVar() = default;
+                GenExpr *expr;
+
+                void accept(StmtVisitor &visitor) override { visitor.visit_var_stmt(*this); };
         };
     }
 }

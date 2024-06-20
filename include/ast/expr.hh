@@ -71,7 +71,7 @@ namespace rift
                     virtual T visit_unary(const Unary<T>& expr) const = 0;
             };
 
-            # pragma mark - Concrete Expressions
+            #pragma mark - Concrete Expressions
 
             /// @class Binary
             /// @param left The left operand

@@ -13,11 +13,14 @@
 # /////////////////////////////////////////////////////////////
 
 set( SOURCES
-    
     # Scanner
     scanner/tokens.cc
     scanner/scanner.cc
     reader/reader.cc
+
+    # Utils
+    utils/arithmetic.cc
+    utils/literals.cc
 
     # AST
     ast/eval.cc

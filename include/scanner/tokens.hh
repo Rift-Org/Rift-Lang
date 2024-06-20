@@ -123,7 +123,7 @@ namespace rift
             }
             bool operator==(const Token &token);
 
-            std::any getLiteral();
+            std::any getLiteral() const;
         };
 
     }

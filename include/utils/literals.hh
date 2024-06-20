@@ -12,30 +12,31 @@
 ///                                                       ///
 /////////////////////////////////////////////////////////////
 
-#include <iostream>
-#include <error/error.hh>
+
+
+#pragma once
+
+#include <any>
+#include <string>
+#include <ast/expr.hh>
+
+using any = std::any;
+using string = std::string;
+
 namespace rift
 {
-    namespace error
-    {
-
-        void report(int line, std::string_view where, std::string msg, const rift::scanner::Token& token, std::exception e) {
-            std::cout << "🛑 [line " << line << "] Error " << where << ": " << msg;
-            if (token.type != rift::scanner::TokenType::EOFF) {
-                std::cout << " (token: " << token.to_string();
-            }
-            std::cout << ")" << std::endl;
-            errorOccured = true;
-
-            if (e.what() != nullptr) {
-                exit(1);
-            }
-        }
-
-        void runTimeError(std::string_view msg)
-        {
-            std::cout << "⛔️ Runtime Error: " << msg << std::endl;
-            runtimeErrorOccured = true;
-        }
-    }
+    /// @brief evaluates token for truthiness
+    extern bool truthy(const Token& tok);
+    /// @brief evaluates tokens for equality
+    extern bool equal(const Token& tl, const Token& tr);
+    /// @brief parses token's literal to check if its a number
+    extern bool isNumber(const Token& tok);
+    /// @brief parses token's literal to check if its a string
+    extern bool isString(const Token& tok);
+    /// @brief casts token to a number
+    extern any castNumber(const Token& tok);
+    /// @brief casts token to a number then to a string for printing
+    extern std::string castNumberString(const any& val);
+    /// @brief casts token to a string
+    extern std::string castString(const Token& tok);
 }

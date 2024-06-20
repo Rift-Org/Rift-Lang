@@ -26,8 +26,8 @@ namespace rift
         [[maybe_unused]] static bool runtimeErrorOccured = false;
 
         /// @brief Used to report an error.
-        void report(int line, const std::string& where, const std::string& msg, const rift::scanner::Token& token, std::exception e);
+        void report(int line, std::string_view where, std::string msg, const rift::scanner::Token& token, std::exception e);
         /// @brief Used to report an runtime error.
-        void runTimeError(const std::string& msg);
+        void runTimeError(std::string_view msg);
     }
 }

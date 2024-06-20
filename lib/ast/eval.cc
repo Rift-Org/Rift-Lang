@@ -49,10 +49,10 @@ namespace rift
             try {
                 Token tok = expr.accept(*visitor);
                 any val = tok.getLiteral();
-                if (this->visitor->isNumber(tok)) {
-                    res = this->visitor->castNumberString(tok);
-                } else if (this->visitor->isString(tok)) {
-                    res = this->visitor->castString(tok);
+                if (isNumber(tok)) {
+                    res = castNumberString(tok);
+                } else if (isString(tok)) {
+                    res = castString(tok);
                 } else if (val.type() == typeid(bool)) {
                     res = std::any_cast<bool>(val) ? "true" : "false";
                 } else if (val.type() == typeid(std::nullptr_t)) {
@@ -212,151 +212,17 @@ namespace rift
             return Token();
         }
 
-        #pragma mark - Helpers
+        #pragma mark - Stmt Visitors
 
-        bool EvalVisitor::truthy(Token tok) const {
-            any val = tok.getLiteral();
-            if (val.type() == typeid(bool)) {
-                return std::any_cast<bool>(val);
-            }
-            return true;
-        }
-
-        bool EvalVisitor::equal(Token tl, Token tr) const {
-            any left = tl.getLiteral();
-            any right = tr.getLiteral();
-            if (left.type() != right.type()) return false;
-            else if (left.type() == typeid(bool)) return std::any_cast<bool>(left) == std::any_cast<bool>(right);
-            else if (left.type() == typeid(std::string)) return std::any_cast<std::string>(left) == std::any_cast<std::string>(right);
-            else if (left.type() == typeid(double)) return std::any_cast<double>(left) == std::any_cast<double>(right);
-            return false;
-        }
-
-        bool EvalVisitor::isNumber(Token tok) const {
-            any val = tok.getLiteral();
-            return val.type() == typeid(double) || val.type() == typeid(float) || 
-                    val.type() == typeid(int) || val.type() == typeid(long) ||
-                    val.type() == typeid(unsigned) || val.type() == typeid(short) || 
-                    val.type() == typeid(unsigned long) || val.type() == typeid(unsigned short) ||
-                    val.type() == typeid(unsigned long long) || val.type() == typeid(long long);
-        }
-
-        bool EvalVisitor::isString(Token tok) const {
-            any val = tok.getLiteral();
-            if(val.type() == typeid(Token)) return isString(std::any_cast<Token>(val));
-            return val.type() == typeid(std::string) || val.type() == typeid(char*) || val.type() == typeid(const char*) ||
-                    val.type() == typeid(char) || val.type() == typeid(unsigned char) || val.type() == typeid(signed char);
-        }
-
-        any EvalVisitor::castNumber(Token tok) const {
-            any val = tok.getLiteral();
-            if (val.type() == typeid(double)) {
-                return std::any_cast<double>(val);
-            } else if (val.type() == typeid(float)) {
-                return std::any_cast<float>(val);
-            } else if (val.type() == typeid(int)) {
-                return std::any_cast<int>(val);
-            } else if (val.type() == typeid(long)) {
-                return std::any_cast<long>(val);
-            } else if (val.type() == typeid(unsigned)) {
-                return std::any_cast<unsigned>(val);
-            } else if (val.type() == typeid(short)) {
-                return std::any_cast<short>(val);
-            } else if (val.type() == typeid(unsigned long)) {
-                return std::any_cast<unsigned long>(val);
-            } else if (val.type() == typeid(unsigned short)) {
-                return std::any_cast<unsigned short>(val);
-            } else if (val.type() == typeid(unsigned long long)) {
-                return std::any_cast<unsigned long long>(val);
-            } else if (val.type() == typeid(long long)) {
-                return std::any_cast<long long>(val);
-            }
-
-            rift::error::runTimeError("Expected a number");
-            return "";
-        }
-
-        std::string EvalVisitor::castNumberString(any val) const {
-            if (val.type() == typeid(double)) {
-                return std::to_string(std::any_cast<double>(val));
-            } else if (val.type() == typeid(float)) {
-                return std::to_string(std::any_cast<float>(val));
-            } else if (val.type() == typeid(int)) {
-                return std::to_string(std::any_cast<int>(val));
-            } else if (val.type() == typeid(long)) {
-                return std::to_string(std::any_cast<long>(val));
-            } else if (val.type() == typeid(unsigned)) {
-                return std::to_string(std::any_cast<unsigned>(val));
-            } else if (val.type() == typeid(short)) {
-                return std::to_string(std::any_cast<short>(val));
-            } else if (val.type() == typeid(unsigned long)) {
-                return std::to_string(std::any_cast<unsigned long>(val));
-            } else if (val.type() == typeid(unsigned short)) {
-                return std::to_string(std::any_cast<unsigned short>(val));
-            } else if (val.type() == typeid(unsigned long long)) {
-                return std::to_string(std::any_cast<unsigned long long>(val));
-            } else if (val.type() == typeid(long long)) {
-                return std::to_string(std::any_cast<long long>(val));
-            } else if (val.type() == typeid(Token)) {
-                return castNumberString(std::any_cast<Token>(val).getLiteral());
-            }
-
-            rift::error::runTimeError("Expected a number or token");
-            return "";
-        }
-
-        std::string EvalVisitor::castString(Token tok) const {
-            any val = tok.getLiteral();
-            if (val.type() == typeid(std::string)) {
-                return std::any_cast<std::string>(val);
-            } else if (val.type() == typeid(char*)) {
-                return std::string(std::any_cast<char*>(val));
-            } else if (val.type() == typeid(const char*)) {
-                return std::string(std::any_cast<const char*>(val));
-            } else if (val.type() == typeid(char)) {
-                return std::string(1, std::any_cast<char>(val));
-            } else if (val.type() == typeid(unsigned char)) {
-                return std::string(1, std::any_cast<unsigned char>(val));
-            } else if (val.type() == typeid(signed char)) {
-                return std::string(1, std::any_cast<signed char>(val));
-            }
-            
-            rift::error::runTimeError("Expected a string");
-            return "";
-        }
-
-        #pragma mark - Arithmetic Ops
-
-        // for now don't allow different types (although we should be able to add diff types for example: int and double)
-        std::any EvalVisitor::any_arithmetic(any left, any right, Token op) const
+        void EvalVisitor::visit_print_stmt(const StmtPrint& stmt) const
         {
-            if (left.type() != right.type())
-                rift::error::report(op.line, "any_arithmetic", "not able to do arithmetic ops on different types (future work)", Token(), EvaluatorException("unable to do arithmetic ops on different types (future work)"));
+            Token val = stmt.expr->accept(*this);
+            std::cout << val << std::endl;
+        }
 
-            if (op.type == TokenType::PLUS) {
-                _ANY_ARITHMETIC(left,right,+, op);
-            } else if (op.type == TokenType::MINUS) {    
-                _ANY_ARITHMETIC(left,right,-, op);
-            } else if (op.type == TokenType::STAR) {
-                _ANY_ARITHMETIC(left,right,*, op);
-            } else if (op.type == TokenType::SLASH) {
-                _ANY_ARITHMETIC(left,right,/, op); 
-            } else if (op.type == TokenType::LESS) {
-                _ANY_ARITHMETIC(left,right,<, op);
-            } else if (op.type == TokenType::LESS_EQUAL) {
-                _ANY_ARITHMETIC(left,right,<=, op);
-            } else if (op.type == TokenType::GREATER) {
-                _ANY_ARITHMETIC(left,right,>, op);
-            } else if (op.type == TokenType::GREATER_EQUAL) {
-                _ANY_ARITHMETIC(left,right,>=, op);
-            } else if (op.type == TokenType::BANG_EQUAL) {
-                _ANY_ARITHMETIC(left,right,!=, op);
-            } else if (op.type == TokenType::EQUAL_EQUAL) {
-                _ANY_ARITHMETIC(left,right,==, op);
-            } else {
-                rift::error::report(op.line, "any_arithmetic", "unsupported operand (future work)", Token(), EvaluatorException("unsupported operand (future work)"));
-            }
-            return any();
+        void EvalVisitor::visit_var_stmt(const StmtVar &stmt) const
+        {
+            stmt.expr->accept(*this);
         }
     }
 }

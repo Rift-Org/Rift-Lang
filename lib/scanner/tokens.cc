@@ -155,7 +155,7 @@ bool isChar(const char* str) {
     return str[0] == '\'' && str[strlen(str) - 1] == '\'';
 }
 
-std::any Token::getLiteral()
+std::any Token::getLiteral() const
 {
     if (type == STRINGLITERAL) {
         return std::any{std::string(lexeme)};

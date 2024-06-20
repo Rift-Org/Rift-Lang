@@ -18,6 +18,14 @@
 
 #pragma mark - Forward Declarations
 
+// for no class
+#define __DEFAULT_FORWARD_NONE_1(class_name) __DEFAULT_FORWARD_NONE(class_name)
+#define __DEFAULT_FORWARD_NONE_2(class1, class2) __DEFAULT_FORWARD_NONE(class1) __DEFAULT_FORWARD_NONE(class2)
+#define __DEFAULT_FORWARD_NONE_3(class1, class2, class3) __DEFAULT_FORWARD_NONE(class1) __DEFAULT_FORWARD_NONE(class2) __DEFAULT_FORWARD_NONE(class3)
+#define __DEFAULT_FORWARD_NONE_4(class1, class2, class3, class4) __DEFAULT_FORWARD_NONE(class1) __DEFAULT_FORWARD_NONE(class2) __DEFAULT_FORWARD_NONE(class3) __DEFAULT_FORWARD_NONE(class4)
+#define __DEFAULT_FORWARD_NONE_5(class1, class2, class3, class4, class5) __DEFAULT_FORWARD_NONE(class1) __DEFAULT_FORWARD_NONE(class2) __DEFAULT_FORWARD_NONE(class3) __DEFAULT_FORWARD_NONE(class4) __DEFAULT_FORWARD_NONE(class5)
+#define __DEFAULT_FORWARD_NONE_6(class1, class2, class3, class4, class5, class6) __DEFAULT_FORWARD_NONE(class1) __DEFAULT_FORWARD_NONE(class2) __DEFAULT_FORWARD_NONE(class3) __DEFAULT_FORWARD_NONE(class4) __DEFAULT_FORWARD_NONE(class5) __DEFAULT_FORWARD_NONE(class6)
+
 // for one class
 #define __DEFAULT_FORWARD_1(class_name) __DEFAULT_FORWARD(class_name)
 #define __DEFAULT_FORWARD_2(class1, class2) __DEFAULT_FORWARD(class1) __DEFAULT_FORWARD(class2)
@@ -36,6 +44,9 @@
 
 #define __SELECT_FORWARD(_1, _2, _3, _4, _5, _6, NAME, ...) NAME
 
+#define __DEFAULT_FORWARD_NONE(class_name)\
+            class class_name; \
+
 #define __DEFAULT_FORWARD(class_name) \
             template <typename T> \
             class class_name; \
@@ -51,6 +62,10 @@
             __SELECT_FORWARD(__VA_ARGS__, __DEFAULT_FORWARD_6, __DEFAULT_FORWARD_5, \
                                 __DEFAULT_FORWARD_4, __DEFAULT_FORWARD_3, \
                                     __DEFAULT_FORWARD_2, __DEFAULT_FORWARD_1) (__VA_ARGS__)
+#define __DEFAULT_FORWARD_NONE_VA(...) \
+            __SELECT_FORWARD(__VA_ARGS__, __DEFAULT_FORWARD_NONE_6, __DEFAULT_FORWARD_NONE_5, \
+                                __DEFAULT_FORWARD_NONE_4, __DEFAULT_FORWARD_NONE_3, \
+                                    __DEFAULT_FORWARD_NONE_2, __DEFAULT_FORWARD_NONE_1) (__VA_ARGS__)
 #define __DEFAULT_FORWARD_MULTI_VA(...) \
             __SELECT_FORWARD(__VA_ARGS__, __DEFAULT_FORWARD_MULTI_6, __DEFAULT_FORWARD_MULTI_5, \
                                 __DEFAULT_FORWARD_MULTI_4, __DEFAULT_FORWARD_MULTI_3, \
