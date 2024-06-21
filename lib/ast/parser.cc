@@ -20,6 +20,8 @@ namespace rift
                 return std::unique_ptr<Literal<Token>>(new Literal<Token>(Token(TokenType::TRUE, "true", "", line)));
             if (match({Token(TokenType::NIL, "nil", "", line)}))
                 return std::unique_ptr<Literal<Token>>(new Literal<Token>(Token(TokenType::NIL, "nil", "", line)));
+            if (match({Token(TokenType::PRINT, "", "", line)})) {}
+                // return std::unique_ptr<Literal<Token>>(new Literal<Token>(peekPrev(1)));
 
             if (match({Token(TokenType::NUMERICLITERAL, "", "", line)}))
                 return std::unique_ptr<Literal<Token>>(new Literal<Token>(peekPrev(1)));

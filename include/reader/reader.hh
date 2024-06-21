@@ -17,6 +17,7 @@
 
 #include <error/error.hh>
 #include <exception>
+#include <string>
 
 namespace rift
 {
@@ -64,6 +65,8 @@ namespace rift
                 inline T peekPrev() { return curr-1>=0 ? source->at(curr-1) : T(); };
                 /// @brief Peeks previous with offset
                 inline T peekPrev(int offset) { return curr-offset>=0 ? source->at(curr-offset) : T(); };
+                /// @brief matches a single character and advances the cursor 
+                inline bool match_one(T expected) { return peek(expected) ? advance() : false; }
 
 
                 /// @brief Scans a comment and advances the cursor
@@ -86,7 +89,15 @@ namespace rift
                     return false;
                 }
 
-                inline bool match_one(T expected) { return peek(expected) ? advance() : false; }
+                /// @brief peeks a word (useful for keywords/identifiers/statements) 
+                inline bool peek_word(std::vector<T> expected, int n) {
+                    for (int i=0; i<n; i++) {
+                        if (!peek_off(expected[i], i)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
         };
 
         /// @class ReaderException

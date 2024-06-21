@@ -25,6 +25,8 @@
 #include <vector>
 
 using namespace rift::reader;
+using str_t = std::string;
+using strv_t = std::string_view;
 typedef rift::scanner::Token Token;
 typedef rift::scanner::TokenType Type;
 namespace rift
@@ -75,6 +77,9 @@ namespace rift
             void num();
             /// @brief Scans an identifier
             void identifier();
+            /// @brief Scans a keyword
+            /// @return true if keyword, false otherwise
+            bool keyword();
         };
     };
 }

@@ -103,12 +103,24 @@ namespace rift
             }
         }
 
+        bool Scanner::keyword() {
+            prevance();
+            for (const auto &[k,v] : keywords) {
+                std::vector vec = std::vector(k.begin(), k.end());
+                if (peek_word(vec, k.size()-1)) {
+                    addToken(v);
+                    for (size_t i=0; i<k.size()-1; i++) advance();
+                    return true;
+                }
+            }
+            return false;
+        }
+
         #pragma mark - Public API
 
         void Scanner::scan_token()
         {
             char c = advance();
-            // if(c == ' ') return;
             switch(c) {
                 case '(': addToken(Type::LEFT_PAREN, "(");break;
                 case ')': addToken(Type::RIGHT_PAREN, ")");break;
@@ -135,9 +147,9 @@ namespace rift
 
                 default:
                     if (isDigit(c)) num();
+                    else if (keyword()) return;
                     else if (isAlpha(c)) identifier();
                     else rift::error::report(line, "scanToken", "Unorthodox Character", Token(), std::exception());
-                    break;
             };
         }
 
