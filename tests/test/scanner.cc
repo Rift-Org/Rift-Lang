@@ -32,6 +32,6 @@ TEST_F(RiftScanner, simpleScanner)
     auto &tokens = scanner->tokens;
 
     EXPECT_EQ(tokens[0].lexeme, "1");
-    EXPECT_EQ(tokens[1].lexeme, "+");
+EXPECT_EQ(tokens[1].lexeme, "+");
     EXPECT_EQ(tokens[2].lexeme, "2");
 }

@@ -17,13 +17,14 @@
 
 #include <any>
 #include <string>
-#include <ast/expr.hh>
-#include <ast/eval.hh>
+#include <scanner/tokens.hh>
 #include <utils/macros.hh>
 
 
 using any = std::any;
 using string = std::string;
+using Token = rift::scanner::Token;
+using TokenType = rift::scanner::TokenType;
 
 namespace rift
 {

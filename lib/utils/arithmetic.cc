@@ -20,7 +20,7 @@ namespace rift
     any any_arithmetic(any left, any right, const Token& op)
     {
         if (left.type() != right.type())
-            rift::error::report(op.line, "any_arithmetic", "not able to do arithmetic ops on different types (future work)", Token(), rift::ast::EvaluatorException("unable to do arithmetic ops on different types (future work)"));
+            rift::error::report(op.line, "any_arithmetic", "not able to do arithmetic ops on different types (future work)", Token(), std::runtime_error("unable to do arithmetic ops on different types (future work)"));
 
         if (op.type == TokenType::PLUS) {
             _ANY_ARITHMETIC(left,right,+, op);
@@ -43,7 +43,7 @@ namespace rift
         } else if (op.type == TokenType::EQUAL_EQUAL) {
             _ANY_ARITHMETIC(left,right,==, op);
         } else {
-            rift::error::report(op.line, "any_arithmetic", "unsupported operand (future work)", Token(), rift::ast::EvaluatorException("unsupported operand (future work)"));
+            rift::error::report(op.line, "any_arithmetic", "unsupported operand (future work)", Token(), std::runtime_error("unsupported operand (future work)"));
         }
         return any();
     }

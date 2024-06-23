@@ -18,10 +18,13 @@
 
 #include <any>
 #include <string>
-#include <ast/expr.hh>
+#include "arithmetic.hh"
+
 
 using any = std::any;
 using string = std::string;
+using Token = rift::scanner::Token;
+using TokenType = rift::scanner::TokenType;
 
 namespace rift
 {

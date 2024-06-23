@@ -109,7 +109,7 @@ namespace rift
                 std::vector vec = std::vector(k.begin(), k.end());
                 if (peek_word(vec, k.size()-1)) {
                     addToken(v);
-                    for (size_t i=0; i<k.size()-1; i++) advance();
+                    for (size_t i=0; i<k.size(); i++) advance();
                     return true;
                 }
             }
@@ -127,7 +127,7 @@ namespace rift
                 case '{': addToken(Type::LEFT_BRACE, "{");break;
                 case '}': addToken(Type::RIGHT_BRACE, "}");break;
                 case ',': addToken(Type::COMMA, ",");break;
-                case '.': 
+                case '.':
                     if(isDigit(peekNext())) num();
                     else addToken(Type::DOT);break;
                 case '-': addToken(Type::MINUS, "-");break;

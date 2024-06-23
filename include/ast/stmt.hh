@@ -15,6 +15,7 @@
 #pragma once
 
 #include <ast/expr.hh>
+#include <ast/grmr.hh>
 #include <ast/parser.hh>
 #include <utils/macros.hh>
 
@@ -23,43 +24,73 @@ namespace rift
     namespace ast
     {
 
+        // i fucking hate c++ macros...
+        // template <typename T = void>
+        // class StmtVisitor;
+
         __DEFAULT_FORWARD_NONE_VA(
-            StmtVisitor,
+            StmtExpr,
             StmtPrint,
             StmtVar
         );
 
-        class Stmt
+
+        class Stmt: public rift::ast::Accept<void>
         {
             public:
-                virtual void accept(StmtVisitor &visitor) = 0;
+                virtual void accept(const Visitor &visitor) const = 0;
+                virtual ~Stmt() = default;
         };
         
-        class StmtVisitor
+        /// @class StmtExpr
+        /// @brief Represents an expression statement
+        /// @details expressions are more common that thought of
+        ///          For example: function calls `something();`
+        /// @code 
+        /// // Code from MDN
+        /// // Using control flow statements
+        ///    function range(start, end) {
+        ///     if (start > end) {
+        ///       [start, end] = [end, start];
+        ///     }
+        /// // Using expression statements
+        /// function range2(start, end) {
+        ///   start > end && ([start, end] = [end, start]);
+        /// }
+        class StmtExpr: public Stmt
         {
             public:
-                virtual void visit_print_stmt(const StmtPrint& expr) const = 0;
-                virtual void visit_var_stmt(const StmtVar& expr) const = 0;
+                StmtExpr(Expr *expr) : expr(expr) {};
+                ~StmtExpr() = default;
+                std::unique_ptr<Expr> expr;
+
+                void accept(const Visitor &visitor) const override { visitor.visit_expr_stmt(*this); };
+                // must uncomment visit_printer in printer.hh
+                string accept_printer(const Visitor& visitor) const override { "unimplemented"; }
         };
 
         class StmtPrint : public Stmt
         {
             public:
-                StmtPrint(GenExpr *expr) : expr(expr) {};
+                StmtPrint(Expr *expr) : expr(expr) {};
                 ~StmtPrint() = default;
-                GenExpr *expr;
+                std::unique_ptr<Expr> expr;
 
-                void accept(StmtVisitor &visitor) override { visitor.visit_print_stmt(*this); };
+                void accept(const Visitor &visitor) const override { visitor.visit_print_stmt(*this); };
+                // must uncomment visit_printer in printer.hh
+                string accept_printer(const Visitor& visitor) const override { "unimplemented"; }
         };
 
         class StmtVar : public Stmt
         {
             public:
-                StmtVar(GenExpr *expr) : expr(expr) {};
+                StmtVar(Expr *expr) : expr(expr) {};
                 ~StmtVar() = default;
-                GenExpr *expr;
+                std::unique_ptr<Expr> expr;
 
-                void accept(StmtVisitor &visitor) override { visitor.visit_var_stmt(*this); };
+                void accept(const Visitor &visitor) const override { visitor.visit_var_stmt(*this); };
+                // must uncomment visit_printer in printer.hh
+                string accept_printer(const Visitor& visitor) const override { "unimplemented"; }
         };
     }
 }

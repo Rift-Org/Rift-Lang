@@ -12,6 +12,7 @@
 ///                                                       ///
 /////////////////////////////////////////////////////////////
 
+#include <ast/grmr.hh>
 #include <ast/eval.hh>
 #include <error/error.hh>
 #include <utils/macros.hh>
@@ -24,30 +25,16 @@ namespace rift
 
         Eval::Eval()
         {
-            visitor = new EvalVisitor(*this);
+            this->visitor = std::unique_ptr<Visitor>(new Visitor());
         }
 
-        Eval::~Eval()
-        {
-            delete visitor;
-        }
-
-        EvalVisitor::EvalVisitor(Eval& eval)
-        {
-            this->eval = &eval;
-        }
-
-        EvalVisitor::~EvalVisitor()
-        {
-            this->eval = nullptr;
-        }
-
-        std::string Eval::evaluate(const rift::ast::Expr::Expr<Token>& expr)
+        std::string Eval::evaluate(const rift::ast::Expr& expr)
         {
             std::string res;
 
             try {
-                Token tok = expr.accept(*visitor);
+                std::cout << this->visitor << std::endl;
+                Token tok = expr.accept(*visitor.get());
                 any val = tok.getLiteral();
                 if (isNumber(tok)) {
                     res = castNumberString(tok);
@@ -70,7 +57,7 @@ namespace rift
 
         #pragma mark - Eval Visitor
 
-        Token EvalVisitor::visit_binary(const BinaryExpr& expr) const
+        Token Visitor::visit_binary(const Binary& expr) const
         {
             Token left = expr.left.get()->accept(*this);
             Token right = expr.right.get()->accept(*this);
@@ -139,12 +126,12 @@ namespace rift
             return Token();
         }
 
-        Token EvalVisitor::visit_grouping(const GroupingExpr& expr) const
+        Token Visitor::visit_grouping(const Grouping& expr) const
         {
             return expr.expr.get()->accept(*this);
         }
 
-        Token EvalVisitor::visit_literal(const LiteralExpr& expr) const
+        Token Visitor::visit_literal(const Literal& expr) const
         {
             Token val = expr.value;
             any literal = val.getLiteral();
@@ -182,7 +169,7 @@ namespace rift
             return Token();
         }
 
-        Token EvalVisitor::visit_unary(const UnaryExpr& expr) const
+        Token Visitor::visit_unary(const Unary& expr) const
         {
             Token right = expr.expr.get()->accept(*this);
             bool res = false;
@@ -214,13 +201,18 @@ namespace rift
 
         #pragma mark - Stmt Visitors
 
-        void EvalVisitor::visit_print_stmt(const StmtPrint& stmt) const
+        void Visitor::visit_expr_stmt(const StmtExpr& stmt) const
+        {
+            stmt.expr->accept(*this);
+        }
+
+        void Visitor::visit_print_stmt(const StmtPrint& stmt) const
         {
             Token val = stmt.expr->accept(*this);
             std::cout << val << std::endl;
         }
 
-        void EvalVisitor::visit_var_stmt(const StmtVar &stmt) const
+        void Visitor::visit_var_stmt(const StmtVar &stmt) const
         {
             stmt.expr->accept(*this);
         }

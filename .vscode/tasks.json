@@ -24,5 +24,17 @@
 				"isDefault": true
 			}
 		},
+
+		// make the program
+		{
+			"type": "shell",
+			"label": "make",
+			"command": "make",
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},	
 	]
 }

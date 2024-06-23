@@ -23,7 +23,6 @@
 
 #include <ast/expr.hh>
 #include <ast/parser.hh>
-#include <ast/printer.hh>
 #include <scanner/scanner.hh>
 #include <ast/eval.hh>
 #include <string>
@@ -48,7 +47,7 @@ namespace rift
 
             std::shared_ptr<std::vector<Token>> tokensPtr = std::make_shared<std::vector<Token>>(riftScanner.tokens);
             Parser riftParser(tokensPtr);
-            std::unique_ptr<GenExpr> statements = riftParser.parse(); 
+            std::unique_ptr<Expr> statements = riftParser.parse(); 
 
             Eval riftEvaluator;
             riftEvaluator.evaluate(*statements);
@@ -90,7 +89,7 @@ namespace rift
             {
                 std::string input = "";
                 std::cout << "> ";
-                std::cin >> input;
+                std::getline(std::cin >> std::ws, input);
                 if (input.empty()) break;
                 run(input);
                 errorOccured = false; // reset error

@@ -11,14 +11,14 @@ using string = std::string;
 #pragma mark - Rift Parser (Mock Fixtures)
 
 /// @note main mock class
-class MockVisitorPrinter : public rift::ast::VisitorPrinter {
+class MockVisitorPrinter : public rift::ast::Visitor {
 public:
-    MockVisitorPrinter(Printer &printer) : VisitorPrinter(printer) { }
+    MockVisitorPrinter(Printer &printer) {};
 
-    MOCK_METHOD(std::string, visit_binary, (rift::ast::Expr::Binary<std::string>* expr), (const));
-    MOCK_METHOD(std::string, visit_grouping, (rift::ast::Expr::Grouping<std::string>* expr), (const));
-    MOCK_METHOD(std::string, visit_literal, (rift::ast::Expr::Literal<std::string>* expr), (const));
-    MOCK_METHOD(std::string, visit_unary, (rift::ast::Expr::Unary<std::string>* expr), (const));
+    MOCK_METHOD(Token, visit_binary, (const rift::ast::Binary& expr), (const));
+    MOCK_METHOD(Token, visit_grouping, (const rift::ast::Grouping& expr), (const));
+    MOCK_METHOD(Token, visit_literal, (const rift::ast::Literal& expr), (const));
+    MOCK_METHOD(Token, visit_unary, (const rift::ast::Unary& expr), (const));
 };
 
 
@@ -26,14 +26,17 @@ public:
 class RiftPrinterMock : public ::testing::Test {
 protected:
     void SetUp() override {
-        mockVisitor = new MockVisitorPrinter(*new Printer());
+        printer = new Printer();
+        mockVisitor = new MockVisitorPrinter(*printer);
     }
 
     void TearDown() override {
         delete mockVisitor;
+        delete printer;
     }
 
     MockVisitorPrinter* mockVisitor;
+    Printer *printer;
 };
 
 
@@ -41,28 +44,28 @@ protected:
 
 TEST_F(RiftPrinterMock, simpleParseExpr) {
     // simple expression for the math operation -1 + 2
-    rift::ast::Expr::Binary<string> expr = rift::ast::Expr::Binary<string>(
-        std::make_unique<rift::ast::Expr::Unary<string>>(
+    rift::ast::Binary expr = rift::ast::Binary(
+        std::make_unique<rift::ast::Unary>(
             rift::scanner::Token(TokenType::MINUS,"-", "", 1),
-            std::make_unique<rift::ast::Expr::Literal<string>>("1")
+            std::make_unique<rift::ast::Literal>("1")
         ),
         rift::scanner::Token(TokenType::PLUS,"+", "", 1),
-        std::make_unique<rift::ast::Expr::Literal<std::string>>("2")
+        std::make_unique<rift::ast::Literal>("2")
     );
 
     EXPECT_CALL(*mockVisitor, visit_unary(testing::_))
-        .WillRepeatedly(testing::Invoke([](rift::ast::Expr::Unary<string>* unary) {
-            return unary->op.lexeme;
+        .WillRepeatedly(testing::Invoke([](const rift::ast::Unary& unary) {
+            return unary.op;
         }));
     EXPECT_CALL(*mockVisitor, visit_literal(testing::_))
-        .WillRepeatedly(testing::Invoke([](rift::ast::Expr::Literal<string>* literal) {
-            return literal->value;
+        .WillRepeatedly(testing::Invoke([](const rift::ast::Literal& literal) {
+            return literal.value;
         }));
     EXPECT_CALL(*mockVisitor, visit_binary(testing::_))
-        .WillRepeatedly(testing::Invoke([](rift::ast::Expr::Binary<string>* binary) {
-            return binary->op.lexeme;
+        .WillRepeatedly(testing::Invoke([](const rift::ast::Binary& binary) {
+            return binary.op;
         }));
 
     // Test Call Assertions (Mock)
-    EXPECT_EQ(mockVisitor->printer->print(&expr), "(+ (- 1) 2)");
+    EXPECT_EQ(printer->print(&expr), "(+ (- 1) 2)");
 }

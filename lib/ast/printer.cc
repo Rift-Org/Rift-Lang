@@ -17,12 +17,6 @@
 #include <vector>
 #include <initializer_list>
 
-using namespace rift::ast;
-using namespace rift::ast::Expr;
-using vec = std::vector<ExprStr*>;
-using string = std::string;
-using ExprStr = rift::ast::Expr::Expr<string>;
-
 namespace rift
 {
     namespace ast
@@ -31,40 +25,36 @@ namespace rift
 
         Printer::Printer()
         {
-            visitor = new VisitorPrinter(*this);
+            // this->visitor = std::unique_ptr<Visitor>(new Visitor());
+            this->visitor = std::make_unique<const Visitor>();
         }
 
-        string Printer::print(ExprStr *expr)
+        string Printer::print(Expr *expr) const
         {
-            return expr->accept(*this->visitor);
+            return expr->accept_printer(*this->visitor);
         }
 
-        string Printer::parenthesize(string name, vec expr)
+        string Printer::parenthesize(string name, vec expr) const
         {
             string result = "(" + name;
             for (auto &e : expr)
-                result += " " + e->accept(*this->visitor);
+                result += " " + e->accept_printer(*this->visitor);
             result += ")";
             return result;
         }
 
-        string Printer::group(vec expr)
+        string Printer::group(vec expr) const
         {
             string result = "[";
             for (auto &e : expr)
-                result += " " + e->accept(*this->visitor);
+                result += " " + e->accept_printer(*this->visitor);
             result += "]";
             return result;
         }
 
         #pragma mark - Visitor
 
-        VisitorPrinter::VisitorPrinter(Printer &printer)
-        {
-            this->printer = &printer;
-        }
-
-        string VisitorPrinter::visit_binary(const Binary<string>& expr) const
+        string Visitor::print_binary(const Binary& expr) const
         {
             vec v;
             v.push_back(expr.left.get());
@@ -72,21 +62,21 @@ namespace rift
             return printer->parenthesize(expr.op.lexeme, v);
         }
 
-        string VisitorPrinter::visit_unary(const Unary<string>& expr) const
+        string Visitor::print_unary(const Unary& expr) const
         {
             vec v;
             v.push_back(expr.expr.get());
             return printer->parenthesize(expr.op.lexeme, v);
         }
 
-        string VisitorPrinter::visit_grouping(const Grouping<string>& expr) const
+        string Visitor::print_grouping(const Grouping& expr) const
         {
             vec v;
             v.push_back(expr.expr.get());
             return printer->group(v);
         }
 
-        string VisitorPrinter::visit_literal(const Literal<string>& expr) const
+        string Visitor::print_literal(const Literal& expr) const
         {
             Token val = expr.value;
             std::any literal = val.getLiteral();

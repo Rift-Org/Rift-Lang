@@ -20,12 +20,11 @@
 #include <exception>
 #include <scanner/tokens.hh>
 #include <reader/reader.hh>
+#include <ast/grmr.hh>
 #include <ast/expr.hh>
 
 using namespace rift::scanner;
 using namespace rift::reader;
-
-using GenExpr = rift::ast::Expr::Expr<rift::scanner::Token>;
 
 namespace rift
 {
@@ -40,7 +39,7 @@ namespace rift
                 ~Parser() = default;
 
                 /// @brief Parses the tokens and returns an expression
-                std::unique_ptr<GenExpr> parse();
+                std::unique_ptr<rift::ast::Expr> parse();
             protected:
                 std::shared_ptr<std::vector<Token>> tokens;
                 std::exception exception;
@@ -48,22 +47,30 @@ namespace rift
             private:
                 #pragma mark - Grammar Evaluators
                 
-                /// @note rules in order of precedence
+                /// @note rules in order of precedence <Expr>
 
                 /// @example 1 + 2 * 3
-                std::unique_ptr<GenExpr> expression();
+                std::unique_ptr<Expr> expression();
                 /// @example 1 == 1, 1 != 2
-                std::unique_ptr<GenExpr> equality();
+                std::unique_ptr<Expr> equality();
                 /// @example 1 > 2, 1 <= 2
-                std::unique_ptr<GenExpr> comparison();
+                std::unique_ptr<Expr> comparison();
                 /// @example 1 + 2, 1 - 2
-                std::unique_ptr<GenExpr> term();
+                std::unique_ptr<Expr> term();
                 /// @example 1 * 2, 1 / 2
-                std::unique_ptr<GenExpr> factor();
+                std::unique_ptr<Expr> factor();
                 /// @example -1, !1
-                std::unique_ptr<GenExpr> unary();
+                std::unique_ptr<Expr> unary();
                 /// @example 1, "string", true, false, nil
-                std::unique_ptr<GenExpr> primary();
+                std::unique_ptr<Expr> primary();
+
+                /// @note rules in order of precedence <Stmt>
+
+                std::unique_ptr<Stmt> statement();
+
+                std::unique_ptr<StmtExpr> statement_expression();
+
+                std::unique_ptr<StmtPrint> statement_print();
                 
                 /// @brief Syncronizes the parser to avoid error-cascading
                 void synchronize();

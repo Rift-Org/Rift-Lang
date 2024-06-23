@@ -23,9 +23,9 @@ set( SOURCES
     utils/literals.cc
 
     # AST
-    ast/eval.cc
     ast/parser.cc
     ast/printer.cc
+    ast/eval.cc
 
     # Driver
     driver/driver.cc

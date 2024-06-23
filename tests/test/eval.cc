@@ -29,13 +29,13 @@ class RiftEvaluator : public ::testing::Test {
 
 TEST_F(RiftEvaluator, simpleEvalExpr) {
     // evaluate -1 + 2
-    rift::ast::Expr::Binary<Token> expr = rift::ast::Expr::Binary<Token>(
-        std::make_unique<rift::ast::Expr::Unary<Token>>(
+    rift::ast::Binary expr = rift::ast::Binary(
+        std::make_unique<rift::ast::Unary>(
             rift::scanner::Token(TokenType::MINUS,"-", "", 1),
-            std::make_unique<rift::ast::Expr::Literal<Token>>(TOK_NUM(1))
+            std::make_unique<rift::ast::Literal>(TOK_NUM(1))
         ),
         rift::scanner::Token(TokenType::PLUS,"+", "", 1),
-        std::make_unique<rift::ast::Expr::Literal<Token>>(TOK_NUM(3))
+        std::make_unique<rift::ast::Literal>(TOK_NUM(3))
     );
 
     EXPECT_EQ(eval->evaluate(expr), "2");
