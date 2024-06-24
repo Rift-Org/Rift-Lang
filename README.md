@@ -33,26 +33,20 @@ See `LICENSE` for more information.
 
 # Roadmap
 
-- Le
-- Parser
-- Compiler
+- Lexer ✅
+- Parser (recursive maybe change to ANTLR later)
+- Full AST
 - JIT
 - Symbol Table
 - Exception Handling
-- VSCode Syntax Extension
-- Standard Library
-- Testing
-- Documentation
+- Custom IR
+- Optimization passes
+- {VSCode, NeoVim} Tooling
+- Standard Kits (std/stk)
+- Documentation (middle way)
 - Benchmarks
-- LLVM Integration
+- Lot Lot More....
+- Bake it into BoneOS as a config mechanism
+    - kind of like Nix (very ambitious)
 
-# Vision
-
- - Have two forms of this langauge
-    - Rift main langauge which is a compiler that produces LLVM IR
-    - RiftI which is the transpiler (transpiles to C++ but as a scripting langauge)
-
- - Barebones language (no batteries included)
- - Seperate Libraries (Core, Security, Networking, GPU-Integration, ML, etc...)
- - Try new techniques from arxiv papers and measure benchmarks (possible make a paper)
 

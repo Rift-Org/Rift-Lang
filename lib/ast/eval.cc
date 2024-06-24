@@ -209,13 +209,11 @@ namespace rift
         Token Visitor::visit_print_stmt(const StmtPrint& stmt) const
         {
             Token val = stmt.expr->accept(*this);
-            std::cout << castString(val) << std::endl;
+            std::string res = castString(val);
+            if (res.at(0) == '"' && res.at(res.size()-1) == '"') 
+                res = res.substr(1, res.size()-2);
+            std::cout << res << std::endl;
             return val;
-        }
-
-        Token Visitor::visit_var_stmt(const StmtVar &stmt) const
-        {
-            return stmt.expr->accept(*this);
         }
 
         #pragma mark - Program Visitor
@@ -223,10 +221,27 @@ namespace rift
         Tokens Visitor::visit_program(const Program& prgm) const
         {
             std::vector<Token> tokens = {};
-            for (auto it=prgm.statements->begin(); it!=prgm.statements->end(); it++) {
+            for (auto it=prgm.statements->begin(); it!=prgm.statements->end(); it++)
                 tokens.push_back((*it)->accept(*this));
-            }
             return tokens;
         }
+
+        #pragma mark - Decl Visitors
+
+        Token Visitor::visit_decl_stmt(const DeclStmt& decl) const
+        {
+            return decl.stmt->accept(*this);
+        }
+
+        Token Visitor::visit_decl_var(const DeclVar& decl) const
+        {
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Wunused-parameter"
+            #pragma clang diagnostic ignored "-Wunused-value"
+            decl;
+            #pragma clang diagnostic pop
+            return Token();
+        }
+
     }
 }

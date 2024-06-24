@@ -39,11 +39,13 @@ TEST_F(RiftEvaluator, simpleEvalExpr) {
     ));
 
     auto stmt_expr = std::make_unique<StmtExpr>(std::move(expr));
-    std::vector<std::unique_ptr<Stmt>> stmts;
-    stmts.emplace_back(std::move(stmt_expr));
+    auto decl_stmt = std::make_unique<DeclStmt>(std::move(stmt_expr));
+    // emplace for no copies
+    std::vector<std::unique_ptr<Decl>> decls;
+    decls.emplace_back(std::move(decl_stmt));
 
     // Create a unique_ptr to a vector of unique_ptr<Stmt>
-    auto program_statements = std::make_unique<std::vector<std::unique_ptr<Stmt>>>(std::move(stmts));
+    auto program_statements = std::make_unique<std::vector<std::unique_ptr<Decl>>>(std::move(decls));
     auto program = std::make_unique<Program>(std::move(program_statements));
     auto x = eval->evaluate((*program));
     EXPECT_EQ(x.at(0), "2");

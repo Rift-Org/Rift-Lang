@@ -1,182 +1,182 @@
 [
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/scanner/tokens.cc.o -c /Users/amanuelbogale/Documents/rift/lib/scanner/tokens.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/scanner/tokens.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/scanner/tokens.cc.o -c /Users/aman/Documents/rift/lib/scanner/tokens.cc",
+  "file": "/Users/aman/Documents/rift/lib/scanner/tokens.cc",
   "output": "lib/CMakeFiles/riftlang.dir/scanner/tokens.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/scanner/scanner.cc.o -c /Users/amanuelbogale/Documents/rift/lib/scanner/scanner.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/scanner/scanner.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/scanner/scanner.cc.o -c /Users/aman/Documents/rift/lib/scanner/scanner.cc",
+  "file": "/Users/aman/Documents/rift/lib/scanner/scanner.cc",
   "output": "lib/CMakeFiles/riftlang.dir/scanner/scanner.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/reader/reader.cc.o -c /Users/amanuelbogale/Documents/rift/lib/reader/reader.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/reader/reader.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/reader/reader.cc.o -c /Users/aman/Documents/rift/lib/reader/reader.cc",
+  "file": "/Users/aman/Documents/rift/lib/reader/reader.cc",
   "output": "lib/CMakeFiles/riftlang.dir/reader/reader.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/utils/arithmetic.cc.o -c /Users/amanuelbogale/Documents/rift/lib/utils/arithmetic.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/utils/arithmetic.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/utils/arithmetic.cc.o -c /Users/aman/Documents/rift/lib/utils/arithmetic.cc",
+  "file": "/Users/aman/Documents/rift/lib/utils/arithmetic.cc",
   "output": "lib/CMakeFiles/riftlang.dir/utils/arithmetic.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/utils/literals.cc.o -c /Users/amanuelbogale/Documents/rift/lib/utils/literals.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/utils/literals.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/utils/literals.cc.o -c /Users/aman/Documents/rift/lib/utils/literals.cc",
+  "file": "/Users/aman/Documents/rift/lib/utils/literals.cc",
   "output": "lib/CMakeFiles/riftlang.dir/utils/literals.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/ast/parser.cc.o -c /Users/amanuelbogale/Documents/rift/lib/ast/parser.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/ast/parser.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/ast/parser.cc.o -c /Users/aman/Documents/rift/lib/ast/parser.cc",
+  "file": "/Users/aman/Documents/rift/lib/ast/parser.cc",
   "output": "lib/CMakeFiles/riftlang.dir/ast/parser.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/ast/printer.cc.o -c /Users/amanuelbogale/Documents/rift/lib/ast/printer.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/ast/printer.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/ast/printer.cc.o -c /Users/aman/Documents/rift/lib/ast/printer.cc",
+  "file": "/Users/aman/Documents/rift/lib/ast/printer.cc",
   "output": "lib/CMakeFiles/riftlang.dir/ast/printer.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/ast/eval.cc.o -c /Users/amanuelbogale/Documents/rift/lib/ast/eval.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/ast/eval.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/ast/eval.cc.o -c /Users/aman/Documents/rift/lib/ast/eval.cc",
+  "file": "/Users/aman/Documents/rift/lib/ast/eval.cc",
   "output": "lib/CMakeFiles/riftlang.dir/ast/eval.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/driver/driver.cc.o -c /Users/amanuelbogale/Documents/rift/lib/driver/driver.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/driver/driver.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/driver/driver.cc.o -c /Users/aman/Documents/rift/lib/driver/driver.cc",
+  "file": "/Users/aman/Documents/rift/lib/driver/driver.cc",
   "output": "lib/CMakeFiles/riftlang.dir/driver/driver.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/error/error.cc.o -c /Users/amanuelbogale/Documents/rift/lib/error/error.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/error/error.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/error/error.cc.o -c /Users/aman/Documents/rift/lib/error/error.cc",
+  "file": "/Users/aman/Documents/rift/lib/error/error.cc",
   "output": "lib/CMakeFiles/riftlang.dir/error/error.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/main.cc.o -c /Users/amanuelbogale/Documents/rift/lib/main.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/main.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -Wmisleading-indentation -o CMakeFiles/riftlang.dir/main.cc.o -c /Users/aman/Documents/rift/lib/main.cc",
+  "file": "/Users/aman/Documents/rift/lib/main.cc",
   "output": "lib/CMakeFiles/riftlang.dir/main.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/scanner/tokens.cc.o -c /Users/amanuelbogale/Documents/rift/lib/scanner/tokens.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/scanner/tokens.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/scanner/tokens.cc.o -c /Users/aman/Documents/rift/lib/scanner/tokens.cc",
+  "file": "/Users/aman/Documents/rift/lib/scanner/tokens.cc",
   "output": "lib/CMakeFiles/riftlib.dir/scanner/tokens.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/scanner/scanner.cc.o -c /Users/amanuelbogale/Documents/rift/lib/scanner/scanner.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/scanner/scanner.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/scanner/scanner.cc.o -c /Users/aman/Documents/rift/lib/scanner/scanner.cc",
+  "file": "/Users/aman/Documents/rift/lib/scanner/scanner.cc",
   "output": "lib/CMakeFiles/riftlib.dir/scanner/scanner.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/reader/reader.cc.o -c /Users/amanuelbogale/Documents/rift/lib/reader/reader.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/reader/reader.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/reader/reader.cc.o -c /Users/aman/Documents/rift/lib/reader/reader.cc",
+  "file": "/Users/aman/Documents/rift/lib/reader/reader.cc",
   "output": "lib/CMakeFiles/riftlib.dir/reader/reader.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/utils/arithmetic.cc.o -c /Users/amanuelbogale/Documents/rift/lib/utils/arithmetic.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/utils/arithmetic.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/utils/arithmetic.cc.o -c /Users/aman/Documents/rift/lib/utils/arithmetic.cc",
+  "file": "/Users/aman/Documents/rift/lib/utils/arithmetic.cc",
   "output": "lib/CMakeFiles/riftlib.dir/utils/arithmetic.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/utils/literals.cc.o -c /Users/amanuelbogale/Documents/rift/lib/utils/literals.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/utils/literals.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/utils/literals.cc.o -c /Users/aman/Documents/rift/lib/utils/literals.cc",
+  "file": "/Users/aman/Documents/rift/lib/utils/literals.cc",
   "output": "lib/CMakeFiles/riftlib.dir/utils/literals.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/ast/parser.cc.o -c /Users/amanuelbogale/Documents/rift/lib/ast/parser.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/ast/parser.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/ast/parser.cc.o -c /Users/aman/Documents/rift/lib/ast/parser.cc",
+  "file": "/Users/aman/Documents/rift/lib/ast/parser.cc",
   "output": "lib/CMakeFiles/riftlib.dir/ast/parser.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/ast/printer.cc.o -c /Users/amanuelbogale/Documents/rift/lib/ast/printer.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/ast/printer.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/ast/printer.cc.o -c /Users/aman/Documents/rift/lib/ast/printer.cc",
+  "file": "/Users/aman/Documents/rift/lib/ast/printer.cc",
   "output": "lib/CMakeFiles/riftlib.dir/ast/printer.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/ast/eval.cc.o -c /Users/amanuelbogale/Documents/rift/lib/ast/eval.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/ast/eval.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/ast/eval.cc.o -c /Users/aman/Documents/rift/lib/ast/eval.cc",
+  "file": "/Users/aman/Documents/rift/lib/ast/eval.cc",
   "output": "lib/CMakeFiles/riftlib.dir/ast/eval.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/driver/driver.cc.o -c /Users/amanuelbogale/Documents/rift/lib/driver/driver.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/driver/driver.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/driver/driver.cc.o -c /Users/aman/Documents/rift/lib/driver/driver.cc",
+  "file": "/Users/aman/Documents/rift/lib/driver/driver.cc",
   "output": "lib/CMakeFiles/riftlib.dir/driver/driver.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/error/error.cc.o -c /Users/amanuelbogale/Documents/rift/lib/error/error.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/error/error.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/error/error.cc.o -c /Users/aman/Documents/rift/lib/error/error.cc",
+  "file": "/Users/aman/Documents/rift/lib/error/error.cc",
   "output": "lib/CMakeFiles/riftlib.dir/error/error.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/lib",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -o CMakeFiles/riftlib.dir/main.cc.o -c /Users/amanuelbogale/Documents/rift/lib/main.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/lib/main.cc",
+  "directory": "/Users/aman/Documents/rift/lib",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -o CMakeFiles/riftlib.dir/main.cc.o -c /Users/aman/Documents/rift/lib/main.cc",
+  "file": "/Users/aman/Documents/rift/lib/main.cc",
   "output": "lib/CMakeFiles/riftlib.dir/main.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/tests",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -o CMakeFiles/riftlangtest.dir/main.cc.o -c /Users/amanuelbogale/Documents/rift/tests/main.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/tests/main.cc",
+  "directory": "/Users/aman/Documents/rift/tests",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -isystem /Users/aman/Documents/rift/external/googletest/googletest/include -isystem /Users/aman/Documents/rift/external/googletest/googletest -isystem /Users/aman/Documents/rift/external/googletest/googlemock/include -isystem /Users/aman/Documents/rift/external/googletest/googlemock -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -o CMakeFiles/riftlangtest.dir/main.cc.o -c /Users/aman/Documents/rift/tests/main.cc",
+  "file": "/Users/aman/Documents/rift/tests/main.cc",
   "output": "tests/CMakeFiles/riftlangtest.dir/main.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/tests",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -o CMakeFiles/riftlangtest.dir/test/parser.cc.o -c /Users/amanuelbogale/Documents/rift/tests/test/parser.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/tests/test/parser.cc",
+  "directory": "/Users/aman/Documents/rift/tests",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -isystem /Users/aman/Documents/rift/external/googletest/googletest/include -isystem /Users/aman/Documents/rift/external/googletest/googletest -isystem /Users/aman/Documents/rift/external/googletest/googlemock/include -isystem /Users/aman/Documents/rift/external/googletest/googlemock -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -o CMakeFiles/riftlangtest.dir/test/parser.cc.o -c /Users/aman/Documents/rift/tests/test/parser.cc",
+  "file": "/Users/aman/Documents/rift/tests/test/parser.cc",
   "output": "tests/CMakeFiles/riftlangtest.dir/test/parser.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/tests",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -o CMakeFiles/riftlangtest.dir/test/scanner.cc.o -c /Users/amanuelbogale/Documents/rift/tests/test/scanner.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/tests/test/scanner.cc",
+  "directory": "/Users/aman/Documents/rift/tests",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -isystem /Users/aman/Documents/rift/external/googletest/googletest/include -isystem /Users/aman/Documents/rift/external/googletest/googletest -isystem /Users/aman/Documents/rift/external/googletest/googlemock/include -isystem /Users/aman/Documents/rift/external/googletest/googlemock -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -o CMakeFiles/riftlangtest.dir/test/scanner.cc.o -c /Users/aman/Documents/rift/tests/test/scanner.cc",
+  "file": "/Users/aman/Documents/rift/tests/test/scanner.cc",
   "output": "tests/CMakeFiles/riftlangtest.dir/test/scanner.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/tests",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock -g -std=gnu++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4 -Wpedantic -Wall -Wextra -Werror -o CMakeFiles/riftlangtest.dir/test/eval.cc.o -c /Users/amanuelbogale/Documents/rift/tests/test/eval.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/tests/test/eval.cc",
+  "directory": "/Users/aman/Documents/rift/tests",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -isystem /Users/aman/Documents/rift/external/googletest/googletest/include -isystem /Users/aman/Documents/rift/external/googletest/googletest -isystem /Users/aman/Documents/rift/external/googletest/googlemock/include -isystem /Users/aman/Documents/rift/external/googletest/googlemock -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0 -Wpedantic -Wall -Wextra -Werror -o CMakeFiles/riftlangtest.dir/test/eval.cc.o -c /Users/aman/Documents/rift/tests/test/eval.cc",
+  "file": "/Users/aman/Documents/rift/tests/test/eval.cc",
   "output": "tests/CMakeFiles/riftlangtest.dir/test/eval.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/external/googletest/googlemock",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -I/Users/amanuelbogale/Documents/rift/external/googletest/googlemock/include -I/Users/amanuelbogale/Documents/rift/external/googletest/googlemock -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest -g -std=c++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4  -DGTEST_HAS_PTHREAD=1   -o CMakeFiles/gmock.dir/src/gmock-all.cc.o -c /Users/amanuelbogale/Documents/rift/external/googletest/googlemock/src/gmock-all.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/external/googletest/googlemock/src/gmock-all.cc",
+  "directory": "/Users/aman/Documents/rift/external/googletest/googlemock",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -I/Users/aman/Documents/rift/external/googletest/googlemock/include -I/Users/aman/Documents/rift/external/googletest/googlemock -isystem /Users/aman/Documents/rift/external/googletest/googletest/include -isystem /Users/aman/Documents/rift/external/googletest/googletest -g -std=c++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0  -DGTEST_HAS_PTHREAD=1   -o CMakeFiles/gmock.dir/src/gmock-all.cc.o -c /Users/aman/Documents/rift/external/googletest/googlemock/src/gmock-all.cc",
+  "file": "/Users/aman/Documents/rift/external/googletest/googlemock/src/gmock-all.cc",
   "output": "external/googletest/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/external/googletest/googlemock",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googlemock -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest -g -std=c++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4  -DGTEST_HAS_PTHREAD=1   -o CMakeFiles/gmock_main.dir/src/gmock_main.cc.o -c /Users/amanuelbogale/Documents/rift/external/googletest/googlemock/src/gmock_main.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/external/googletest/googlemock/src/gmock_main.cc",
+  "directory": "/Users/aman/Documents/rift/external/googletest/googlemock",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -isystem /Users/aman/Documents/rift/external/googletest/googlemock/include -isystem /Users/aman/Documents/rift/external/googletest/googlemock -isystem /Users/aman/Documents/rift/external/googletest/googletest/include -isystem /Users/aman/Documents/rift/external/googletest/googletest -g -std=c++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0  -DGTEST_HAS_PTHREAD=1   -o CMakeFiles/gmock_main.dir/src/gmock_main.cc.o -c /Users/aman/Documents/rift/external/googletest/googlemock/src/gmock_main.cc",
+  "file": "/Users/aman/Documents/rift/external/googletest/googlemock/src/gmock_main.cc",
   "output": "external/googletest/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/external/googletest/googletest",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -I/Users/amanuelbogale/Documents/rift/external/googletest/googletest/include -I/Users/amanuelbogale/Documents/rift/external/googletest/googletest -g -std=c++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4  -DGTEST_HAS_PTHREAD=1   -o CMakeFiles/gtest.dir/src/gtest-all.cc.o -c /Users/amanuelbogale/Documents/rift/external/googletest/googletest/src/gtest-all.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/external/googletest/googletest/src/gtest-all.cc",
+  "directory": "/Users/aman/Documents/rift/external/googletest/googletest",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -I/Users/aman/Documents/rift/external/googletest/googletest/include -I/Users/aman/Documents/rift/external/googletest/googletest -g -std=c++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0  -DGTEST_HAS_PTHREAD=1   -o CMakeFiles/gtest.dir/src/gtest-all.cc.o -c /Users/aman/Documents/rift/external/googletest/googletest/src/gtest-all.cc",
+  "file": "/Users/aman/Documents/rift/external/googletest/googletest/src/gtest-all.cc",
   "output": "external/googletest/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o"
 },
 {
-  "directory": "/Users/amanuelbogale/Documents/rift/external/googletest/googletest",
-  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/amanuelbogale/Documents/rift/include -I/Users/amanuelbogale/Documents/rift/external -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest/include -isystem /Users/amanuelbogale/Documents/rift/external/googletest/googletest -g -std=c++17 -arch arm64 -isysroot /Applications/Linux.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.4  -DGTEST_HAS_PTHREAD=1   -o CMakeFiles/gtest_main.dir/src/gtest_main.cc.o -c /Users/amanuelbogale/Documents/rift/external/googletest/googletest/src/gtest_main.cc",
-  "file": "/Users/amanuelbogale/Documents/rift/external/googletest/googletest/src/gtest_main.cc",
+  "directory": "/Users/aman/Documents/rift/external/googletest/googletest",
+  "command": "/usr/bin/clang++ -DARCH_ARM -DOS_APPLE -I/Users/aman/Documents/rift/include -I/Users/aman/Documents/rift/external -isystem /Users/aman/Documents/rift/external/googletest/googletest/include -isystem /Users/aman/Documents/rift/external/googletest/googletest -g -std=c++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.0.sdk -mmacosx-version-min=14.0  -DGTEST_HAS_PTHREAD=1   -o CMakeFiles/gtest_main.dir/src/gtest_main.cc.o -c /Users/aman/Documents/rift/external/googletest/googletest/src/gtest_main.cc",
+  "file": "/Users/aman/Documents/rift/external/googletest/googletest/src/gtest_main.cc",
   "output": "external/googletest/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o"
 }
 ]

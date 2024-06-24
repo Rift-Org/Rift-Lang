@@ -16,8 +16,10 @@
 #include <ast/stmt.hh>
 #include <error/error.hh>
 #include <memory>
+#include <ast/prgm.hh>
 
 using namespace rift::scanner;
+
 
 namespace rift
 {
@@ -146,15 +148,6 @@ namespace rift
 
         #pragma mark - Statements Parsing
 
-        // std::unique_ptr<Stmt> Parser::statement()
-        // {
-        //     if (match({Token(TokenType::PRINT, "", "", line)})) {
-        //         return statement_print();
-        //     } else {
-        //         return statement_expression();
-        //     }
-        // }
-
         std::unique_ptr<StmtExpr> Parser::statement_expression()
         {
             auto expr = expression();
@@ -171,23 +164,41 @@ namespace rift
             return std::unique_ptr<StmtPrint>(new StmtPrint(expr));
         }
 
+        #pragma mark - Declarations Parsing
+
+        std::unique_ptr<DeclStmt> Parser::declaration_statement()
+        {
+            std::unique_ptr<Stmt> stmt;
+            if (match_kw (Token(TokenType::PRINT, "", "", line))) {
+                stmt = statement_print();
+            } else {
+                stmt = statement_expression();
+            }
+
+            return std::make_unique<DeclStmt>(std::move(stmt));
+        }
+
+        std::unique_ptr<DeclVar> Parser::declaration_variable()
+        {
+            consume(Token(TokenType::IDENTIFIER, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected variable name")));
+            return nullptr;
+        }
+
         #pragma mark - Program Parsing
 
         std::unique_ptr<Program> Parser::program()
         {
-            vec_prog statements = std::make_unique<std::vector<std::unique_ptr<Stmt>>>();
+            vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
 
             while (!atEnd()) {
-                if (match_kw (Token(TokenType::PRINT, "", "", line))) {
-                    statements->push_back(statement_print());
-                } else if (match ({Token(TokenType::EOFF, "", "", line)})) {
-                    break;
+                if (match_kw (Token(TokenType::VAR, "", "", line))) {
+                    decls->push_back(declaration_variable());
                 } else {
-                    statements->push_back(statement_expression());
+                    decls->push_back(declaration_statement());
                 }
             }
 
-            return std::unique_ptr<Program>(new Program(std::move(statements)));
+            return std::unique_ptr<Program>(new Program(std::move(decls)));
         }
 
         # pragma mark - Utilities

@@ -23,6 +23,7 @@
 #include <ast/grmr.hh>
 #include <ast/expr.hh>
 #include <ast/stmt.hh>
+#include <ast/decl.hh>
 
 using namespace rift::scanner;
 using namespace rift::reader;
@@ -73,6 +74,12 @@ namespace rift
                 std::unique_ptr<StmtExpr> statement_expression();
                 /// @example print(1 + 2);
                 std::unique_ptr<StmtPrint> statement_print();
+
+                /// @note rules in order of precedence <Decl>
+                /// @example var x = 1;
+                std::unique_ptr<DeclStmt> declaration_statement();
+                /// @example var x = 1;
+                std::unique_ptr<DeclVar> declaration_variable();
 
                 /// @note program
 

@@ -27,7 +27,8 @@ namespace rift
     {
         ///         RIFT Grammar
         ///         ------------
-        /// program        → statement * EOF
+        /// program        → decl * EOF
+        /// decl           → varDecl | statement
         /// statement      → exprStmt | printStmt ";"
         /// printStmt      → "print" "(" expression ");" 
         /// exprStmt       → expression ";"
@@ -38,6 +39,7 @@ namespace rift
         /// factor         → unary ( ( "/" | "*" ) unary )* ";"
         /// unary          → ( "!" | "-" ) unary | primary ";"
         /// primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ";"
+
         __DEFAULT_FORWARD_NONE_VA(
             Binary,
             Grouping,
@@ -46,7 +48,20 @@ namespace rift
             Printer
         )
 
-        __DEFAULT_FORWARD_NONE_VA(StmtPrint, StmtExpr, StmtVar, Program)
+        __DEFAULT_FORWARD_NONE_VA(
+            Stmt, 
+            StmtPrint, 
+            StmtExpr
+        )
+
+        __DEFAULT_FORWARD_NONE_VA(
+            Decl, 
+            DeclStmt, 
+            DeclVar, 
+            Program
+        )
+
+        using vec_prog = std::unique_ptr<std::vector<std::unique_ptr<Decl>>>;
         /// @class Visitor 
         /// @brief implementation of the statements and expressions
         class Visitor
@@ -63,10 +78,14 @@ namespace rift
                     /// @note TokenType::IGNORE is used to ignore statements returning void
                     virtual Token visit_expr_stmt(const StmtExpr& expr) const;
                     virtual Token visit_print_stmt(const StmtPrint& expr) const;
-                    virtual Token visit_var_stmt(const StmtVar& expr) const;
 
+                    /* decl */
+                    virtual Token visit_decl_stmt(const DeclStmt& decl) const;
+                    virtual Token visit_decl_var(const DeclVar& decl) const;
+                    
                     /* prgm */
                     virtual Tokens visit_program(const Program& prgm) const;
+
 
                 /* Printer */
                     /* expr */
@@ -79,6 +98,10 @@ namespace rift
                     // virtual void print_expr_stmt(const StmtExpr& expr) const;
                     // virtual void print_print_stmt(const StmtPrint& expr) const;
                     // virtual void print_var_stmt(const StmtVar& expr) const;
+
+                    /* virtual void print_program(const Program& prgm) const; */
+
+                
 
                 virtual ~Visitor() = default;
         };

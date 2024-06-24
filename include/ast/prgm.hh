@@ -14,47 +14,33 @@
 
 #pragma once
 
-#include <exception>
+#include <memory>
+#include <scanner/tokens.hh>
 #include <ast/grmr.hh>
-#include <ast/expr.hh>
-#include <ast/stmt.hh>
-#include <ast/decl.hh>
-#include <ast/prgm.hh>
-#include <utils/arithmetic.hh>
-#include <utils/literals.hh>
 
-using any = std::any;
-using string = std::string;
-
+using Tokens = std::vector<rift::scanner::Token>;
 namespace rift
 {
     namespace ast
     {
-        class Eval
+        class Stmt;
+
+        class Program : public Accept<Tokens>
         {
             public:
-                Eval();
-                ~Eval() = default;
+                Program(vec_prog statements) : statements(std::move(statements)) {}
+                virtual ~Program() = default;
+                friend class Visitor;
 
-                /// @brief Evaluates the given *expr/stmt/decl*
-                std::vector<string> evaluate(const Program& expr);
+                Tokens accept(const Visitor &visitor) const override { return visitor.visit_program(*this); }
 
-            private:
-                std::unique_ptr<Visitor> visitor;
-        };
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
+                std::string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
 
-        /// @class EvaluatorException
-        /// @brief The base exception for the evaluator
-        class EvaluatorException: public std::exception
-        {
-            public:
-                EvaluatorException(const std::string &message) : message(message) {}
-                ~EvaluatorException() = default;
-
-                const char *what() const noexcept override { return message.c_str(); }
-
-            private:
-                std::string message;
+            protected:
+                vec_prog statements = nullptr;
         };
     }
 }

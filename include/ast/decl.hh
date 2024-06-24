@@ -16,78 +16,47 @@
 
 #include <ast/expr.hh>
 #include <ast/grmr.hh>
-#include <ast/parser.hh>
-#include <utils/macros.hh>
 
 namespace rift
 {
     namespace ast
     {
-
-        // i fucking hate c++ macros...
-        // template <typename T = void>
-        // class StmtVisitor;
-
-        __DEFAULT_FORWARD_NONE_VA(
-            StmtExpr,
-            StmtPrint,
-            StmtVar
-        );
-
-    
-        class Stmt: public rift::ast::Accept<Token>
+        class Decl: public Accept<Token>
         {
             public:
                 virtual Token accept(const Visitor &visitor) const = 0;
-                virtual string accept_printer(const Visitor& visitor) const = 0;
-                virtual ~Stmt() = default;
+                virtual ~Decl() = default;
         };
-        
-        /// @class StmtExpr
-        /// @brief Represents an expression statement
-        /// @details expressions are more common that thought of
-        ///          For example: function calls `something();`
-        /// @code 
-        /// // Code from MDN
-        /// // Using control flow statements
-        ///    function range(start, end) {
-        ///     if (start > end) {
-        ///       [start, end] = [end, start];
-        ///     }
-        /// // Using expression statements
-        /// function range2(start, end) {
-        ///   start > end && ([start, end] = [end, start]);
-        /// }
-        class StmtExpr: public Stmt
+
+        class DeclStmt: public Decl
         {
             public:
-                StmtExpr(std::unique_ptr<Expr> expr) : expr(std::move(expr)) {};
-                ~StmtExpr() = default;
-                std::unique_ptr<Expr> expr;
+                DeclStmt(std::unique_ptr<Stmt> stmt) : stmt(std::move(stmt)) {};
+                Token accept(const Visitor &visitor) const override { return visitor.visit_decl_stmt(*this); }
 
-
-                Token accept(const Visitor &visitor) const override { return visitor.visit_expr_stmt(*this); };
-                
                 #pragma clang diagnostic push
                 #pragma clang diagnostic ignored "-Wunused-parameter"
                 // must uncomment visit_printer in printer.hh
                 string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
                 #pragma clang diagnostic pop
+
+                std::unique_ptr<Stmt> stmt;
         };
 
-        class StmtPrint : public Stmt
+        class DeclVar: public Decl
         {
             public:
-                StmtPrint(std::unique_ptr<Expr>& expr) : expr(std::move(expr)) {};
-                ~StmtPrint() = default;
-                std::unique_ptr<Expr> expr;
+                DeclVar(const Token &identifier, std::unique_ptr<Expr> expr) : identifier(identifier), expr(std::move(expr)) {};
+                Token accept(const Visitor &visitor) const override { return visitor.visit_decl_var(*this); }
 
-                Token accept(const Visitor &visitor) const override { return visitor.visit_print_stmt(*this); };
                 #pragma clang diagnostic push
                 #pragma clang diagnostic ignored "-Wunused-parameter"
                 // must uncomment visit_printer in printer.hh
                 string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
                 #pragma clang diagnostic pop
+
+                const Token& identifier;
+                std::unique_ptr<Expr> expr;
         };
     }
 }
