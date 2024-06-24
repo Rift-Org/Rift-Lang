@@ -89,9 +89,10 @@ namespace rift
                     return false;
                 }
 
-                inline bool match_kw(T expected, std::string kw) {
+                inline bool match_kw(T expected/*, std::string kw*/) {
                     if (peek(expected)) {
-                        for (size_t i=0; i<=kw.size(); i++) advance();
+                        // for (size_t i=0; i<=kw.size(); i++) advance();
+                        advance();
                         return true;
                     }
                     return false;

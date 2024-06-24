@@ -52,8 +52,6 @@ namespace rift
                 error::runTimeError(e.what());
             }
 
-            for (const auto& r : res) 
-                std::cout << r << std::endl;
             return res;
         }
 
@@ -211,7 +209,7 @@ namespace rift
         Token Visitor::visit_print_stmt(const StmtPrint& stmt) const
         {
             Token val = stmt.expr->accept(*this);
-            std::cout << val << std::endl;
+            std::cout << castString(val) << std::endl;
             return val;
         }
 
@@ -225,10 +223,6 @@ namespace rift
         Tokens Visitor::visit_program(const Program& prgm) const
         {
             std::vector<Token> tokens = {};
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Wunused-variable"
-            auto test = prgm.statements.get()->at(0).get();
-            #pragma clang diagnostic pop
             for (auto it=prgm.statements->begin(); it!=prgm.statements->end(); it++) {
                 tokens.push_back((*it)->accept(*this));
             }

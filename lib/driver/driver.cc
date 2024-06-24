@@ -88,7 +88,7 @@ namespace rift
             while(true)
             {
                 std::string input = "";
-                std::cout << "> ";
+                std::cout << "🦊 ＞ ";
                 std::getline(std::cin >> std::ws, input);
                 if (input.empty()) break;
                 run(input);

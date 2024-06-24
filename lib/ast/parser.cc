@@ -164,16 +164,11 @@ namespace rift
 
         std::unique_ptr<StmtPrint> Parser::statement_print()
         {
-            if (match({Token(TokenType::PRINT, "", "", line)})) {
-                consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after print")));
-                auto expr = expression();
-                consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after print")));
-
-                return std::unique_ptr<StmtPrint>(new StmtPrint(expr));
-
-            }
-
-            return nullptr;
+            consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after print")));
+            auto expr = expression();
+            consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after print")));
+            consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after print statement")));
+            return std::unique_ptr<StmtPrint>(new StmtPrint(expr));
         }
 
         #pragma mark - Program Parsing
@@ -183,7 +178,7 @@ namespace rift
             vec_prog statements = std::make_unique<std::vector<std::unique_ptr<Stmt>>>();
 
             while (!atEnd()) {
-                if (match_kw (Token(TokenType::PRINT, "", "", line), "print")) {
+                if (match_kw (Token(TokenType::PRINT, "", "", line))) {
                     statements->push_back(statement_print());
                 } else if (match ({Token(TokenType::EOFF, "", "", line)})) {
                     break;
