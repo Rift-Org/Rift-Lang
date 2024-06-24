@@ -18,6 +18,7 @@
 #include <utils/macros.hh>
 
 using Token = rift::scanner::Token;
+using Tokens = std::vector<Token>;
 using string = std::string;
 
 namespace rift
@@ -45,7 +46,7 @@ namespace rift
             Printer
         )
 
-        __DEFAULT_FORWARD_NONE_VA(StmtPrint, StmtExpr, StmtVar)
+        __DEFAULT_FORWARD_NONE_VA(StmtPrint, StmtExpr, StmtVar, Program)
         /// @class Visitor 
         /// @brief implementation of the statements and expressions
         class Visitor
@@ -59,9 +60,13 @@ namespace rift
                     virtual Token visit_unary(const Unary& expr) const;
 
                     /* stmt */
-                    virtual void visit_expr_stmt(const StmtExpr& expr) const;
-                    virtual void visit_print_stmt(const StmtPrint& expr) const;
-                    virtual void visit_var_stmt(const StmtVar& expr) const;
+                    /// @note TokenType::IGNORE is used to ignore statements returning void
+                    virtual Token visit_expr_stmt(const StmtExpr& expr) const;
+                    virtual Token visit_print_stmt(const StmtPrint& expr) const;
+                    virtual Token visit_var_stmt(const StmtVar& expr) const;
+
+                    /* prgm */
+                    virtual Tokens visit_program(const Program& prgm) const;
 
                 /* Printer */
                     /* expr */

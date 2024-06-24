@@ -28,30 +28,32 @@ namespace rift
             this->visitor = std::unique_ptr<Visitor>(new Visitor());
         }
 
-        std::string Eval::evaluate(const rift::ast::Expr& expr)
+        std::vector<std::string> Eval::evaluate(const Program& expr)
         {
-            std::string res;
+            std::vector<std::string> res;
 
             try {
-                std::cout << this->visitor << std::endl;
-                Token tok = expr.accept(*visitor.get());
-                any val = tok.getLiteral();
-                if (isNumber(tok)) {
-                    res = castNumberString(tok);
-                } else if (isString(tok)) {
-                    res = castString(tok);
-                } else if (val.type() == typeid(bool)) {
-                    res = std::any_cast<bool>(val) ? "true" : "false";
-                } else if (val.type() == typeid(std::nullptr_t)) {
-                    res = "null";
-                } else {
-                    res = "undefined";
+                auto toks = expr.accept(*visitor.get());
+                for (const auto& tok : toks) {
+                    any val = tok.getLiteral();
+                    if (isNumber(tok)) {
+                        res.push_back(castNumberString(tok));
+                    } else if (isString(tok)) {
+                        res.push_back(castString(tok));
+                    } else if (val.type() == typeid(bool)) {
+                        res.push_back(std::any_cast<bool>(val) ? "true" : "false");
+                    } else if (val.type() == typeid(std::nullptr_t)) {
+                        res.push_back("null");
+                    } else {
+                        res.push_back("undefined");
+                    }
                 }
             } catch (const std::runtime_error& e) {
                 error::runTimeError(e.what());
             }
 
-            std::cout << res << std::endl;
+            for (const auto& r : res) 
+                std::cout << r << std::endl;
             return res;
         }
 
@@ -201,20 +203,32 @@ namespace rift
 
         #pragma mark - Stmt Visitors
 
-        void Visitor::visit_expr_stmt(const StmtExpr& stmt) const
+        Token Visitor::visit_expr_stmt(const StmtExpr& stmt) const
         {
-            stmt.expr->accept(*this);
+            return stmt.expr->accept(*this);
         }
 
-        void Visitor::visit_print_stmt(const StmtPrint& stmt) const
+        Token Visitor::visit_print_stmt(const StmtPrint& stmt) const
         {
             Token val = stmt.expr->accept(*this);
             std::cout << val << std::endl;
+            return val;
         }
 
-        void Visitor::visit_var_stmt(const StmtVar &stmt) const
+        Token Visitor::visit_var_stmt(const StmtVar &stmt) const
         {
-            stmt.expr->accept(*this);
+            return stmt.expr->accept(*this);
+        }
+
+        #pragma mark - Program Visitor
+
+        Tokens Visitor::visit_program(const Program& prgm) const
+        {
+            std::vector<Token> tokens = {};
+            for (auto it=prgm.statements->begin(); it!=prgm.statements->end(); it++) {
+                tokens.push_back((*it)->accept(*this));
+            }
+            return tokens;
         }
     }
 }

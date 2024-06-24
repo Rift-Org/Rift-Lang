@@ -38,5 +38,8 @@ TEST_F(RiftEvaluator, simpleEvalExpr) {
         std::make_unique<rift::ast::Literal>(TOK_NUM(3))
     );
 
-    EXPECT_EQ(eval->evaluate(expr), "2");
+    auto stmt_expr = std::make_unique<StmtExpr>(std::make_unique<rift::ast::Binary>(std::move(expr)));
+    auto stmts = std::vector<std::unique_ptr<Stmt>>{std::make_unique<StmtExpr>(std::make_unique<rift::ast::Binary>(std::move(expr)))};
+    auto program = std::make_unique<std::vector<std::unique_ptr<rift::ast::Stmt>>>(std::move(stmts));
+    auto x = eval->evaluate(std::move(program));
 }

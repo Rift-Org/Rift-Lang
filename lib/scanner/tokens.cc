@@ -62,6 +62,7 @@ std::string Token::convertTypeString(TokenType type) {
         case TRUE: return "TRUE";
         case VAR: return "VAR";
         case WHILE: return "WHILE";
+        case IGNORE: return "IGNORE";
         case EOFF: return "EOFF";
     }
 }

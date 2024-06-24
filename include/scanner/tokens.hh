@@ -73,7 +73,8 @@ namespace rift
             TRUE,
             VAR,
             WHILE,
-
+            
+            IGNORE,
             EOFF
         };
 

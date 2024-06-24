@@ -23,7 +23,19 @@ namespace rift
 {
     namespace ast
     {
-        #pragma mark - Grammar Evaluators
+
+        #pragma mark - Public API
+
+        std::unique_ptr<Program> Parser::parse()
+        {
+            try {
+                return program();
+            } catch (const ParserException &e) {
+                return nullptr;
+            }
+        }
+
+        #pragma mark - Expressions Parsing
 
         std::unique_ptr<Expr> Parser::primary()
         {
@@ -132,23 +144,55 @@ namespace rift
             return equality();
         }
 
-        std::unique_ptr<Stmt> Parser::statement()
+        #pragma mark - Statements Parsing
+
+        // std::unique_ptr<Stmt> Parser::statement()
+        // {
+        //     if (match({Token(TokenType::PRINT, "", "", line)})) {
+        //         return statement_print();
+        //     } else {
+        //         return statement_expression();
+        //     }
+        // }
+
+        std::unique_ptr<StmtExpr> Parser::statement_expression()
+        {
+            auto expr = expression();
+            consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after expression")));
+            return std::unique_ptr<StmtExpr>(new StmtExpr(std::move(expr)));
+        }
+
+        std::unique_ptr<StmtPrint> Parser::statement_print()
         {
             if (match({Token(TokenType::PRINT, "", "", line)})) {
                 consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after print")));
                 auto expr = expression();
                 consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after print")));
-                return std::unique_ptr<StmtPrint>(new StmtPrint(Token(TokenType::PRINT, "", "", line)));
+
+                return std::unique_ptr<StmtPrint>(new StmtPrint(std::move(expr)));
+
             }
+
+            return nullptr;
         }
 
-        std::unique_ptr<Expr> Parser::parse()
+        #pragma mark - Program Parsing
+
+        std::unique_ptr<Program> Parser::program()
         {
-            try {
-                return expression();
-            } catch (const ParserException &e) {
-                return nullptr;
+            vec_prog statements;
+
+            while (!atEnd()) {
+                if (match ({Token(TokenType::PRINT, "", "", line)})) {
+                    statements->push_back(statement_print());
+                } else if (match ({Token(TokenType::EOFF, "", "", line)})) {
+                    break;
+                } else {
+                    statements->push_back(statement_expression());
+                }
             }
+
+            return std::unique_ptr<Program>(new Program(std::move(statements)));
         }
 
         # pragma mark - Utilities

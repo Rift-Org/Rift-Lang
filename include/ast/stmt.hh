@@ -34,11 +34,12 @@ namespace rift
             StmtVar
         );
 
-
-        class Stmt: public rift::ast::Accept<void>
+    
+        class Stmt: public rift::ast::Accept<Token>
         {
             public:
-                virtual void accept(const Visitor &visitor) const = 0;
+                virtual Token accept(const Visitor &visitor) const = 0;
+                virtual string accept_printer(const Visitor& visitor) const = 0;
                 virtual ~Stmt() = default;
         };
         
@@ -60,37 +61,69 @@ namespace rift
         class StmtExpr: public Stmt
         {
             public:
-                StmtExpr(Expr *expr) : expr(expr) {};
+                StmtExpr(std::unique_ptr<Expr> expr) : expr(std::move(expr)) {};
                 ~StmtExpr() = default;
                 std::unique_ptr<Expr> expr;
 
-                void accept(const Visitor &visitor) const override { visitor.visit_expr_stmt(*this); };
+
+                Token accept(const Visitor &visitor) const override { return visitor.visit_expr_stmt(*this); };
+                
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
                 // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { "unimplemented"; }
+                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
         };
 
         class StmtPrint : public Stmt
         {
             public:
-                StmtPrint(Expr *expr) : expr(expr) {};
+                StmtPrint(std::unique_ptr<Expr> expr) : expr(std::move(expr)) {};
                 ~StmtPrint() = default;
                 std::unique_ptr<Expr> expr;
 
-                void accept(const Visitor &visitor) const override { visitor.visit_print_stmt(*this); };
+                Token accept(const Visitor &visitor) const override { return visitor.visit_print_stmt(*this); };
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
                 // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { "unimplemented"; }
+                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
         };
 
         class StmtVar : public Stmt
         {
             public:
-                StmtVar(Expr *expr) : expr(expr) {};
+                StmtVar(std::unique_ptr<Expr> expr) : expr(std::move(expr)) {};
                 ~StmtVar() = default;
                 std::unique_ptr<Expr> expr;
 
-                void accept(const Visitor &visitor) const override { visitor.visit_var_stmt(*this); };
+                Token accept(const Visitor &visitor) const override { return visitor.visit_var_stmt(*this); };
+                
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
                 // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { "unimplemented"; }
+                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
+        };
+
+        using vec_prog = std::unique_ptr<std::vector<std::unique_ptr<Stmt>>>;
+        using Tokens = std::vector<Token>;
+        class Program: public Accept<Tokens>
+        {
+        public:
+            Program(vec_prog statements) {
+                this->statements = std::move(statements);
+            }
+            virtual ~Program() = default;
+            friend class Visitor;
+
+            Tokens accept(const Visitor &visitor) const override { return visitor.visit_program(*this); };
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Wunused-parameter"
+            string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+            #pragma clang diagnostic pop
+        protected:
+            vec_prog statements = nullptr;
         };
     }
 }
