@@ -169,7 +169,7 @@ namespace rift
                 auto expr = expression();
                 consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after print")));
 
-                return std::unique_ptr<StmtPrint>(new StmtPrint(std::move(expr)));
+                return std::unique_ptr<StmtPrint>(new StmtPrint(expr));
 
             }
 

@@ -29,17 +29,22 @@ class RiftEvaluator : public ::testing::Test {
 
 TEST_F(RiftEvaluator, simpleEvalExpr) {
     // evaluate -1 + 2
-    rift::ast::Binary expr = rift::ast::Binary(
+    auto expr = std::make_unique<Binary>(rift::ast::Binary(
         std::make_unique<rift::ast::Unary>(
             rift::scanner::Token(TokenType::MINUS,"-", "", 1),
             std::make_unique<rift::ast::Literal>(TOK_NUM(1))
         ),
         rift::scanner::Token(TokenType::PLUS,"+", "", 1),
         std::make_unique<rift::ast::Literal>(TOK_NUM(3))
-    );
+    ));
 
-    auto stmt_expr = std::make_unique<StmtExpr>(std::make_unique<rift::ast::Binary>(std::move(expr)));
-    auto stmts = std::vector<std::unique_ptr<Stmt>>{std::make_unique<StmtExpr>(std::make_unique<rift::ast::Binary>(std::move(expr)))};
-    auto program = std::make_unique<std::vector<std::unique_ptr<rift::ast::Stmt>>>(std::move(stmts));
-    auto x = eval->evaluate(std::move(program));
+    auto stmt_expr = std::make_unique<StmtExpr>(std::move(expr));
+    std::vector<std::unique_ptr<Stmt>> stmts;
+    stmts.emplace_back(std::move(stmt_expr));
+
+    // Create a unique_ptr to a vector of unique_ptr<Stmt>
+    auto program_statements = std::make_unique<std::vector<std::unique_ptr<Stmt>>>(std::move(stmts));
+    auto program = std::make_unique<Program>(std::move(program_statements));
+    auto x = eval->evaluate((*program));
+    EXPECT_EQ(x.at(0), "2");
 }
