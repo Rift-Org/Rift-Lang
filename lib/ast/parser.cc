@@ -180,10 +180,10 @@ namespace rift
 
         std::unique_ptr<Program> Parser::program()
         {
-            vec_prog statements;
+            vec_prog statements = std::make_unique<std::vector<std::unique_ptr<Stmt>>>();
 
             while (!atEnd()) {
-                if (match ({Token(TokenType::PRINT, "", "", line)})) {
+                if (match_kw (Token(TokenType::PRINT, "", "", line), "print")) {
                     statements->push_back(statement_print());
                 } else if (match ({Token(TokenType::EOFF, "", "", line)})) {
                     break;

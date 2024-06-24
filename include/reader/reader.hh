@@ -89,6 +89,14 @@ namespace rift
                     return false;
                 }
 
+                inline bool match_kw(T expected, std::string kw) {
+                    if (peek(expected)) {
+                        for (size_t i=0; i<=kw.size(); i++) advance();
+                        return true;
+                    }
+                    return false;
+                }
+
                 /// @brief peeks a word (useful for keywords/identifiers/statements) 
                 inline bool peek_word(std::vector<T> expected, int n) {
                     for (int i=0; i<n; i++) {

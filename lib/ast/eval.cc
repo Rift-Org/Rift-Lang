@@ -225,6 +225,10 @@ namespace rift
         Tokens Visitor::visit_program(const Program& prgm) const
         {
             std::vector<Token> tokens = {};
+            #pragma clang diagnostic push
+            #pragma clang diagnostic ignored "-Wunused-variable"
+            auto test = prgm.statements.get()->at(0).get();
+            #pragma clang diagnostic pop
             for (auto it=prgm.statements->begin(); it!=prgm.statements->end(); it++) {
                 tokens.push_back((*it)->accept(*this));
             }
