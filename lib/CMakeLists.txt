@@ -23,6 +23,7 @@ set( SOURCES
     utils/literals.cc
 
     # AST
+    ast/env.cc
     ast/parser.cc
     ast/printer.cc
     ast/eval.cc
@@ -36,7 +37,6 @@ set( SOURCES
     # Main
     main.cc
 )
-
 
 add_executable(
     riftlang 

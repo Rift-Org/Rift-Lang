@@ -19,8 +19,8 @@ endif()
 
 project(RiftLang)
 
-# C++17 for now might switch to 20
-set(CMAKE_CXX_STANDARD 17)
+# C++20 required
+set(CMAKE_CXX_STANDARD 20)
 
 # Set Debug Mode
 set(CMAKE_BUILD_TYPE Debug)
@@ -43,3 +43,8 @@ add_subdirectory(tests)
 add_subdirectory(external/googletest)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
+
+# Google {Abseil}
+add_subdirectory(external/abseil)
+include_directories(${CMAKE_SOURCE_DIR}/external/abseil/absl)
+# target_link_libraries(riftlang absl::base absl::synchronization absl::strings)
