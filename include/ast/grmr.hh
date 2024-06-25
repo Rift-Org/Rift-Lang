@@ -33,6 +33,7 @@ namespace rift
         /// printStmt      → "print" "(" expression ");" 
         /// exprStmt       → expression ";"
         /// expression     → equality ";"
+        /// assignment     → IDENTIFIER "=" assignment | equality
         /// equality       → comparison ( ( "!=" | "==" ) comparison )* ";"
         /// comparison     → term ( ( ">" | ">=" | "<" | "<=" ) term )* ";"
         /// term           → factor ( ( "-" | "+" ) factor )* ";"
@@ -41,6 +42,7 @@ namespace rift
         /// primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ";"
 
         __DEFAULT_FORWARD_NONE_VA(
+            Assign,
             Binary,
             Grouping,
             Literal,
@@ -69,6 +71,7 @@ namespace rift
             public:
                 /* Evaluator */
                     /* expr */
+                    virtual Token visit_assign(const Assign& expr) const;
                     virtual Token visit_binary(const Binary& expr) const;
                     virtual Token visit_grouping(const Grouping& expr) const;
                     virtual Token visit_literal(const Literal& expr) const;

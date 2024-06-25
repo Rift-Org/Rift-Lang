@@ -13,8 +13,11 @@
 /////////////////////////////////////////////////////////////
 
 #pragma once
-#include <absl/container/flat_hash_map.h>
+// #include "../../external/abseil/absl/container/flat_hash_map.h"
+// #include <absl/container/flat_hash_map.h>
 #include <scanner/tokens.hh>
+#include <map>
+#include <iostream>
 
 using Token = rift::scanner::Token;
 using str_t = std::string;
@@ -30,10 +33,11 @@ namespace rift
                 Environment() = default;
                 ~Environment() = default;
 
-                Token getEnv(const strv_t& name) const;
-                void setEnv(const strv_t& name, const Token& value);
+                Token getEnv(const str_t& name) const;
+                void setEnv(const str_t& name, const Token& value);
             protected:
-                absl::flat_hash_map<str_t, rift::scanner::Token> values;
+                // absl::flat_hash_map<str_t, rift::scanner::Token> values;
+                std::unordered_map<str_t, rift::scanner::Token> values = {};
         };
     }
 }

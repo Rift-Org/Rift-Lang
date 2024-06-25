@@ -58,6 +58,20 @@ namespace rift
 
         #pragma mark - Concrete Expressions
 
+        class Assign : public Expr
+        {
+            public:
+                Assign(Token name, std::unique_ptr<Expr> value): name(name), value(std::move(value)) {};
+                Token name;
+                std::unique_ptr<Expr> value;
+
+                inline Token accept(const Visitor& visitor) const override { return visitor.visit_assign(*this); }
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
+                inline string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
+        };
+
         /// @class Binary
         /// @param left The left operand
         /// @param op The operator

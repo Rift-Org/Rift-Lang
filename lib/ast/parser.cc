@@ -52,6 +52,8 @@ namespace rift
                 return std::unique_ptr<Literal>(new Literal(peekPrev(1)));
             if (match({Token(TokenType::STRINGLITERAL, "", "", line)}))
                 return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
+            if (match({Token(TokenType::IDENTIFIER, "", "", line)}))
+                return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
 
             if (match({Token(TokenType::LEFT_PAREN, "(", "", line)})) { 
                 auto expr = expression();
@@ -141,9 +143,22 @@ namespace rift
             return expr;
         };
 
+        std::unique_ptr<Expr> Parser::assignment()
+        {
+            if (match({Token(TokenType::IDENTIFIER, "", "", line)})) {
+                auto idt = peekPrev();
+                consume(Token(TokenType::EQUAL, "=", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '=' after variable name")));
+                auto expr = assignment();
+                if (expr == nullptr) rift::error::report(line, "assignment", "Expected expression after variable name", peekPrev(), ParserException("Expected expression after variable name"));
+                return std::unique_ptr<Assign>(new Assign(idt, std::move(expr)));
+            }
+
+            return equality();
+        }
+
         std::unique_ptr<Expr> Parser::expression()
         {
-            return equality();
+            return assignment();
         }
 
         #pragma mark - Statements Parsing
@@ -180,7 +195,11 @@ namespace rift
 
         std::unique_ptr<DeclVar> Parser::declaration_variable()
         {
-            consume(Token(TokenType::IDENTIFIER, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected variable name")));
+            // auto idt = consume(Token(TokenType::IDENTIFIER, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected variable name")));
+            // consume(Token(TokenType::EQUAL, "=", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '=' after variable name")));
+            // consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable declaration")));
+            // auto val = consume(Token(TokenType::NUMERICLITERAL, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected number after variable declaration")));
+            // return std::make_unique<DeclVar>(idt);
             return nullptr;
         }
 

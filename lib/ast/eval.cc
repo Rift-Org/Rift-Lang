@@ -57,6 +57,14 @@ namespace rift
 
         #pragma mark - Eval Visitor
 
+        Token Visitor::visit_assign(const Assign& expr) const
+        {
+            Token val = expr.value->accept(*this);
+            auto name = castString(expr.name);
+            expr.env.assign(name, val);
+            return val;
+        }
+
         Token Visitor::visit_binary(const Binary& expr) const
         {
             Token left = expr.left.get()->accept(*this);
@@ -235,12 +243,11 @@ namespace rift
 
         Token Visitor::visit_decl_var(const DeclVar& decl) const
         {
-            #pragma clang diagnostic push
-            #pragma clang diagnostic ignored "-Wunused-parameter"
-            #pragma clang diagnostic ignored "-Wunused-value"
-            decl;
-            #pragma clang diagnostic pop
-            return Token();
+            auto name = castString(decl.identifier);
+            auto tok = decl.env.getEnv(name);
+            if(tok == Token())
+                rift::error::runTimeError("🛑 Undefined variable '" + name + "'");
+            return tok;
         }
 
     }

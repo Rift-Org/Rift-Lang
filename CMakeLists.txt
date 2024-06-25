@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 # Built using Clang 🐐
 set(CMAKE_CXX_COMPILER_ID "Clang")
@@ -19,7 +19,7 @@ endif()
 
 project(RiftLang)
 
-# C++20 required
+# C++17 required
 set(CMAKE_CXX_STANDARD 20)
 
 # Set Debug Mode
@@ -46,5 +46,5 @@ include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
 
 # Google {Abseil}
 add_subdirectory(external/abseil)
-include_directories(${CMAKE_SOURCE_DIR}/external/abseil/absl)
+# include_directories(${abseil_SOURCE_DIR})
 # target_link_libraries(riftlang absl::base absl::synchronization absl::strings)

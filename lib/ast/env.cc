@@ -19,15 +19,15 @@ namespace rift
 {
     namespace ast
     {
-        Token Environment::getEnv(const strv_t& name) const
+        Token Environment::getEnv(const str_t& name) const
         {
             if (!values.contains(name)) {
-                rift::error::runTimeError("🛑 Undefined variable '" + std::string(name) + "'");
+                return Token();
             }
             return values.at("env");
         }
 
-        void Environment::setEnv(const strv_t& name, const Token& value)
+        void Environment::setEnv(const str_t& name, const Token& value)
         {
             if (values.contains(name)) {
                 std::cout << "🟡 [line " << value.line << "] Warn: Variable '" << name << "' already defined." << std::endl;

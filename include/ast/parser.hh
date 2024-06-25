@@ -55,6 +55,8 @@ namespace rift
 
                 /// @example 1 + 2 * 3
                 std::unique_ptr<Expr> expression();
+                /// @example identifier = 1 + 3
+                std::unique_ptr<Expr> assignment();
                 /// @example 1 == 1, 1 != 2
                 std::unique_ptr<Expr> equality();
                 /// @example 1 > 2, 1 <= 2

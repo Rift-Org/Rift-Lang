@@ -16,6 +16,7 @@
 
 #include <ast/expr.hh>
 #include <ast/grmr.hh>
+#include <ast/env.hh>
 
 namespace rift
 {
@@ -26,6 +27,11 @@ namespace rift
             public:
                 virtual Token accept(const Visitor &visitor) const = 0;
                 virtual ~Decl() = default;
+                friend class Visitor;
+                friend class DeclStmt;
+                friend class DeclVar;
+            protected:
+                rift::ast::Environment env = {};
         };
 
         class DeclStmt: public Decl
@@ -46,7 +52,7 @@ namespace rift
         class DeclVar: public Decl
         {
             public:
-                DeclVar(const Token &identifier, std::unique_ptr<Expr> expr) : identifier(identifier), expr(std::move(expr)) {};
+                DeclVar(const Token &identifier): identifier(identifier) {};
                 Token accept(const Visitor &visitor) const override { return visitor.visit_decl_var(*this); }
 
                 #pragma clang diagnostic push
@@ -56,7 +62,6 @@ namespace rift
                 #pragma clang diagnostic pop
 
                 const Token& identifier;
-                std::unique_ptr<Expr> expr;
         };
     }
 }

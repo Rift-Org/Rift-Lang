@@ -66,7 +66,7 @@ namespace rift
             #pragma mark - Helper Functions (Inline)
 
             inline bool isDigit(char c) { return c>='0' && c<='9'; }
-            inline bool isAlpha(char c) { return (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_'; }
+            inline bool isAlpha(char c) { return (c!=' ') && ( (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_'); }
             inline bool isAlphaNumeric(char c) { return isAlpha(c) || isDigit(c); }
 
             #pragma mark - Token Scanners
