@@ -30,6 +30,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # sets targets
 include(Options.mk)
+include(FindReadline.mk)
 
 # "#includes"
 include_directories(${CMAKE_SOURCE_DIR}/include)
@@ -50,3 +51,10 @@ include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
 # find_package(absl REQUIRED)
 # include_directories(${abseil_SOURCE_DIR})
 # target_link_libraries(riftlang absl::base absl::synchronization absl::strings)
+
+#readline library for interpreter
+# find_package(Readline REQUIRED)
+# if READLINE_FOUND is false then fail
+if(NOT READLINE_FOUND)
+    message(FATAL_ERROR "Readline not found")
+endif()

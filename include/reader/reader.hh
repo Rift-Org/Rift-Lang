@@ -50,7 +50,9 @@ namespace rift
                 // inline typename std::enable_if<!std::is_same<T, char>::value, T>::type advance() { return (!atEnd()) ? source->at(curr++) : nullptr; }
 
                 /// @brief Peeks at the current character 
-                inline bool peek(T expected) { return !atEnd() && source->at(curr) == expected; };
+                inline bool peek(T expected) {
+                    return !atEnd() && source->at(curr) == expected; 
+                };
                 /// @brief Peeks at the current character with an offset
                 inline bool peek_off(T expected, int offset) { return curr+offset<source->size() && source->at(curr+offset) == expected; };
                 /// @brief Peeks at the current character

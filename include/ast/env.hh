@@ -36,6 +36,7 @@ namespace rift
                 }
                 Token getEnv(const str_t& name) const;
                 void setEnv(const str_t& name, const Token& value);
+                void printState();
             protected:
                 // absl::flat_hash_map<str_t, rift::scanner::Token> values;
                 std::unordered_map<str_t, rift::scanner::Token> values = {};

@@ -46,7 +46,7 @@ namespace rift
             keywords["super"] = Type::SUPER;
             keywords["this"] = Type::THIS;
             keywords["true"] = Type::TRUE;
-            keywords["var"] = Type::VAR;
+            keywords["let"] = Type::VAR;
             keywords["while"] = Type::WHILE;
         }
 
@@ -94,7 +94,7 @@ namespace rift
         }
         
         void Scanner::identifier() {
-            while (isAlphaNumeric(advance()));
+            while (isIdentifier(peek())) advance();
             std::string text = std::string(source->begin()+start, source->begin()+curr);
             text.erase(std::remove_if(text.begin(), text.end(), ::isspace), text.end());
             if (keywords.find(text)!= keywords.end()) {

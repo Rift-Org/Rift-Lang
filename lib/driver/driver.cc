@@ -27,6 +27,9 @@
 #include <ast/eval.hh>
 #include <string>
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
 using namespace rift::error;
 using namespace rift::scanner;
 using namespace rift::ast;
@@ -51,6 +54,7 @@ namespace rift
 
             Eval riftEvaluator;
             riftEvaluator.evaluate(*statements);
+            rift::ast::Environment::getInstance().printState();
         }
 
         void Driver::runFile()
@@ -85,14 +89,17 @@ namespace rift
 
         void Driver::runPrompt()
         {
-            while(true)
-            {
-                std::string input = "";
-                std::cout << "🦊 ＞ ";
-                std::getline(std::cin >> std::ws, input);
-                if (input.empty()) break;
+            rl_bind_key('\t', rl_complete);
+            while(true) {
+                char* input = readline("🦊 ＞ ");
+                if (input == nullptr) break;
+                add_history(input);
+
                 run(input);
-                errorOccured = false; // reset error
+                
+                // reset
+                errorOccured = false;
+                free(input);
             }
         }
 

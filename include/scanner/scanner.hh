@@ -67,7 +67,8 @@ namespace rift
 
             inline bool isDigit(char c) { return c>='0' && c<='9'; }
             inline bool isAlpha(char c) { return (c!=' ') && ( (c>='a' && c<='z') || (c>='A' && c<='Z') || c=='_'); }
-            inline bool isAlphaNumeric(char c) { return isAlpha(c) || isDigit(c); }
+            inline bool isAlphaNumeric(char c) { return std::isalnum(c); }
+            inline bool isIdentifier(char c) { return std::isalnum(c) || c == '_'; }
 
             #pragma mark - Token Scanners
 

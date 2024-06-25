@@ -24,9 +24,6 @@ namespace rift
             // if(tok == Token())
             //     rift::error::runTimeError("🛑 Undefined variable '" + name + "'");
             // }
-            for (const auto& [key, value] : values) {
-                std::cout << key << " => " << value.to_string() << std::endl;
-            }
             if (!values.contains(name)) {
                 return Token();
             }
@@ -36,6 +33,13 @@ namespace rift
         void Environment::setEnv(const str_t& name, const Token& value)
         {
             values[name] = value;
+        }
+
+        void Environment::printState()
+        {
+            for (const auto& [key, value] : values) {
+                std::cout << key << " => " << value.to_string() << std::endl;
+            }
         }
     }
 }
