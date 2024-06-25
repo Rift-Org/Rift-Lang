@@ -16,6 +16,7 @@
 #include <ast/eval.hh>
 #include <error/error.hh>
 #include <utils/macros.hh>
+#include <ast/env.hh>
 
 namespace rift
 {
@@ -59,10 +60,10 @@ namespace rift
 
         Token Visitor::visit_assign(const Assign& expr) const
         {
-            Token val = expr.value->accept(*this);
             auto name = castString(expr.name);
-            expr.env.assign(name, val);
-            return val;
+            auto tok = rift::ast::Environment::getInstance().getEnv(name);
+            rift::ast::Environment::getInstance().setEnv(name, expr.value->accept(*this));
+            return tok;
         }
 
         Token Visitor::visit_binary(const Binary& expr) const
@@ -243,12 +244,8 @@ namespace rift
 
         Token Visitor::visit_decl_var(const DeclVar& decl) const
         {
-            auto name = castString(decl.identifier);
-            auto tok = decl.env.getEnv(name);
-            if(tok == Token())
-                rift::error::runTimeError("🛑 Undefined variable '" + name + "'");
-            return tok;
+            // check performed in parser, undefined variables are CT errors
+            return decl.expr->accept(*this);
         }
-
     }
 }

@@ -45,6 +45,8 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
 
 # Google {Abseil}
-add_subdirectory(external/abseil)
+# add_compile_definitions(ABSL_USE_GOOGLE_DEFAULT_NAMESPACE)
+# add_subdirectory(external/abseil)
+# find_package(absl REQUIRED)
 # include_directories(${abseil_SOURCE_DIR})
 # target_link_libraries(riftlang absl::base absl::synchronization absl::strings)

@@ -16,7 +16,7 @@
 // #include "../../external/abseil/absl/container/flat_hash_map.h"
 // #include <absl/container/flat_hash_map.h>
 #include <scanner/tokens.hh>
-#include <map>
+#include <unordered_map>
 #include <iostream>
 
 using Token = rift::scanner::Token;
@@ -30,14 +30,21 @@ namespace rift
         class Environment
         {
             public:
-                Environment() = default;
-                ~Environment() = default;
-
+                static Environment& getInstance() {
+                    static Environment instance;
+                    return instance;
+                }
                 Token getEnv(const str_t& name) const;
                 void setEnv(const str_t& name, const Token& value);
             protected:
                 // absl::flat_hash_map<str_t, rift::scanner::Token> values;
                 std::unordered_map<str_t, rift::scanner::Token> values = {};
+                Environment(Environment &other) = delete;
+                Environment &operator=(const Environment &other) = delete;
+            
+            private:
+                Environment() = default;
+                ~Environment() = default;
         };
     }
 }

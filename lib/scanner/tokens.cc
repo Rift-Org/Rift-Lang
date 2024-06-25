@@ -160,7 +160,10 @@ std::any Token::getLiteral() const
 {
     if (type == STRINGLITERAL) {
         return std::any{std::string(lexeme)};
+    } else if (type == IDENTIFIER) {
+        return std::any{std::string(lexeme)};
     }
+
     if (isInteger(lexeme.c_str()))
         return std::any{std::stoi(lexeme.c_str())};
     if (isUnsignedInteger(lexeme.c_str()))

@@ -30,8 +30,6 @@ namespace rift
                 friend class Visitor;
                 friend class DeclStmt;
                 friend class DeclVar;
-            protected:
-                rift::ast::Environment env = {};
         };
 
         class DeclStmt: public Decl
@@ -52,7 +50,7 @@ namespace rift
         class DeclVar: public Decl
         {
             public:
-                DeclVar(const Token &identifier): identifier(identifier) {};
+                DeclVar(const Token &identifier, std::unique_ptr<Expr> expr): identifier(identifier), expr(std::move(expr)) {};
                 Token accept(const Visitor &visitor) const override { return visitor.visit_decl_var(*this); }
 
                 #pragma clang diagnostic push
@@ -62,6 +60,7 @@ namespace rift
                 #pragma clang diagnostic pop
 
                 const Token& identifier;
+                std::unique_ptr<Expr> expr;
         };
     }
 }

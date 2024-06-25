@@ -43,11 +43,10 @@ add_executable(
     ${SOURCES}
 )
 
-find_package(absl REQUIRED)
 target_compile_options(riftlang PRIVATE -Wno-gcc-compat)
 target_compile_definitions(riftlang PRIVATE ABSL_USES_STD_ANY=1)
 
-target_link_libraries(riftlang absl::base absl::strings absl::hash absl::algorithm absl::memory absl::flat_hash_map absl::container_common absl::container_memory)
+# target_link_libraries(riftlang absl::base absl::strings absl::hash absl::algorithm absl::memory absl::flat_hash_map absl::container_common absl::container_memory)
 
 add_library(riftlib STATIC ${SOURCES})
 

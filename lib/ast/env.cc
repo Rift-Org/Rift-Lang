@@ -21,17 +21,20 @@ namespace rift
     {
         Token Environment::getEnv(const str_t& name) const
         {
+            // if(tok == Token())
+            //     rift::error::runTimeError("🛑 Undefined variable '" + name + "'");
+            // }
+            for (const auto& [key, value] : values) {
+                std::cout << key << " => " << value.to_string() << std::endl;
+            }
             if (!values.contains(name)) {
                 return Token();
             }
-            return values.at("env");
+            return values.at(name);
         }
 
         void Environment::setEnv(const str_t& name, const Token& value)
         {
-            if (values.contains(name)) {
-                std::cout << "🟡 [line " << value.line << "] Warn: Variable '" << name << "' already defined." << std::endl;
-            }
             values[name] = value;
         }
     }

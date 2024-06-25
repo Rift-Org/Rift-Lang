@@ -96,6 +96,7 @@ namespace rift
         void Scanner::identifier() {
             while (isAlphaNumeric(advance()));
             std::string text = std::string(source->begin()+start, source->begin()+curr);
+            text.erase(std::remove_if(text.begin(), text.end(), ::isspace), text.end());
             if (keywords.find(text)!= keywords.end()) {
                 addToken(keywords.at(text));
             } else {

@@ -36,6 +36,7 @@ namespace rift
         {
             std::cout << "⛔️ Runtime Error: " << msg << std::endl;
             runtimeErrorOccured = true;
+            exit(1);
         }
     }
 }

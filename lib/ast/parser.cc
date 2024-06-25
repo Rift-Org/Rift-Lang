@@ -17,6 +17,8 @@
 #include <error/error.hh>
 #include <memory>
 #include <ast/prgm.hh>
+#include <ast/env.hh>
+#include <utils/literals.hh>
 
 using namespace rift::scanner;
 
@@ -52,8 +54,14 @@ namespace rift
                 return std::unique_ptr<Literal>(new Literal(peekPrev(1)));
             if (match({Token(TokenType::STRINGLITERAL, "", "", line)}))
                 return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
-            if (match({Token(TokenType::IDENTIFIER, "", "", line)}))
+            if (match({Token(TokenType::IDENTIFIER, "", "", line)})) {
+                /// @note rhs identifier undeclared
+                auto idt = peekPrev(1);
+                if (rift::ast::Environment::getInstance().getEnv(castString(idt)) == Token()) {
+                    rift::error::report(line, "primary", "🛑 Undefined variable '" + castString(idt) + "' at line: " + castNumberString(idt.line), idt, ParserException("Undefined variable '" + castString(idt) + "'"));
+                }
                 return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
+            }
 
             if (match({Token(TokenType::LEFT_PAREN, "(", "", line)})) { 
                 auto expr = expression();
@@ -150,6 +158,10 @@ namespace rift
                 consume(Token(TokenType::EQUAL, "=", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '=' after variable name")));
                 auto expr = assignment();
                 if (expr == nullptr) rift::error::report(line, "assignment", "Expected expression after variable name", peekPrev(), ParserException("Expected expression after variable name"));
+
+                // assignemnt operator expects lhs to be already declared
+                if (rift::ast::Environment::getInstance().getEnv(castString(idt)) == Token())
+                    rift::error::report(line, "assignment", "🛑 Undefined variable '" + castString(idt) + "' at line: " + castNumberString(idt.line), idt, ParserException("Undefined variable '" + castString(idt) + "'"));
                 return std::unique_ptr<Assign>(new Assign(idt, std::move(expr)));
             }
 
@@ -195,12 +207,17 @@ namespace rift
 
         std::unique_ptr<DeclVar> Parser::declaration_variable()
         {
-            // auto idt = consume(Token(TokenType::IDENTIFIER, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected variable name")));
-            // consume(Token(TokenType::EQUAL, "=", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '=' after variable name")));
-            // consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable declaration")));
-            // auto val = consume(Token(TokenType::NUMERICLITERAL, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected number after variable declaration")));
-            // return std::make_unique<DeclVar>(idt);
-            return nullptr;
+            // make sure there is an identifier
+            auto idt = consume(Token(TokenType::IDENTIFIER, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected variable name")));
+            prevance();
+            // make sure the identifier is not already declared
+            if (rift::ast::Environment::getInstance().getEnv(castString(idt)) != Token())
+                rift::error::report(line, "declaration_variable", "🛑 Variable '" + castString(idt) + "' already declared at line: " + castNumberString(idt.line), idt, ParserException("Variable '" + castString(idt) + "' already declared"));
+            rift::ast::Environment::getInstance().setEnv(castString(idt), Token(TokenType::NIL, "nil", "", line));
+
+            auto expr = assignment();
+            consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable assignment")));
+            return std::make_unique<DeclVar>(idt, std::move(expr));
         }
 
         #pragma mark - Program Parsing
