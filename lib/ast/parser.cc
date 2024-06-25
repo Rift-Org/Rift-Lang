@@ -154,20 +154,22 @@ namespace rift
 
         std::unique_ptr<Expr> Parser::assignment()
         {
-            if (match({Token(TokenType::IDENTIFIER, "", "", line)})) {
-                if (peek(Token(TokenType::SEMICOLON, ";", "", line))) {
-                    prevance();
-                    return equality();
-                }
-                auto idt = peekPrev();
-                consume(Token(TokenType::EQUAL, "=", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '=' after variable name")));
-                auto expr = assignment();
-                if (expr == nullptr) rift::error::report(line, "assignment", "Expected expression after variable name", peekPrev(), ParserException("Expected expression after variable name"));
+            if(peekNext() == Token(TokenType::EQUAL, "=", "", line)) {
+                if (match({Token(TokenType::IDENTIFIER, "", "", line)})) {
+                    if (peek(Token(TokenType::SEMICOLON, ";", "", line))) {
+                        prevance();
+                        return equality();
+                    }
+                    auto idt = peekPrev();
+                    consume(Token(TokenType::EQUAL, "=", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '=' after variable name")));
+                    auto expr = assignment();
+                    if (expr == nullptr) rift::error::report(line, "assignment", "Expected expression after variable name", peekPrev(), ParserException("Expected expression after variable name"));
 
-                // assignemnt operator expects lhs to be already declared
-                if (rift::ast::Environment::getInstance().getEnv(castString(idt)) == Token())
-                    rift::error::report(line, "assignment", "🛑 Undefined variable '" + castString(idt) + "' at line: " + castNumberString(idt.line), idt, ParserException("Undefined variable '" + castString(idt) + "'"));
-                return std::unique_ptr<Assign>(new Assign(idt, std::move(expr)));
+                    // assignemnt operator expects lhs to be already declared
+                    if (rift::ast::Environment::getInstance().getEnv(castString(idt)) == Token())
+                        rift::error::report(line, "assignment", "🛑 Undefined variable '" + castString(idt) + "' at line: " + castNumberString(idt.line), idt, ParserException("Undefined variable '" + castString(idt) + "'"));
+                    return std::unique_ptr<Assign>(new Assign(idt, std::move(expr)));
+                }
             }
 
             return equality();

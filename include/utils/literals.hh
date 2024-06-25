@@ -39,7 +39,9 @@ namespace rift
     /// @brief casts token to a number
     extern any castNumber(const Token& tok);
     /// @brief casts token to a number then to a string for printing
-    extern std::string castNumberString(const any& val);
+    extern std::string castNumberString(const any& val, bool err = true);
     /// @brief casts token to a string
-    extern std::string castString(const Token& tok);
+    extern std::string castString(const Token& tok, bool err = true);
+    /// @brief casts token to a string for printing
+    extern std::string castAnyString(const Token& token);
 }

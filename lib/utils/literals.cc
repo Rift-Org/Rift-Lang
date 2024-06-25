@@ -81,7 +81,7 @@ namespace rift
         return "";
     }
 
-    std::string castNumberString(const any& val) {
+    std::string castNumberString(const any& val, bool err) {
         if (val.type() == typeid(double)) {
             return std::to_string(std::any_cast<double>(val));
         } else if (val.type() == typeid(float)) {
@@ -105,12 +105,12 @@ namespace rift
         } else if (val.type() == typeid(Token)) {
             return castNumberString(std::any_cast<Token>(val).getLiteral());
         }
-
-        rift::error::runTimeError("Expected a number or token");
+        if (err)
+            rift::error::runTimeError("Expected a number or token");
         return "";
     }
 
-    std::string castString(const Token& tok) {
+    std::string castString(const Token& tok, bool err) {
         any val = tok.getLiteral();
         if (val.type() == typeid(std::string)) {
             return std::any_cast<std::string>(val);
@@ -126,8 +126,21 @@ namespace rift
             return std::string(1, std::any_cast<signed char>(val));
         }
         
-        rift::error::runTimeError("Expected a string");
+        if (err)
+            rift::error::runTimeError("Expected a string");
         return "";
+    }
+
+    std::string castAnyString(const Token& tok)
+    {
+        std::string str = castNumberString(tok.getLiteral(), false);
+        if (str.empty()) {
+            str = castString(tok, false);
+            if (str.empty()) {
+                rift::error::runTimeError("Expected a string or number");
+            }
+        }
+        return str;
     }
 }
 

@@ -218,7 +218,7 @@ namespace rift
         Token Visitor::visit_print_stmt(const StmtPrint& stmt) const
         {
             Token val = stmt.expr->accept(*this);
-            std::string res = castString(val);
+            std::string res = castAnyString(val);
             if (res.at(0) == '"' && res.at(res.size()-1) == '"') 
                 res = res.substr(1, res.size()-2);
             std::cout << res << std::endl;
