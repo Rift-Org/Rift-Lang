@@ -62,8 +62,12 @@ namespace rift
         __DEFAULT_FORWARD_NONE_VA(
             Decl, 
             DeclStmt, 
-            DeclVar, 
-            Program
+            DeclVar
+        )
+
+        __DEFAULT_FORWARD_NONE_VA(
+            Program,
+            Block
         )
 
         using vec_prog = std::unique_ptr<std::vector<std::unique_ptr<Decl>>>;

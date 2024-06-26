@@ -83,6 +83,7 @@
         "regex": "cpp",
         "scoped_allocator": "cpp",
         "typeindex": "cpp",
-        "__tuple": "cpp"
+        "__tuple": "cpp",
+        "*.inc": "cpp"
     }
 }

@@ -60,6 +60,52 @@ namespace rift
 
         #pragma mark - Eval Visitor
 
+        Token Visitor::visit_literal(const Literal& expr) const
+        {
+            Token val = expr.value;
+            any literal;
+
+            if (val.type == TokenType::IDENTIFIER) {
+                Token res = env::getInstance().getEnv(castString(val));
+                if (res.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(val) + "'");
+                literal = res.getLiteral();
+            } else {
+                literal = val.getLiteral();
+            }
+
+            if (literal.type() == typeid(std::string)) 
+                return Token(TokenType::STRINGLITERAL, std::any_cast<std::string>(literal), 0, expr.value.line);
+
+            /* Numeric Literals */
+            else if (literal.type() == typeid(double))
+                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<double>(literal)), std::any_cast<double>(literal), expr.value.line);
+            else if (literal.type() == typeid(int))
+                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<int>(literal)), std::any_cast<int>(literal), expr.value.line);
+            else if (literal.type() == typeid(unsigned))
+                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<unsigned>(literal)), std::any_cast<unsigned>(literal), expr.value.line);
+            else if (literal.type() == typeid(short))
+                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<short>(literal)), std::any_cast<short>(literal), expr.value.line);
+            else if (literal.type() == typeid(unsigned long))
+                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<unsigned long>(literal)), std::any_cast<unsigned long>(literal), expr.value.line);
+            else if (literal.type() == typeid(unsigned short))
+                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<unsigned short>(literal)), std::any_cast<unsigned short>(literal), expr.value.line);
+            else if (literal.type() == typeid(unsigned long long))
+                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<unsigned long long>(literal)), std::any_cast<unsigned long long>(literal), expr.value.line);
+            else if (literal.type() == typeid(long long))
+                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<long long>(literal)), std::any_cast<long long>(literal), expr.value.line);
+            
+            /* Other Literals */
+            else if (literal.type() == typeid(std::nullptr_t))
+                return Token(TokenType::NIL, "null", nullptr, expr.value.line);
+            else if (literal.type() == typeid(bool))
+                return Token(std::any_cast<bool>(literal)?TokenType::TRUE:TokenType::FALSE, std::to_string(std::any_cast<bool>(literal)), std::any_cast<bool>(literal), expr.value.line);
+            else if (literal.type() == typeid(std::nullptr_t))
+                return Token(TokenType::NIL, "null", nullptr, expr.value.line);
+            else
+                rift::error::runTimeError("Unknown literal type");
+            return Token();
+        }
+
         Token Visitor::visit_assign(const Assign& expr) const
         {
             auto name = castString(expr.name);
@@ -71,6 +117,19 @@ namespace rift
         {
             Token left = expr.left.get()->accept(*this);
             Token right = expr.right.get()->accept(*this);
+
+            /* resolve identifiers */
+            if (left.type == TokenType::IDENTIFIER) {
+                auto tmp = Token(left);
+                left = rift::ast::Environment::getInstance().getEnv(castString(left));
+                if (left.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(tmp) + "'");
+            }
+            if (right.type == TokenType::IDENTIFIER) {
+                auto tmp = Token(right);
+                right = rift::ast::Environment::getInstance().getEnv(castString(right));
+                if (right.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(tmp) + "'");
+            }
+
             string l_s, r_s;
             any resAny;
             bool resBool;
@@ -141,55 +200,14 @@ namespace rift
             return expr.expr.get()->accept(*this);
         }
 
-        Token Visitor::visit_literal(const Literal& expr) const
-        {
-            Token val = expr.value;
-            any literal;
-
-            if (val.type == TokenType::IDENTIFIER) {
-                Token res = env::getInstance().getEnv(castString(val));
-                if (res.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(val) + "'");
-                literal = res.getLiteral();
-            } else {
-                literal = val.getLiteral();
-            }
-
-            if (literal.type() == typeid(std::string)) 
-                return Token(TokenType::STRINGLITERAL, std::any_cast<std::string>(literal), 0, expr.value.line);
-
-            /* Numeric Literals */
-            else if (literal.type() == typeid(double))
-                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<double>(literal)), std::any_cast<double>(literal), expr.value.line);
-            else if (literal.type() == typeid(int))
-                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<int>(literal)), std::any_cast<int>(literal), expr.value.line);
-            else if (literal.type() == typeid(unsigned))
-                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<unsigned>(literal)), std::any_cast<unsigned>(literal), expr.value.line);
-            else if (literal.type() == typeid(short))
-                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<short>(literal)), std::any_cast<short>(literal), expr.value.line);
-            else if (literal.type() == typeid(unsigned long))
-                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<unsigned long>(literal)), std::any_cast<unsigned long>(literal), expr.value.line);
-            else if (literal.type() == typeid(unsigned short))
-                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<unsigned short>(literal)), std::any_cast<unsigned short>(literal), expr.value.line);
-            else if (literal.type() == typeid(unsigned long long))
-                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<unsigned long long>(literal)), std::any_cast<unsigned long long>(literal), expr.value.line);
-            else if (literal.type() == typeid(long long))
-                return Token(TokenType::NUMERICLITERAL, std::to_string(std::any_cast<long long>(literal)), std::any_cast<long long>(literal), expr.value.line);
-            
-            /* Other Literals */
-            else if (literal.type() == typeid(std::nullptr_t))
-                return Token(TokenType::NIL, "null", nullptr, expr.value.line);
-            else if (literal.type() == typeid(bool))
-                return Token(std::any_cast<bool>(literal)?TokenType::TRUE:TokenType::FALSE, std::to_string(std::any_cast<bool>(literal)), std::any_cast<bool>(literal), expr.value.line);
-            else if (literal.type() == typeid(std::nullptr_t))
-                return Token(TokenType::NIL, "null", nullptr, expr.value.line);
-            else
-                rift::error::runTimeError("Unknown literal type");
-            return Token();
-        }
-
         Token Visitor::visit_unary(const Unary& expr) const
         {
             Token right = expr.expr.get()->accept(*this);
+            // if (right.type == TokenType::IDENTIFIER) {
+            //     auto tmp = Token(right);
+            //     right = rift::ast::Environment::getInstance().getEnv(castString(right));
+            //     if (right.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(tmp) + "'");
+            // }
 
             bool res = false;
             any resAny;
@@ -240,6 +258,7 @@ namespace rift
         Tokens Visitor::visit_block_stmt(const Block& block) const
         {
             Tokens toks = {};
+
             env::getInstance().addChild(); // add scope
             for (auto it=block.decls->begin(); it!=block.decls->end(); it++) {
                 auto its = (*it)->accept(*this);
@@ -264,13 +283,17 @@ namespace rift
 
         Tokens Visitor::visit_decl_stmt(const DeclStmt& decl) const
         {
-            return {decl.stmt->accept(*this)};
+            std::vector<Token> toks;
+            toks.push_back(decl.stmt->accept(*this));
+            return toks;
         }
 
         Tokens Visitor::visit_decl_var(const DeclVar& decl) const
         {
             // check performed in parser, undefined variables are CT errors
-            return {decl.expr->accept(*this)};
+            std::vector<Token> toks;
+            toks.push_back(decl.expr->accept(*this));
+            return toks;
         }
     }
 }

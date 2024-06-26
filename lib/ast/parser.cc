@@ -214,6 +214,7 @@ namespace rift
             prevance();
             // make sure the identifier is not already declared
             /// @note this is just a check, the actual declaration is done in the evaluator
+            ///       this also checks if any outer block has already declared this variable
             if (rift::ast::Environment::getInstance().getEnv(castString(idt)) != Token())
                 rift::error::report(line, "declaration_variable", "🛑 Variable '" + castString(idt) + "' already declared at line: " + castNumberString(idt.line), idt, ParserException("Variable '" + castString(idt) + "' already declared"));
 
@@ -226,26 +227,23 @@ namespace rift
 
         std::unique_ptr<Block> Parser::block()
         {
-            std::vector<std::unique_ptr<Decl>> decls = {};
-            // rift::ast::Environment::addChild(); // create a new scope REMOVED (done in evaulator)
+            vec_prog decls = {};
 
             while (!atEnd() && !peek(Token(TokenType::RIGHT_BRACE, "}", "", line))) {
                 if (match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
                     auto inner_decls = std::move(block()->decls);
-                    decls.insert(decls.end(), std::make_move_iterator(inner_decls->begin()), std::make_move_iterator(inner_decls->end()));
+                    decls->insert(decls->end(), std::make_move_iterator(inner_decls->begin()), std::make_move_iterator(inner_decls->end()));
                 } else if (match_kw (Token(TokenType::VAR, "", "", line))) {
-                    decls.push_back(declaration_variable());
+                    decls->push_back(declaration_variable());
                 } else {
-                    decls.push_back(declaration_statement());
+                    decls->push_back(declaration_statement());
                 }
             }
 
             if (!match({Token(TokenType::RIGHT_BRACE, "}", "", line)})) 
                 rift::error::report(line, "statement_block", "Expected '}' after block", peek(), ParserException("Expected '}' after block"));
-            // rift::ast::Environment::removeChild(); // remove the scope REMOVED (done in evaulator)
 
-            std::unique_ptr<std::vector<std::unique_ptr<Decl>>> ret = std::make_unique<std::vector<std::unique_ptr<Decl>>>(decls);
-            return std::make_unique<Block>(std::move(ret));
+            return std::unique_ptr<Block>(new Block(std::move(decls)));
         }
 
         std::unique_ptr<Program> Parser::program()
@@ -261,6 +259,7 @@ namespace rift
                     decls->push_back(declaration_statement());
                 }
             }
+// using rift::ast::vec_prog = std::__1::unique_ptr<std::__1::vector<std::__1::unique_ptr<rift::ast::Decl>>> 
 
             return std::unique_ptr<Program>(new Program(std::move(decls)));
         }

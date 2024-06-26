@@ -33,12 +33,8 @@ namespace rift
 
         void Environment::setEnv(const str_t& name, const Token& value)
         {
-            if(values.contains(name)) {
-                values[name] = value;
-                return;
-            } else if(child != nullptr) {
+            if (!values.contains(name) && child != nullptr) {
                 child->setEnv(name, value);
-                return;
             } else {
                 values[name] = value;
             }

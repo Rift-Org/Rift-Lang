@@ -66,9 +66,9 @@ namespace rift
         class Block : public Decl
         {
             public:
-                Block(std::unique_ptr<std::vector<std::unique_ptr<Decl>>> decls) : decls(std::move(decls)) {};
+                Block(vec_prog decls) : decls(std::move(decls)) {};
                 ~Block() = default;
-                std::unique_ptr<std::vector<std::unique_ptr<Decl>>> decls;
+                vec_prog decls = nullptr;
 
                 Tokens accept(const Visitor &visitor) const override { return visitor.visit_block_stmt(*this); };
                 #pragma clang diagnostic push
