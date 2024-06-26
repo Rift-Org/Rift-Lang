@@ -18,6 +18,8 @@
 #include <utils/macros.hh>
 #include <ast/env.hh>
 
+using env = rift::ast::Environment;
+
 namespace rift
 {
     namespace ast
@@ -61,9 +63,8 @@ namespace rift
         Token Visitor::visit_assign(const Assign& expr) const
         {
             auto name = castString(expr.name);
-            auto tok = rift::ast::Environment::getInstance().getEnv(name);
-            rift::ast::Environment::getInstance().setEnv(name, expr.value->accept(*this));
-            return tok;
+            env::getInstance().setEnv(name, expr.value->accept(*this));
+            return env::getInstance().getEnv(name);;
         }
 
         Token Visitor::visit_binary(const Binary& expr) const
@@ -143,7 +144,15 @@ namespace rift
         Token Visitor::visit_literal(const Literal& expr) const
         {
             Token val = expr.value;
-            any literal = val.getLiteral();
+            any literal;
+
+            if (val.type == TokenType::IDENTIFIER) {
+                Token res = env::getInstance().getEnv(castString(val));
+                if (res.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(val) + "'");
+                literal = res.getLiteral();
+            } else {
+                literal = val.getLiteral();
+            }
 
             if (literal.type() == typeid(std::string)) 
                 return Token(TokenType::STRINGLITERAL, std::any_cast<std::string>(literal), 0, expr.value.line);
@@ -181,6 +190,7 @@ namespace rift
         Token Visitor::visit_unary(const Unary& expr) const
         {
             Token right = expr.expr.get()->accept(*this);
+
             bool res = false;
             any resAny;
  
@@ -225,27 +235,42 @@ namespace rift
             return val;
         }
 
-        #pragma mark - Program Visitor
+        #pragma mark - Program / Block Visitor
+
+        Tokens Visitor::visit_block_stmt(const Block& block) const
+        {
+            Tokens toks = {};
+            env::getInstance().addChild(); // add scope
+            for (auto it=block.decls->begin(); it!=block.decls->end(); it++) {
+                auto its = (*it)->accept(*this);
+                toks.insert(toks.end(), its.begin(), its.end());
+            }
+            env::getInstance().removeChild(); // remove scope
+
+            return toks;
+        }
 
         Tokens Visitor::visit_program(const Program& prgm) const
         {
-            std::vector<Token> tokens = {};
-            for (auto it=prgm.statements->begin(); it!=prgm.statements->end(); it++)
-                tokens.push_back((*it)->accept(*this));
-            return tokens;
+            Tokens toks = {};
+            for (auto it=prgm.decls->begin(); it!=prgm.decls->end(); it++) {
+                auto its = (*it)->accept(*this);
+                toks.insert(toks.end(), its.begin(), its.end());
+            }
+            return toks;
         }
 
         #pragma mark - Decl Visitors
 
-        Token Visitor::visit_decl_stmt(const DeclStmt& decl) const
+        Tokens Visitor::visit_decl_stmt(const DeclStmt& decl) const
         {
-            return decl.stmt->accept(*this);
+            return {decl.stmt->accept(*this)};
         }
 
-        Token Visitor::visit_decl_var(const DeclVar& decl) const
+        Tokens Visitor::visit_decl_var(const DeclVar& decl) const
         {
             // check performed in parser, undefined variables are CT errors
-            return decl.expr->accept(*this);
+            return {decl.expr->accept(*this)};
         }
     }
 }

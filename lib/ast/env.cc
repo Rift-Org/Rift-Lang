@@ -21,10 +21,11 @@ namespace rift
     {
         Token Environment::getEnv(const str_t& name) const
         {
-            // if(tok == Token())
-            //     rift::error::runTimeError("🛑 Undefined variable '" + name + "'");
-            // }
             if (!values.contains(name)) {
+                
+                if(child != nullptr)
+                    return child->getEnv(name);
+
                 return Token();
             }
             return values.at(name);
@@ -32,7 +33,15 @@ namespace rift
 
         void Environment::setEnv(const str_t& name, const Token& value)
         {
-            values[name] = value;
+            if(values.contains(name)) {
+                values[name] = value;
+                return;
+            } else if(child != nullptr) {
+                child->setEnv(name, value);
+                return;
+            } else {
+                values[name] = value;
+            }
         }
 
         void Environment::printState()

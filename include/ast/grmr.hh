@@ -16,6 +16,7 @@
 
 #include <scanner/tokens.hh>
 #include <utils/macros.hh>
+#include <ast/env.hh>
 
 using Token = rift::scanner::Token;
 using Tokens = std::vector<Token>;
@@ -29,9 +30,11 @@ namespace rift
         ///         ------------
         /// program        → decl * EOF
         /// decl           → varDecl | statement
-        /// statement      → exprStmt | printStmt ";"
-        /// printStmt      → "print" "(" expression ");" 
+        /// statement      → exprStmt | printStmt | block ";"
+        /// varDecl        → "var" IDENTIFIER ( "=" expression ) ";"
+        /// printStmt      → "print" "(" expression ");"
         /// exprStmt       → expression ";"
+        /// block          → "{" declaration* "}"
         /// expression     → equality ";"
         /// assignment     → IDENTIFIER "=" assignment | equality
         /// equality       → comparison ( ( "!=" | "==" ) comparison )* ";"
@@ -79,13 +82,15 @@ namespace rift
 
                     /* stmt */
                     /// @note TokenType::IGNORE is used to ignore statements returning void
-                    virtual Token visit_expr_stmt(const StmtExpr& expr) const;
-                    virtual Token visit_print_stmt(const StmtPrint& expr) const;
+                    virtual Token visit_expr_stmt(const StmtExpr& stmt) const;
+                    virtual Token visit_print_stmt(const StmtPrint& stmt) const;
 
                     /* decl */
-                    virtual Token visit_decl_stmt(const DeclStmt& decl) const;
-                    virtual Token visit_decl_var(const DeclVar& decl) const;
+                    virtual Tokens visit_decl_stmt(const DeclStmt& decl) const;
+                    virtual Tokens visit_decl_var(const DeclVar& decl) const;
                     
+                    /* block */
+                    virtual Tokens visit_block_stmt(const Block& block) const;
                     /* prgm */
                     virtual Tokens visit_program(const Program& prgm) const;
 

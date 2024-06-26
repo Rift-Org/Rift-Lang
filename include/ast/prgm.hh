@@ -28,7 +28,7 @@ namespace rift
         class Program : public Accept<Tokens>
         {
             public:
-                Program(vec_prog statements) : statements(std::move(statements)) {}
+                Program(vec_prog decls) : decls(std::move(decls)) {}
                 virtual ~Program() = default;
                 friend class Visitor;
 
@@ -40,7 +40,7 @@ namespace rift
                 #pragma clang diagnostic pop
 
             protected:
-                vec_prog statements = nullptr;
+                vec_prog decls = nullptr;
         };
     }
 }

@@ -83,8 +83,9 @@ namespace rift
                 /// @example var x = 1;
                 std::unique_ptr<DeclVar> declaration_variable();
 
+                /// @example { var x = 1; }
+                std::unique_ptr<Block> block();
                 /// @note program
-
                 std::unique_ptr<Program> program();
                 
                 /// @brief Syncronizes the parser to avoid error-cascading

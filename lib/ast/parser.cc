@@ -54,15 +54,8 @@ namespace rift
                 return std::unique_ptr<Literal>(new Literal(peekPrev(1)));
             if (match({Token(TokenType::STRINGLITERAL, "", "", line)}))
                 return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
-            if (match({Token(TokenType::IDENTIFIER, "", "", line)})) {
-                /// @note rhs identifier undeclared
-                auto idt = peekPrev(1);
-                auto val  = rift::ast::Environment::getInstance().getEnv(castString(idt));
-                if (val == Token()) {
-                    rift::error::report(line, "primary", "🛑 Undefined variable '" + castString(idt) + "' at line: " + castNumberString(idt.line), idt, ParserException("Undefined variable '" + castString(idt) + "'"));
-                }
-                return std::unique_ptr<Literal>(new Literal(Token(val)));
-            }
+            if (match({Token(TokenType::IDENTIFIER, "", "", line)}))
+                return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
 
             if (match({Token(TokenType::LEFT_PAREN, "(", "", line)})) { 
                 auto expr = expression();
@@ -166,8 +159,10 @@ namespace rift
                     if (expr == nullptr) rift::error::report(line, "assignment", "Expected expression after variable name", peekPrev(), ParserException("Expected expression after variable name"));
 
                     // assignemnt operator expects lhs to be already declared
+                    /// @note: this is just a check, the actual assignment is done in the evaluator
                     if (rift::ast::Environment::getInstance().getEnv(castString(idt)) == Token())
                         rift::error::report(line, "assignment", "🛑 Undefined variable '" + castString(idt) + "' at line: " + castNumberString(idt.line), idt, ParserException("Undefined variable '" + castString(idt) + "'"));
+
                     return std::unique_ptr<Assign>(new Assign(idt, std::move(expr)));
                 }
             }
@@ -218,16 +213,40 @@ namespace rift
             auto idt = consume(Token(TokenType::IDENTIFIER, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected variable name")));
             prevance();
             // make sure the identifier is not already declared
+            /// @note this is just a check, the actual declaration is done in the evaluator
             if (rift::ast::Environment::getInstance().getEnv(castString(idt)) != Token())
                 rift::error::report(line, "declaration_variable", "🛑 Variable '" + castString(idt) + "' already declared at line: " + castNumberString(idt.line), idt, ParserException("Variable '" + castString(idt) + "' already declared"));
-            rift::ast::Environment::getInstance().setEnv(castString(idt), Token(TokenType::NIL, "nil", "", line));
 
             auto expr = assignment();
             consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable assignment")));
             return std::make_unique<DeclVar>(idt, std::move(expr));
         }
 
-        #pragma mark - Program Parsing
+        #pragma mark - Program / Block Parsing
+
+        std::unique_ptr<Block> Parser::block()
+        {
+            std::vector<std::unique_ptr<Decl>> decls = {};
+            // rift::ast::Environment::addChild(); // create a new scope REMOVED (done in evaulator)
+
+            while (!atEnd() && !peek(Token(TokenType::RIGHT_BRACE, "}", "", line))) {
+                if (match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
+                    auto inner_decls = std::move(block()->decls);
+                    decls.insert(decls.end(), std::make_move_iterator(inner_decls->begin()), std::make_move_iterator(inner_decls->end()));
+                } else if (match_kw (Token(TokenType::VAR, "", "", line))) {
+                    decls.push_back(declaration_variable());
+                } else {
+                    decls.push_back(declaration_statement());
+                }
+            }
+
+            if (!match({Token(TokenType::RIGHT_BRACE, "}", "", line)})) 
+                rift::error::report(line, "statement_block", "Expected '}' after block", peek(), ParserException("Expected '}' after block"));
+            // rift::ast::Environment::removeChild(); // remove the scope REMOVED (done in evaulator)
+
+            std::unique_ptr<std::vector<std::unique_ptr<Decl>>> ret = std::make_unique<std::vector<std::unique_ptr<Decl>>>(decls);
+            return std::make_unique<Block>(std::move(ret));
+        }
 
         std::unique_ptr<Program> Parser::program()
         {
@@ -236,6 +255,8 @@ namespace rift
             while (!atEnd()) {
                 if (match_kw (Token(TokenType::VAR, "", "", line))) {
                     decls->push_back(declaration_variable());
+                } else if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
+                    decls->push_back(block());
                 } else {
                     decls->push_back(declaration_statement());
                 }

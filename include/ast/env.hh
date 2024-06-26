@@ -30,22 +30,40 @@ namespace rift
         class Environment
         {
             public:
+                /// @note top level
                 static Environment& getInstance() {
                     static Environment instance;
                     return instance;
                 }
+                /// @brief add a child to the current environment (recursive-checks)
+                static void addChild() {
+                    Environment &curr = getInstance();
+                    while(curr.child != nullptr) {
+                        curr = curr.child;
+                    }
+                    curr.child = new Environment();
+                }
+                /// @brief remove the child from the current environment
+                static void removeChild() {
+                    Environment prev;
+                    Environment curr = getInstance();
+                    while(curr.child != nullptr) {
+                        prev = curr;
+                        curr = *curr.child;
+                    }
+                    prev.child = nullptr; // remove the child
+                }
+
+                Environment() : child(nullptr) {}
+                Environment(Environment *child) : child(child) {}
+                ~Environment() = default;
                 Token getEnv(const str_t& name) const;
                 void setEnv(const str_t& name, const Token& value);
                 void printState();
+                Environment *child;
             protected:
                 // absl::flat_hash_map<str_t, rift::scanner::Token> values;
                 std::unordered_map<str_t, rift::scanner::Token> values = {};
-                Environment(Environment &other) = delete;
-                Environment &operator=(const Environment &other) = delete;
-            
-            private:
-                Environment() = default;
-                ~Environment() = default;
         };
     }
 }

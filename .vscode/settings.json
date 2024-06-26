@@ -82,6 +82,7 @@
         "future": "cpp",
         "regex": "cpp",
         "scoped_allocator": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "__tuple": "cpp"
     }
 }
