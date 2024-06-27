@@ -96,6 +96,19 @@
     else \
         rift::error::report(op_tok.line, "Arithmetic Error", "Invalid operands for arithmetic operation", Token(), std::exception());
 
+#define _STRING_ARITHMETIC() \
+        if (expr.op.type == TokenType::GREATER) \
+            return (strcmp(castString(left).c_str(),castString(right).c_str())>0) ? Token(TokenType::TRUE, "true", "true", expr.op.line) : Token(TokenType::FALSE, "false", "false", expr.op.line); \
+        else if (expr.op.type == TokenType::LESS) \
+            return (strcmp(castString(left).c_str(),castString(right).c_str())<0) ? Token(TokenType::TRUE, "true", "true", expr.op.line) : Token(TokenType::FALSE, "false", "false", expr.op.line); \
+        else if (expr.op.type == TokenType::GREATER_EQUAL) \
+            return (strcmp(castString(left).c_str(),castString(right).c_str())>=0) ? Token(TokenType::TRUE, "true", "true", expr.op.line) : Token(TokenType::FALSE, "false", "false", expr.op.line); \
+        else if (expr.op.type == TokenType::LESS_EQUAL) \
+            return (strcmp(castString(left).c_str(),castString(right).c_str())<=0) ? Token(TokenType::TRUE, "true", "true", expr.op.line) : Token(TokenType::FALSE, "false", "false", expr.op.line); \
+        else if (expr.op.type == TokenType::EQUAL_EQUAL) \
+            return (strcmp(castString(left).c_str(),castString(right).c_str())==0) ? Token(TokenType::TRUE, "true", "true", expr.op.line) : Token(TokenType::FALSE, "false", "false", expr.op.line); \
+        else if (expr.op.type == TokenType::BANG_EQUAL) \
+            return (strcmp(castString(left).c_str(),castString(right).c_str())!=0) ? Token(TokenType::TRUE, "true", "true", expr.op.line) : Token(TokenType::FALSE, "false", "false", expr.op.line); \
 
 #pragma mark  - Specific Codebase
 
@@ -103,7 +116,5 @@
             resBool = std::any_cast<bool>(any_arithmetic(left, right, op));\
             return Token(resBool?TokenType::TRUE:TokenType::FALSE, resBool?"true":"false", resBool, op.line);\
         } else if (isString(left) && isString(right)) {\
-            resBool = castString(left) > castString(right);\
-            return Token(resBool?TokenType::TRUE:TokenType::FALSE, resBool?"true":"false", resBool, op.line);\
+            _STRING_ARITHMETIC()\
         }\
-                

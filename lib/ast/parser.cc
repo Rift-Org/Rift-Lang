@@ -186,8 +186,10 @@ namespace rift
         std::unique_ptr<Stmt> Parser::ret_stmt()
         {
             std::unique_ptr<Stmt> stmt;
-            if (match_kw (Token(TokenType::PRINT, "", "", line))) {
+            if (consume (Token(TokenType::PRINT, "", "", line))) {
                 stmt = statement_print();
+            } else if (consume(Token(TokenType::IF, "if", "if", line))) {
+                stmt = statement_if();
             } else {
                 stmt = statement_expression();
             }
@@ -197,7 +199,6 @@ namespace rift
         std::unique_ptr<StmtExpr> Parser::statement_expression()
         {
             auto expr = expression();
-            consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after expression")));
             return std::unique_ptr<StmtExpr>(new StmtExpr(std::move(expr)));
         }
 
@@ -307,7 +308,7 @@ namespace rift
                 if (match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
                     auto inner_decls = std::move(block()->decls);
                     decls->insert(decls->end(), std::make_move_iterator(inner_decls->begin()), std::make_move_iterator(inner_decls->end()));
-                } else if (match_kw (Token(TokenType::VAR, "", "", line))) {
+                } else if (consume (Token(TokenType::VAR, "", "", line))) {
                     auto decl = declaration_variable();
                     decls->push_back(std::move(decl));
                 } else {
@@ -327,7 +328,7 @@ namespace rift
             vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
 
             while (!atEnd()) {
-                if (match_kw (Token(TokenType::VAR, "", "", line))) {
+                if (consume (Token(TokenType::VAR, "", "", line))) {
                     decls->push_back(declaration_variable());
                 } else if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
                     decls->push_back(block());

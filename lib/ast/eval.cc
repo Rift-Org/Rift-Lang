@@ -172,7 +172,9 @@ namespace rift
 
                 /* comparison ops */
                 case TokenType::GREATER:
-                    _BOOL_LOGIC(expr.op);
+                    if(strcmp(castString(left).c_str(),castString(right).c_str())>0)
+                        return Token(TokenType::TRUE, "true", "true", expr.op.line);
+                    return Token(TokenType::FALSE, "false", "false", expr.op.line);
                     rift::error::runTimeError("Expected a number or string for '>' operator");
                 case TokenType::GREATER_EQUAL:
                     _BOOL_LOGIC(expr.op);

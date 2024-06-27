@@ -44,7 +44,6 @@ namespace rift
         {
             Environment *curr = this;
             while (curr != nullptr) {
-                std::cout << "IN  ";
                 for (const auto& [key, value] : curr->values) {
                     std::cout << key << " => " << value.to_string() << std::endl;
                 }

@@ -137,10 +137,10 @@ namespace rift
                 case '+': addToken(Type::PLUS, "+");break;
                 case ';': addToken(Type::SEMICOLON, ";");break;
                 case '*': addToken(Type::STAR, "*");break;
-                case '!': addToken(match_one('=') ? Type::BANG_EQUAL : Type::BANG, "!");break;
-                case '=': addToken(match_one('=') ? Type::EQUAL_EQUAL : Type::EQUAL, "=");break;
-                case '<': addToken(match_one('=') ? Type::LESS_EQUAL : Type::LESS, "<");break;
-                case '>': addToken(match_one('=') ? Type::GREATER_EQUAL : Type::GREATER, ">");break;
+                case '!': addToken(match_one('=') ? Type::BANG_EQUAL : Type::BANG);break;
+                case '=': addToken(match_one('=') ? Type::EQUAL_EQUAL : Type::EQUAL);break;
+                case '<': addToken(match_one('=') ? Type::LESS_EQUAL : Type::LESS);break;
+                case '>': addToken(match_one('=') ? Type::GREATER_EQUAL : Type::GREATER);break;
                 case '/': match_one('/') ? scanComment() : addToken(Type::SLASH, "/");break;
                 case '"': string(); break;
                 case ' ': break;

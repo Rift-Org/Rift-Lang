@@ -57,7 +57,8 @@ namespace rift
         __DEFAULT_FORWARD_NONE_VA(
             Stmt, 
             StmtPrint, 
-            StmtExpr
+            StmtExpr,
+            StmtIf
         )
 
         __DEFAULT_FORWARD_NONE_VA(
