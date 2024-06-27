@@ -43,6 +43,8 @@ std::string Token::convertTypeString(TokenType type) {
         case SEPARATOR: return "SEPARATOR";
         case WHITESPACE: return "WHITESPACE";
         case OPERATOR: return "OPERATOR";
+        case TERNARY: return "TERNARY";
+        case NULLISH_COAL: return "NULLISH_COAL";
         case IDENTIFIER: return "IDENTIFIER";
         case STRINGLITERAL: return "STRINGLITERAL";
         case NUMERICLITERAL: return "NUMERICLITERAL";

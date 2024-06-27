@@ -146,6 +146,14 @@ namespace rift
             return expr;
         };
 
+        std::unique_ptr<Expr> Parser::ternary()
+        {
+            if (peekNext() == Token(TokenType::TERNARY, "?:", "", line)) {
+                auto expr = equality();
+                
+            }
+        }
+
         std::unique_ptr<Expr> Parser::assignment()
         {
             if(peekNext() == Token(TokenType::EQUAL, "=", "", line)) {

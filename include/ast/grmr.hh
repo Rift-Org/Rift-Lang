@@ -36,6 +36,7 @@ namespace rift
         /// printStmt      → "print" "(" expression ");"
         /// exprStmt       → expression ";"
         /// ifStmt        → "if" "(" expression ")" statement|block ( "elif" statment|block )* ( "else" statement|block )?
+        /// ternary        → expression "?" expression ":" expression ";"
         /// expression     → equality ";"
         /// assignment     → IDENTIFIER "=" assignment | equality
         /// equality       → comparison ( ( "!=" | "==" ) comparison )* ";"
@@ -50,8 +51,12 @@ namespace rift
             Binary,
             Grouping,
             Literal,
-            Unary,
-            Printer
+            Unary
+        )
+
+        __DEFAULT_FORWARD_NONE_VA(
+            Printer,
+            Ternary
         )
 
         __DEFAULT_FORWARD_NONE_VA(
@@ -85,6 +90,7 @@ namespace rift
                     virtual Token visit_grouping(const Grouping& expr) const;
                     virtual Token visit_literal(const Literal& expr) const;
                     virtual Token visit_unary(const Unary& expr) const;
+                    virtual Token visit_ternary(const Ternary& expr) const;
 
                     /* stmt */
                     /// @note TokenType::IGNORE is used to ignore statements returning void

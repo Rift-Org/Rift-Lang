@@ -58,6 +58,21 @@ namespace rift
 
         #pragma mark - Concrete Expressions
 
+        class Ternary : public Expr
+        {
+            public:
+                Ternary(std::unique_ptr<Expr> condition, std::unique_ptr<Expr> left, std::unique_ptr<Expr> right): condition(std::move(condition)), left(std::move(left)), right(std::move(right)) {};
+                std::unique_ptr<Expr> condition;
+                std::unique_ptr<Expr> left;
+                std::unique_ptr<Expr> right;
+
+                inline Token accept(const Visitor& visitor) const override { return visitor.visit_ternary(*this); }
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
+                inline string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
+        };
+
         class Assign : public Expr
         {
             public:

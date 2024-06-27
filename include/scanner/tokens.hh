@@ -50,6 +50,8 @@ namespace rift
             SEPARATOR,
             WHITESPACE,
             OPERATOR,
+            TERNARY,
+            NULLISH_COAL,
 
             // Literals
             IDENTIFIER,

@@ -285,9 +285,11 @@ namespace rift
 
             // else stmt
             auto else_stmt = stmt.else_stmt;
-            if (else_stmt->blk != nullptr) else_stmt->blk->accept(*this);
-            else if (else_stmt->stmt != nullptr) else_stmt->stmt->accept(*this);
-            else rift::error::runTimeError("Else statement should have a statement or block");
+            if(else_stmt != nullptr) {
+                if (else_stmt->blk != nullptr) else_stmt->blk->accept(*this);
+                else if (else_stmt->stmt != nullptr) else_stmt->stmt->accept(*this);
+                else rift::error::runTimeError("Else statement should have a statement or block");
+            }
             return Token();
         }
 
