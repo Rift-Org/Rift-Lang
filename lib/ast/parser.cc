@@ -183,6 +183,17 @@ namespace rift
 
         #pragma mark - Statements Parsing
 
+        std::unique_ptr<Stmt> Parser::ret_stmt()
+        {
+            std::unique_ptr<Stmt> stmt;
+            if (match_kw (Token(TokenType::PRINT, "", "", line))) {
+                stmt = statement_print();
+            } else {
+                stmt = statement_expression();
+            }
+            return stmt;
+        }
+
         std::unique_ptr<StmtExpr> Parser::statement_expression()
         {
             auto expr = expression();
@@ -199,17 +210,72 @@ namespace rift
             return std::unique_ptr<StmtPrint>(new StmtPrint(expr));
         }
 
+        std::unique_ptr<StmtIf> Parser::statement_if()
+        {
+            std::unique_ptr<StmtIf> ret = std::make_unique<StmtIf>();
+            consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after if")));
+            auto expr = expression();
+            consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after if")));
+            
+            /// if stmt
+            StmtIf::Stmt* if_stmt= new StmtIf::Stmt(std::move(expr));
+
+            // block vs stmt
+            if (peek() == Token(TokenType::LEFT_BRACE, "{", "", line)) {
+                consume(Token(TokenType::LEFT_BRACE, "{", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '{' after if block")));
+                auto blk = block();
+                if_stmt->blk = std::move(blk);
+            } else {
+                std::unique_ptr<Stmt> stmt = ret_stmt();
+                if_stmt->stmt = std::move(stmt);
+            }
+            ret->if_stmt = if_stmt;
+
+            /// elif stmts
+            if (peek() == Token(TokenType::ELIF, "elif", "elif", line)) {
+                std::vector<StmtIf::Stmt*> elif_stmts = {};
+
+                while (consume(Token(TokenType::ELIF, "elif", "elif", line))) {
+                    auto expr = expression();
+                    StmtIf::Stmt* curr = new StmtIf::Stmt(std::move(expr));
+                     // block vs stmt
+                    if (peek() == Token(TokenType::LEFT_BRACE, "{", "", line)) {
+                        consume(Token(TokenType::LEFT_BRACE, "{", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '{' after elif block")));
+                        auto blk = block();
+                        curr->blk = std::move(blk);
+                    } else {
+                        std::unique_ptr<Stmt> stmt = ret_stmt();
+                        curr->stmt = std::move(stmt);
+                    }
+                    elif_stmts.push_back(curr);
+                }
+                ret->elif_stmts = elif_stmts;
+            }
+
+
+            /// else stmt
+            if (consume(Token(TokenType::ELSE, "else", "else", line))) {
+                StmtIf::Stmt* else_stmt = new StmtIf::Stmt();
+                // block vs stmt
+                if (peek() == Token(TokenType::LEFT_BRACE, "{", "", line)) {
+                    consume(Token(TokenType::LEFT_BRACE, "{", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '{' after else block")));
+                    auto blk = block();
+                    else_stmt->blk = std::move(blk);
+                } else {
+                    std::unique_ptr<Stmt> stmt = ret_stmt();
+                    else_stmt->stmt = std::move(stmt);
+                }
+                ret->else_stmt = else_stmt;
+            }
+
+            return ret;
+        }
+
         #pragma mark - Declarations Parsing
 
         std::unique_ptr<DeclStmt> Parser::declaration_statement()
         {
-            std::unique_ptr<Stmt> stmt;
-            if (match_kw (Token(TokenType::PRINT, "", "", line))) {
-                stmt = statement_print();
-            } else {
-                stmt = statement_expression();
-            }
-
+            std::unique_ptr<Stmt> stmt = ret_stmt();
             return std::make_unique<DeclStmt>(std::move(stmt));
         }
 
@@ -234,7 +300,7 @@ namespace rift
 
         std::unique_ptr<Block> Parser::block()
         {
-            vec_prog decls = {};
+            vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
 
             env::addChild();
             while (!atEnd() && !peek(Token(TokenType::RIGHT_BRACE, "}", "", line))) {
@@ -242,7 +308,8 @@ namespace rift
                     auto inner_decls = std::move(block()->decls);
                     decls->insert(decls->end(), std::make_move_iterator(inner_decls->begin()), std::make_move_iterator(inner_decls->end()));
                 } else if (match_kw (Token(TokenType::VAR, "", "", line))) {
-                    decls->push_back(declaration_variable());
+                    auto decl = declaration_variable();
+                    decls->push_back(std::move(decl));
                 } else {
                     decls->push_back(declaration_statement());
                 }

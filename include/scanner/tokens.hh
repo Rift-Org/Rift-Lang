@@ -59,11 +59,12 @@ namespace rift
             // Keywords
             AND,
             CLASS,
-            ELSE,
             FALSE,
             FUN,
             FOR,
             IF,
+            ELSE,
+            ELIF,
             NIL,
             OR,
             PRINT,

@@ -27,9 +27,6 @@
 #include <ast/eval.hh>
 #include <string>
 
-#include <readline/readline.h>
-#include <readline/history.h>
-
 using namespace rift::error;
 using namespace rift::scanner;
 using namespace rift::ast;
@@ -59,29 +56,15 @@ namespace rift
 
         void Driver::runFile(std::string path)
         {
-            CLI::results_t args = app.remaining();
-
-            if (!args.empty()) {
-                for (auto arg : args) path = arg;
-            } else {
-                std::cout << "File flag provided without arguments." << std::endl;
-                return;
-            }
-
             std::ifstream file(std::string(path), std::ios::binary | std::ios::ate);
-
             if (file) {
                 std::streamsize size = file.tellg();
                 file.seekg(0, std::ios::beg);
-
                 std::vector<char> buffer(size);
                 if (file.read(buffer.data(), size)) {
                     run(buffer.data(), false);
                     if (errorOccured) exit(42);
                     if (runtimeErrorOccured) exit(69);
-                    // reset
-                    errorOccured = false; 
-                    runtimeErrorOccured = false;
                 }
             }   
         }
@@ -104,37 +87,52 @@ namespace rift
 
         void Driver::version()
         {
-            std::string versionString = std::string("Rift version ") + "0.0.1" + "\n\n(c) Aman 2024";
-            app.set_version_flag("--version,-v", versionString);
-            app.footer("(c) Aman 2024");
+            std::cout << "Rift version 0.0.1" << std::endl;
+            std::cout << "(c) Rift-Team 2024" << std::endl;
+            exit(1);
+        }
+
+        void Driver::help()
+        {
+            std::cout << "Rift Lang" << std::endl;
+            std::cout << "Usage: rift [options] [file]" << std::endl;
+            std::cout << "Options:" << std::endl;
+            std::cout << "  [file]            Run the compiler" << std::endl;
+            std::cout << "  -h, --help        Display this information" << std::endl;
+            std::cout << "  -v, --version     Display the version of the program" << std::endl;
+            std::cout << "  -i, --interactive Run the interpreter" << std::endl;
+            exit(1);
         }
 
         # pragma mark - Driver
 
         int Driver::parse(int argc, char **argv) 
         {
-            std::string file;
-            try {
-                app.add_flag_callback("--version,-v", [this]() { version(); }, "Print the version of the Rift language");
-                app.add_flag_callback("--prompt,-p", [this]() { runPrompt(); }, "Run the Rift prompt");
+            bool passed = false;
+            int opt = 0, idx = 0;
+            while ((opt = getopt_long(argc, argv, "", opts, &idx)) != -1) {
+                passed = true;
+                switch (opt) {
+                    case 'h':
+                        help();
+                        exit(1);
+                    case 'v':
+                        version();
+                    case 'i':
+                        runPrompt();
+                    default:
+                        std::cout << "Invalid option" << std::endl;
+                        break;
 
-                // CLI::Option *option = app.add_option("--file,-f", file, "Run a Rift source file")
-                //     ->check(CLI::ExistingFile)
-                //     ->required();
-                
-                  app.add_option_function<std::string>("--file,-f", [this](const std::string& path) {
-                    runFile(path);
-                }, "Run a Rift source file")->check(CLI::ExistingFile)->required();
-
-                
-                // app.parse(argc, argv);
-                CLI11_PARSE(app, argc, argv);
-                // std::cout << "Running file: " << file << std::endl;
-                if (!file.empty()) {
-                    this->runFile(file);
                 }
-            } catch (const CLI::ParseError &parseError) {
-                return app.exit(parseError);
+            }
+
+            if (!passed) {
+                if (optind < argc) {
+                    runFile(argv[optind]);
+                } else {
+                    help();
+                }
             }
 
             return 0;

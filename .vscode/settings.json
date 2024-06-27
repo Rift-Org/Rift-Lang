@@ -84,6 +84,7 @@
         "scoped_allocator": "cpp",
         "typeindex": "cpp",
         "__tuple": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "filesystem": "cpp"
     }
 }

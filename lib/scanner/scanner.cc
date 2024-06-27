@@ -35,11 +35,12 @@ namespace rift
             keywords = std::unordered_map<std::string, Type>();
             keywords["and"] = Type::AND;
             keywords["class"] = Type::CLASS;
-            keywords["else"] = Type::ELSE;
             keywords["false"] = Type::FALSE;
             keywords["for"] = Type::FOR;
             keywords["fun"] = Type::FUN;
             keywords["if"] = Type::IF;
+            keywords["else"] = Type::ELSE;
+            keywords["elif"] = Type::ELIF;
             keywords["nil"] = Type::NIL;
             keywords["or"] = Type::OR;
             keywords["print"] = Type::PRINT;
@@ -47,7 +48,7 @@ namespace rift
             keywords["super"] = Type::SUPER;
             keywords["this"] = Type::THIS;
             keywords["true"] = Type::TRUE;
-            keywords["let"] = Type::VAR;
+            keywords["mut"] = Type::VAR;
             keywords["while"] = Type::WHILE;
         }
 

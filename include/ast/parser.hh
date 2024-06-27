@@ -76,6 +76,8 @@ namespace rift
                 std::unique_ptr<StmtExpr> statement_expression();
                 /// @example print(1 + 2);
                 std::unique_ptr<StmtPrint> statement_print();
+                /// @example if (1+2) print(3);
+                std::unique_ptr<StmtIf> statement_if();
 
                 /// @note rules in order of precedence <Decl>
                 /// @example var x = 1;
@@ -90,6 +92,8 @@ namespace rift
                 
                 /// @brief Syncronizes the parser to avoid error-cascading
                 void synchronize();
+                /// @brief returns any statements that might be executed 
+                std::unique_ptr<Stmt> ret_stmt();
         };
 
         class ParserException : public ReaderException

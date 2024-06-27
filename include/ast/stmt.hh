@@ -89,5 +89,38 @@ namespace rift
                 string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
                 #pragma clang diagnostic pop
         };
+
+        class StmtIf : public Stmt
+        {
+            public:
+                struct Stmt {
+                    public:
+                        Stmt() : expr(nullptr), stmt(nullptr), blk(nullptr) {};
+                        Stmt(std::unique_ptr<Expr> expr): expr(std::move(expr)), stmt(nullptr), blk(nullptr) {}
+                        Stmt(std::unique_ptr<Expr> expr, std::unique_ptr<rift::ast::Stmt> stmt): expr(std::move(expr)), stmt(std::move(stmt)) {}
+                        Stmt(std::unique_ptr<Expr> expr, std::unique_ptr<Block> blk): expr(std::move(expr)), blk(std::move(blk)) {}
+
+                        std::unique_ptr<Expr> expr;
+                        std::unique_ptr<rift::ast::Stmt> stmt;
+                        std::unique_ptr<Block> blk;
+                };
+
+            public:
+                StmtIf(): if_stmt(nullptr),  else_stmt(nullptr), elif_stmts({}) {};
+                StmtIf(Stmt* if_stmt): if_stmt(if_stmt) {};
+                StmtIf(Stmt* if_stmt, Stmt* else_stmt): if_stmt(if_stmt), else_stmt(else_stmt) {};
+                StmtIf(Stmt* if_stmt, Stmt* else_stmt, std::vector<Stmt*> elif_stmts): if_stmt(if_stmt), else_stmt(else_stmt), elif_stmts(elif_stmts) {};
+
+                Stmt* if_stmt;
+                Stmt* else_stmt;
+                std::vector<Stmt*> elif_stmts;
+
+                Token accept(const Visitor &visitor) const override { return visitor.visit_if_stmt(*this); };
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
+                // must uncomment visit_printer in printer.hh
+                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
+        };
     }
 }

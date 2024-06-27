@@ -14,12 +14,26 @@
 
 
 #pragma once
-#include <cli/cli.hh>
+
+// #include <cli/cli.hh>
+#include <getopt.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <string>
+#include <iostream>
 
 namespace rift
 {
     namespace driver
     {
+        
+        static const struct option opts[] = {
+            {"help",        no_argument,       0,  'h' },
+            {"version",     no_argument,       0,  'v' },
+            {"interactive", no_argument,       0,  'i' },
+            {nullptr, 0, nullptr, 0}
+        };
+
         class Driver
         {
             public:
@@ -33,11 +47,13 @@ namespace rift
                 int parse(int argc, char **argv);
 
             private:
-                CLI::App app{"rift"};
+                // CLI::App app{"rift"};
 
                 #pragma mark - Command Line Options
                 /// @brief The version of the program.
                 void version();
+                /// @brief Help
+                void help();
 
                 /// @brief Runs the compiler
                 void runFile(std::string path);

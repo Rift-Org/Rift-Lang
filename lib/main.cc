@@ -18,8 +18,6 @@
 /// @return 0 if the program exits successfully
 int main(int argc, char **argv)
 {
-    for (int i = 0; i < argc; i++)
-        std::cout << argv[i] << std::endl;
     rift::driver::Driver driver;
     return driver.parse(argc, argv);
 }

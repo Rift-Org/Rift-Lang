@@ -254,6 +254,41 @@ namespace rift
             return val;
         }
 
+        Token Visitor::visit_if_stmt(const StmtIf& stmt) const
+        {
+            auto if_stmt = stmt.if_stmt;
+            // if stmt
+            auto expr = std::move(if_stmt->expr);
+            if (expr == nullptr) rift::error::runTimeError("If statement expression should not be null");
+            auto expr_tok = expr->accept(*this);
+
+            if (truthy(expr_tok)) {
+                if (if_stmt->blk != nullptr) if_stmt->blk->accept(*this);
+                else if (if_stmt->stmt != nullptr) if_stmt->stmt->accept(*this);
+                else rift::error::runTimeError("If statement should have a statement or block");
+                return Token();
+            }
+
+            // elif stmt
+            auto elif_stmts = stmt.elif_stmts;
+            for (const auto& elif_stmt : elif_stmts) {
+                if(elif_stmt->expr == nullptr) rift::error::runTimeError("Elif statement expression should not be null");
+                if(truthy(elif_stmt->expr->accept(*this))) {
+                    if (elif_stmt->blk != nullptr) elif_stmt->blk->accept(*this);
+                    else if (elif_stmt->stmt != nullptr) elif_stmt->stmt->accept(*this);
+                    else rift::error::runTimeError("Elif statement should have a statement or block");
+                    return Token();
+                }
+            }
+
+            // else stmt
+            auto else_stmt = stmt.else_stmt;
+            if (else_stmt->blk != nullptr) else_stmt->blk->accept(*this);
+            else if (else_stmt->stmt != nullptr) else_stmt->stmt->accept(*this);
+            else rift::error::runTimeError("Else statement should have a statement or block");
+            return Token();
+        }
+
         #pragma mark - Program / Block Visitor
 
         Tokens Visitor::visit_block_stmt(const Block& block) const

@@ -49,6 +49,7 @@ std::string Token::convertTypeString(TokenType type) {
         case AND: return "AND";
         case CLASS: return "CLASS";
         case ELSE: return "ELSE";
+        case ELIF: return "ELIF";
         case FALSE: return "FALSE";
         case FUN: return "FUN";
         case FOR: return "FOR";

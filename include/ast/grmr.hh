@@ -30,11 +30,12 @@ namespace rift
         ///         ------------
         /// program        → decl * EOF
         /// decl           → varDecl | statement
+        /// block          → "{" decl* "}"
         /// statement      → exprStmt | printStmt | block ";"
         /// varDecl        → "var" IDENTIFIER ( "=" expression ) ";"
         /// printStmt      → "print" "(" expression ");"
         /// exprStmt       → expression ";"
-        /// block          → "{" declaration* "}"
+        /// ifStmt        → "if" "(" expression ")" statement|block ( "elif" statment|block )* ( "else" statement|block )?
         /// expression     → equality ";"
         /// assignment     → IDENTIFIER "=" assignment | equality
         /// equality       → comparison ( ( "!=" | "==" ) comparison )* ";"
@@ -88,6 +89,7 @@ namespace rift
                     /// @note TokenType::IGNORE is used to ignore statements returning void
                     virtual Token visit_expr_stmt(const StmtExpr& stmt) const;
                     virtual Token visit_print_stmt(const StmtPrint& stmt) const;
+                    virtual Token visit_if_stmt(const StmtIf& stmt) const;
 
                     /* decl */
                     virtual Tokens visit_decl_stmt(const DeclStmt& decl) const;

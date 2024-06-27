@@ -42,8 +42,13 @@ namespace rift
 
         void Environment::printState()
         {
-            for (const auto& [key, value] : values) {
-                std::cout << key << " => " << value.to_string() << std::endl;
+            Environment *curr = this;
+            while (curr != nullptr) {
+                std::cout << "IN  ";
+                for (const auto& [key, value] : curr->values) {
+                    std::cout << key << " => " << value.to_string() << std::endl;
+                }
+                curr = curr->child;
             }
         }
     }

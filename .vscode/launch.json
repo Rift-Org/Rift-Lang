@@ -41,7 +41,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/lib/riftlang",
-            "args": ["-f", "${workspaceFolder}/examples/hello-world/hello.rf"],
+            "args": ["${workspaceFolder}/examples/internal/test.rf"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

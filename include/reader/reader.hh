@@ -79,6 +79,13 @@ namespace rift
                     if (error) rift::error::report(line, "consume", "expected token not found", expected, *error);
                     return T();
                 }
+                /// @brief 
+                inline bool consume(T expected) {
+                    if(peek(expected)) {
+                        advance(); return true;
+                    }
+                    return false;
+                }
                 /// @brief Matches a T from a set of T's{token, character} and advances the cursor
                 inline bool match(std::vector<T> expected) {
                     match_length = 0;

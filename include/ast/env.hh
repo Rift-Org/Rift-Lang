@@ -37,8 +37,9 @@ namespace rift
                 }
                 /// @brief add a child to the current environment (recursive-checks)
                 static void addChild() {
-                    Environment &curr = getInstance();
-                    while(curr.child != nullptr) {
+                    Environment curr = getInstance();
+                    while(curr.child) {
+                        std::cout << curr.child << std::endl;
                         curr = curr.child;
                     }
                     curr.child = new Environment();
