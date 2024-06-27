@@ -54,6 +54,18 @@ namespace rift
                     prev.child = nullptr; // remove the child
                 }
 
+                /// @brief clear all enviroments
+                /// @note usefull for switching from compile-time to runtime
+                static void clear() {
+                    Environment &curr = getInstance();
+                    while(curr.child != nullptr) {
+                        Environment *tmp = curr.child;
+                        curr.child = curr.child->child;
+                        delete tmp;
+                    }
+                    getInstance().values.clear();
+                }
+
                 Environment() : child(nullptr) {}
                 Environment(Environment *child) : child(child) {}
                 ~Environment() = default;

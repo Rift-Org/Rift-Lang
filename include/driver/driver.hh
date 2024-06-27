@@ -32,8 +32,6 @@ namespace rift
                 /// @return 0 if the program exits successfully.
                 int parse(int argc, char **argv);
 
-                /// @brief Runs the driver.
-                void init();
             private:
                 CLI::App app{"rift"};
 
@@ -42,7 +40,7 @@ namespace rift
                 void version();
 
                 /// @brief Runs the compiler
-                void runFile();
+                void runFile(std::string path);
 
                 /// @brief Runs the interpreter
                 void runPrompt();

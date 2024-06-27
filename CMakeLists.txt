@@ -19,7 +19,7 @@ endif()
 
 project(RiftLang)
 
-# C++17 required
+# C++20 required
 set(CMAKE_CXX_STANDARD 20)
 
 # Set Debug Mode

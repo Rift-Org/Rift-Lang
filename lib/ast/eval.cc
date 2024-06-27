@@ -31,11 +31,12 @@ namespace rift
             this->visitor = std::unique_ptr<Visitor>(new Visitor());
         }
 
-        std::vector<std::string> Eval::evaluate(const Program& expr)
+        std::vector<std::string> Eval::evaluate(const Program& expr, bool interactive)
         {
             std::vector<std::string> res;
 
             try {
+                if(!interactive) env::clear();
                 auto toks = expr.accept(*visitor.get());
                 for (const auto& tok : toks) {
                     any val = tok.getLiteral();

@@ -37,7 +37,7 @@ namespace rift
                 ~Eval() = default;
 
                 /// @brief Evaluates the given *expr/stmt/decl*
-                std::vector<string> evaluate(const Program& expr);
+                std::vector<string> evaluate(const Program& expr, bool interactive);
 
             private:
                 std::unique_ptr<Visitor> visitor;

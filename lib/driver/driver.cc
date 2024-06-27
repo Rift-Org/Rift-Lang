@@ -40,7 +40,7 @@ namespace rift
     {
         # pragma mark - Driver Tools
 
-        void run(std::string lines)
+        void run(std::string lines, bool interactive)
         {
             std::istringstream scanner(lines);
             std::shared_ptr<std::vector<char>> source = std::make_shared<std::vector<char>>(std::istreambuf_iterator<char>(scanner), std::istreambuf_iterator<char>()); 
@@ -53,14 +53,13 @@ namespace rift
             std::unique_ptr<Program> statements = riftParser.parse(); 
 
             Eval riftEvaluator;
-            riftEvaluator.evaluate(*statements);
+            riftEvaluator.evaluate(*statements, interactive);
             rift::ast::Environment::getInstance().printState();
         }
 
-        void Driver::runFile()
+        void Driver::runFile(std::string path)
         {
             CLI::results_t args = app.remaining();
-            std::string path;
 
             if (!args.empty()) {
                 for (auto arg : args) path = arg;
@@ -77,7 +76,7 @@ namespace rift
 
                 std::vector<char> buffer(size);
                 if (file.read(buffer.data(), size)) {
-                    run(buffer.data());
+                    run(buffer.data(), false);
                     if (errorOccured) exit(42);
                     if (runtimeErrorOccured) exit(69);
                     // reset
@@ -95,7 +94,7 @@ namespace rift
                 if (input == nullptr) break;
                 add_history(input);
 
-                run(input);
+                run(input, true);
                 
                 // reset
                 errorOccured = false;
@@ -114,30 +113,31 @@ namespace rift
 
         int Driver::parse(int argc, char **argv) 
         {
+            std::string file;
             try {
-                app.parse(argc, argv);
+                app.add_flag_callback("--version,-v", [this]() { version(); }, "Print the version of the Rift language");
+                app.add_flag_callback("--prompt,-p", [this]() { runPrompt(); }, "Run the Rift prompt");
+
+                // CLI::Option *option = app.add_option("--file,-f", file, "Run a Rift source file")
+                //     ->check(CLI::ExistingFile)
+                //     ->required();
+                
+                  app.add_option_function<std::string>("--file,-f", [this](const std::string& path) {
+                    runFile(path);
+                }, "Run a Rift source file")->check(CLI::ExistingFile)->required();
+
+                
+                // app.parse(argc, argv);
+                CLI11_PARSE(app, argc, argv);
+                // std::cout << "Running file: " << file << std::endl;
+                if (!file.empty()) {
+                    this->runFile(file);
+                }
             } catch (const CLI::ParseError &parseError) {
                 return app.exit(parseError);
             }
-            runPrompt();
-            // return 0;
-            // if (argc > 2) {
-            //     std::cout << "Usage: rift" << std::endl;
-            // } else if (argc == 2) {
-            //     // file
-            //     runFile(argv[1]);
-            // } else {
-            //     // prompt
-            //     runPrompt();
-            // }
-            return 0;
-        }
 
-        void Driver::init()
-        {
-            app.add_flag_callback("--version,-v", [this]() { version(); }, "Print the version of the Rift language");
-            app.add_flag_callback("--prompt,-p", [this]() { runPrompt(); }, "Run the Rift prompt");
-            app.add_flag_callback("--file,-f", [this]() { runFile(); }, "Run a Rift source file");
+            return 0;
         }
     }
 }

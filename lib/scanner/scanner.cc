@@ -15,6 +15,7 @@
 
 #include <scanner/scanner.hh>
 #include <iostream>
+#include <format>
 
 typedef rift::scanner::Token Token;
 typedef rift::scanner::TokenType Type;
@@ -150,7 +151,7 @@ namespace rift
                     if (isDigit(c)) num();
                     else if (keyword()) return;
                     else if (isAlpha(c)) identifier();
-                    else rift::error::report(line, "scanToken", "Unorthodox Character", Token(), std::exception());
+                    else rift::error::report(line, "scanToken", std::format("Unorthodox Character {}", c), Token(), std::exception());
             };
         }
 

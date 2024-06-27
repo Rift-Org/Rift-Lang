@@ -47,6 +47,6 @@ TEST_F(RiftEvaluator, simpleEvalExpr) {
     // Create a unique_ptr to a vector of unique_ptr<Stmt>
     auto program_statements = std::make_unique<std::vector<std::unique_ptr<Decl>>>(std::move(decls));
     auto program = std::make_unique<Program>(std::move(program_statements));
-    auto x = eval->evaluate((*program));
+    auto x = eval->evaluate((*program), true);
     EXPECT_EQ(x.at(0), "2");
 }
