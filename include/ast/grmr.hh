@@ -31,11 +31,13 @@ namespace rift
         /// program        → decl * EOF
         /// decl           → varDecl | statement
         /// block          → "{" decl* "}"
+        /// for            → "for" "(" (decl|stmt)? ";" expr ";" (stmt)? ")" stmt|blk
         /// statement      → exprStmt | printStmt | block ";"
-        /// varDecl        → "var" IDENTIFIER ( "=" expression ) ";"
+        /// varDecl        → "mut" IDENTIFIER ( "=" stmt ) ";"
+        /// constDecl      → "mut!" IDENTIFIER ( "=" expr ) ";"
         /// printStmt      → "print" "(" expression ");"
         /// exprStmt       → expression ";"
-        /// ifStmt        → "if" "(" expression ")" statement|block ( "elif" statment|block )* ( "else" statement|block )?
+        /// ifStmt         → "if" "(" expression ")" statement|block ( "elif" statment|block )* ( "else" statement|block )?
         /// ternary        → expression "?" expression ":" expression ";"
         /// expression     → equality ";"
         /// assignment     → IDENTIFIER "=" assignment | equality
@@ -56,7 +58,8 @@ namespace rift
 
         __DEFAULT_FORWARD_NONE_VA(
             Printer,
-            Ternary
+            Ternary,
+            For
         )
 
         __DEFAULT_FORWARD_NONE_VA(
@@ -101,7 +104,8 @@ namespace rift
                     /* decl */
                     virtual Tokens visit_decl_stmt(const DeclStmt& decl) const;
                     virtual Tokens visit_decl_var(const DeclVar& decl) const;
-                    
+                    /* c-flow */
+                    virtual Tokens visit_for(const For& decl) const;
                     /* block */
                     virtual Tokens visit_block_stmt(const Block& block) const;
                     /* prgm */

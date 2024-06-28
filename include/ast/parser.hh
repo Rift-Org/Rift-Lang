@@ -80,12 +80,16 @@ namespace rift
                 std::unique_ptr<StmtPrint> statement_print();
                 /// @example if (1+2) print(3);
                 std::unique_ptr<StmtIf> statement_if();
+            
 
                 /// @note rules in order of precedence <Decl>
                 /// @example var x = 1;
                 std::unique_ptr<DeclStmt> declaration_statement();
                 /// @example var x = 1;
                 std::unique_ptr<DeclVar> declaration_variable();
+
+                /// @example while(true) print("hi");
+                std::unique_ptr<For> for_();
 
                 /// @example { var x = 1; }
                 std::unique_ptr<Block> block();

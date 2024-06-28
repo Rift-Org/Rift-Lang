@@ -307,9 +307,50 @@ namespace rift
                 rift::error::report(line, "declaration_variable", "🛑 Variable '" + castString(idt) + "' already declared at line: " + castNumberString(idt.line), idt, ParserException("Variable '" + castString(idt) + "' already declared"));
             env::getInstance().setEnv(castString(idt), idt);
 
-            auto expr = assignment();
-            consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable assignment")));
-            return std::make_unique<DeclVar>(idt, std::move(expr));
+            if(peekNext() == Token(TokenType::EQUAL, "=", "", line)) {
+                auto expr = assignment();
+                consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable assignment")));
+                return std::make_unique<DeclVar>(idt, std::move(expr));
+            }
+
+            idt = consume(Token(TokenType::IDENTIFIER, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected variable name")));
+            consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable declaration")));
+            // return std::make_unique<DeclVar>(idt, std::unique_ptr<Literal>(new Literal(Token(TokenType::NIL, "nil", "", line))));
+            return std::make_unique<DeclVar>(idt);
+        }
+
+        std::unique_ptr<For> Parser::for_()
+        {
+            std::unique_ptr<For> _for = std::make_unique<For>();
+            consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after for")));
+
+            // first ;
+            if (match({Token(TokenType::VAR, "", "", line)})) {
+                _for->decl = std::move(declaration_variable());
+            } else if(peek(Token(TokenType::IDENTIFIER, "", "", line))) {
+                _for->stmt_l = std::move(ret_stmt());
+            }
+            // taken by var_decl();
+            // consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after for first statement")));
+
+            // second ;
+            auto expr = expression();
+            _for->expr = std::move(expr);
+            consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after for second statement")));
+
+            // third ;
+            if(peek(Token(TokenType::IDENTIFIER, "", "", line))) {
+                _for->stmt_r = std::move(ret_stmt());
+            }
+            consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after for")));
+
+            if (match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
+                _for->blk = std::move(block());
+            } else {
+                _for->stmt_o = std::move(ret_stmt());
+            }
+
+            return _for;
         }
 
         #pragma mark - Program / Block Parsing
@@ -344,7 +385,10 @@ namespace rift
 
             while (!atEnd()) {
                 if (consume (Token(TokenType::VAR, "", "", line))) {
-                    decls->push_back(declaration_variable());
+                    auto test = declaration_variable();
+                    decls->emplace_back(std::move(test)); // GIVING ME UB
+                } else if (consume (Token(TokenType::FOR, "", "", line)))  {
+                    decls->push_back(for_());
                 } else if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
                     decls->push_back(block());
                 } else {

@@ -65,8 +65,10 @@ namespace rift
         {
             Token val = expr.value;
             any literal;
-
-            if (val.type == TokenType::IDENTIFIER) {
+            
+            if (val.type == TokenType::NIL) 
+                return Token(TokenType::NIL, "nil", nullptr, expr.value.line);
+            else if (val.type == TokenType::IDENTIFIER) {
                 Token res = env::getInstance().getEnv(castString(val));
                 if (res.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(val) + "'");
                 literal = res.getLiteral();
@@ -97,11 +99,11 @@ namespace rift
             
             /* Other Literals */
             else if (literal.type() == typeid(std::nullptr_t))
-                return Token(TokenType::NIL, "null", nullptr, expr.value.line);
+                return Token(TokenType::NIL, "nil", nullptr, expr.value.line);
             else if (literal.type() == typeid(bool))
                 return Token(std::any_cast<bool>(literal)?TokenType::TRUE:TokenType::FALSE, std::to_string(std::any_cast<bool>(literal)), std::any_cast<bool>(literal), expr.value.line);
             else if (literal.type() == typeid(std::nullptr_t))
-                return Token(TokenType::NIL, "null", nullptr, expr.value.line);
+                return Token(TokenType::NIL, "nil", nullptr, expr.value.line);
             else
                 rift::error::runTimeError("Unknown literal type");
             return Token();
@@ -357,7 +359,32 @@ namespace rift
         {
             // check performed in parser, undefined variables are CT errors
             std::vector<Token> toks;
-            toks.push_back(decl.expr->accept(*this));
+            if (decl.expr != nullptr) {
+                toks.push_back(decl.expr->accept(*this));
+            } else {
+                auto niltok = Token(TokenType::NIL, "null", nullptr, decl.identifier.line);
+                env::getInstance().setEnv(decl.identifier.lexeme, niltok);
+                toks.push_back(niltok);
+            }
+            return toks;
+        }
+
+        Tokens Visitor::visit_for(const For& decl) const
+        {
+            Tokens toks = {};
+            if (decl.decl != nullptr) decl.decl->accept(*this);
+            else if (decl.stmt_l != nullptr) decl.stmt_l->accept(*this);
+
+            while(truthy(decl.expr->accept(*this))) {
+                if(decl.stmt_o != nullptr) toks.push_back(decl.stmt_o->accept(*this));
+                else if (decl.blk != nullptr) {
+                    auto bk = decl.blk->accept(*this);
+                    toks.insert(toks.begin(), bk.begin(), bk.end());
+                }
+                else rift::error::runTimeError("For statement should have a statement or block");
+
+                if (decl.stmt_r != nullptr) decl.stmt_r->accept(*this);
+            }
             return toks;
         }
     }

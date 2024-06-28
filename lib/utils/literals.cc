@@ -112,6 +112,7 @@ namespace rift
 
     std::string castString(const Token& tok, bool err) {
         any val = tok.getLiteral();
+
         if (val.type() == typeid(std::string)) {
             return std::any_cast<std::string>(val);
         } else if (val.type() == typeid(char*)) {
