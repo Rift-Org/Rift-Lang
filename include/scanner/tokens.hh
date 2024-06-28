@@ -37,6 +37,8 @@ namespace rift
             SEMICOLON,
             SLASH,
             STAR,
+            QUESTION,
+            COLON,
 
             // One or two character tokens
             BANG,
@@ -49,9 +51,14 @@ namespace rift
             LESS_EQUAL,
             SEPARATOR,
             WHITESPACE,
+
+            // Operators
             OPERATOR,
-            TERNARY,
             NULLISH_COAL,
+            LOG_AND,
+            LOG_OR,
+            BIT_AND,
+            BIT_OR,
 
             // Literals
             IDENTIFIER,
@@ -59,7 +66,6 @@ namespace rift
             NUMERICLITERAL,
 
             // Keywords
-            AND,
             CLASS,
             FALSE,
             FUN,
@@ -68,7 +74,6 @@ namespace rift
             ELSE,
             ELIF,
             NIL,
-            OR,
             PRINT,
             RETURN,
             SUPER,

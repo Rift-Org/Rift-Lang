@@ -116,25 +116,48 @@ namespace rift
 
         Token Visitor::visit_binary(const Binary& expr) const
         {
-            Token left = expr.left.get()->accept(*this);
-            Token right = expr.right.get()->accept(*this);
-
-            /* resolve identifiers */
-            if (left.type == TokenType::IDENTIFIER) {
-                auto tmp = Token(left);
-                left = rift::ast::Environment::getInstance().getEnv(castString(left));
-                if (left.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(tmp) + "'");
-            }
-            if (right.type == TokenType::IDENTIFIER) {
-                auto tmp = Token(right);
-                right = rift::ast::Environment::getInstance().getEnv(castString(right));
-                if (right.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(tmp) + "'");
-            }
+            Token left;
+            Token right;
 
             string l_s, r_s;
             any resAny;
             bool resBool;
 
+            // Operators that can't evaulate yet
+            switch (expr.op.type) {
+                case NULLISH_COAL:
+                    left = expr.left.get()->accept(*this);
+                    if (left.type == TokenType::NIL) {
+                        right = expr.right.get()->accept(*this);
+                        return right;
+                    }
+                    return left;
+                case LOG_AND:
+                    left = expr.left.get()->accept(*this);
+                    if(truthy(left)) {
+                        if(truthy(expr.right.get()->accept(*this)))
+                            return Token(TokenType::TRUE, "true", "true", expr.op.line);
+                        return Token(TokenType::FALSE, "false", "false", expr.op.line);
+                    }
+                    return Token();
+                case LOG_OR:
+                    left = expr.left.get()->accept(*this);
+                    if (truthy(left)) {
+                        right = expr.right.get()->accept(*this);
+                        return Token(TokenType::TRUE, "true", "true", expr.op.line);
+                    } else {
+                        right = expr.left.get()->accept(*this);
+                        if (truthy(right)) return Token(TokenType::TRUE, "true", "true", expr.op.line);
+                        return Token(TokenType::FALSE, "false", "false", expr.op.line);
+                    }
+                default:
+                    break;
+            }
+
+            left = expr.left.get()->accept(*this);
+            right = expr.right.get()->accept(*this);
+
+            // Operators which depend on evaluation of both
             switch (expr.op.type) {
                 /* arthimetic ops */
                 case TokenType::MINUS:
@@ -169,7 +192,6 @@ namespace rift
                         rift::error::runTimeError("Expected a number for '*' operator");
                     resAny = any_arithmetic(left, right, expr.op);
                     return Token(TokenType::NUMERICLITERAL, castNumberString(resAny), resAny, expr.op.line);
-
                 /* comparison ops */
                 case TokenType::GREATER:
                     if(strcmp(castString(left).c_str(),castString(right).c_str())>0)
@@ -206,12 +228,6 @@ namespace rift
         Token Visitor::visit_unary(const Unary& expr) const
         {
             Token right = expr.expr.get()->accept(*this);
-            // if (right.type == TokenType::IDENTIFIER) {
-            //     auto tmp = Token(right);
-            //     right = rift::ast::Environment::getInstance().getEnv(castString(right));
-            //     if (right.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(tmp) + "'");
-            // }
-
             bool res = false;
             any resAny;
  
@@ -237,6 +253,15 @@ namespace rift
                     rift::error::runTimeError("Unknown operator for a unary expression");
             }
             return Token();
+        }
+
+        Token Visitor::visit_ternary(const Ternary& expr) const
+        {
+            Token cond = expr.condition->accept(*this);
+
+            if(truthy(cond)) 
+                return Token(expr.left->accept(*this));
+            return Token(expr.right->accept(*this));
         }
 
         #pragma mark - Stmt Visitors

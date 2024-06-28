@@ -135,7 +135,8 @@ namespace rift
         {
             auto expr = comparison();
 
-            while (match({Token(TokenType::BANG_EQUAL, "!=", "", line)}) || match({Token(TokenType::EQUAL_EQUAL, "==", "", line)})) {
+            if (match({Token(TokenType::BANG_EQUAL, "!=", "", line)}) || match({Token(TokenType::EQUAL_EQUAL, "==", "", line)}) || 
+                match({Token(TokenType::NULLISH_COAL, "??", "", line)}) || match({Token(TokenType::LOG_AND, "&&", "", line)}) ) {
                 auto op = peekPrev();
                 auto right = comparison();
                 if (expr == nullptr) rift::error::report(line, "equality", "Expected expression before equality operator", op, ParserException("Expected expression before equality operator"));
@@ -148,10 +149,16 @@ namespace rift
 
         std::unique_ptr<Expr> Parser::ternary()
         {
-            if (peekNext() == Token(TokenType::TERNARY, "?:", "", line)) {
-                auto expr = equality();
-                
+            auto expr = equality();
+
+            if (match({Token(TokenType::QUESTION, "?", "", line)})) {
+                auto left = equality();
+                consume(Token(TokenType::COLON, ":", "", line), std::unique_ptr<ParserException>(new ParserException("Expected a colon while expecting a ternary operator")));
+                auto right = equality();
+                return std::unique_ptr<Ternary>(new Ternary(std::move(expr),std::move(left),std::move(right)));
             }
+
+            return expr;
         }
 
         std::unique_ptr<Expr> Parser::assignment()
@@ -181,7 +188,7 @@ namespace rift
                 }
             }
 
-            return equality();
+            return ternary();
         }
 
         std::unique_ptr<Expr> Parser::expression()

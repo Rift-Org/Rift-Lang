@@ -43,12 +43,15 @@ std::string Token::convertTypeString(TokenType type) {
         case SEPARATOR: return "SEPARATOR";
         case WHITESPACE: return "WHITESPACE";
         case OPERATOR: return "OPERATOR";
-        case TERNARY: return "TERNARY";
+        case QUESTION: return "QUESTION";
+        case COLON: return "COLON";
         case NULLISH_COAL: return "NULLISH_COAL";
         case IDENTIFIER: return "IDENTIFIER";
         case STRINGLITERAL: return "STRINGLITERAL";
         case NUMERICLITERAL: return "NUMERICLITERAL";
-        case AND: return "AND";
+        case BIT_AND: return "BIT_AND";
+        case BIT_OR: return "BIT_OR";
+        case LOG_AND: return "LOG_AND";
         case CLASS: return "CLASS";
         case ELSE: return "ELSE";
         case ELIF: return "ELIF";
@@ -57,7 +60,7 @@ std::string Token::convertTypeString(TokenType type) {
         case FOR: return "FOR";
         case IF: return "IF";
         case NIL: return "NIL";
-        case OR: return "OR";
+        case LOG_OR: return "LOG_OR";
         case PRINT: return "PRINT";
         case RETURN: return "RETURN";
         case SUPER: return "SUPER";
@@ -165,6 +168,14 @@ std::any Token::getLiteral() const
         return std::any{std::string(lexeme)};
     } else if (type == IDENTIFIER) {
         return std::any{std::string(lexeme)};
+    } else if (type == NUMERICLITERAL) {
+        return std::any{std::stod(lexeme)};
+    } else if (type == TRUE) {
+        return std::any{true};
+    } else if (type == FALSE) {
+        return std::any{false};
+    } else if (type == NIL) {
+        return std::any{nullptr};
     }
 
     if (isInteger(lexeme.c_str()))
@@ -191,8 +202,6 @@ std::any Token::getLiteral() const
         return std::any{std::string(lexeme.substr(1, lexeme.length() - 2))};
     if (isChar(lexeme.c_str()))
         return std::any{char(lexeme[1])};
-    if (lexeme == "nil")
-        return std::any{nullptr};
 
     rift::error::report(line, "getLiteral", "Unknown Literal Type", Token(), std::exception());
     return std::any(); // should never hit

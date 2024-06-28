@@ -70,6 +70,15 @@ namespace rift
             inline bool isAlphaNumeric(char c) { return std::isalnum(c); }
             inline bool isIdentifier(char c) { return std::isalnum(c) || c == '_'; }
 
+            void twoChar(Type t1, Type t2, char c) {
+                if (peek(c)) {
+                    addToken(t2); 
+                    advance(); 
+                } else {
+                    addToken(t1);
+                }
+            }
+
             #pragma mark - Token Scanners
 
             /// @brief Scans a string literal

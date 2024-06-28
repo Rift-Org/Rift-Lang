@@ -133,6 +133,9 @@ namespace rift
 
     std::string castAnyString(const Token& tok)
     {
+        if (tok.type == TokenType::TRUE) return "true";
+        if (tok.type == TokenType::FALSE) return "false";
+        if (tok.type == TokenType::NIL) return "nil";
         std::string str = castNumberString(tok.getLiteral(), false);
         if (str.empty()) {
             str = castString(tok, false);

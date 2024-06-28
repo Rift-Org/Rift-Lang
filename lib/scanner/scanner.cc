@@ -33,7 +33,7 @@ namespace rift
             this->tokens = std::vector<Token>();
 
             keywords = std::unordered_map<std::string, Type>();
-            keywords["and"] = Type::AND;
+            keywords["and"] = Type::LOG_AND;
             keywords["class"] = Type::CLASS;
             keywords["false"] = Type::FALSE;
             keywords["for"] = Type::FOR;
@@ -42,7 +42,7 @@ namespace rift
             keywords["else"] = Type::ELSE;
             keywords["elif"] = Type::ELIF;
             keywords["nil"] = Type::NIL;
-            keywords["or"] = Type::OR;
+            keywords["or"] = Type::LOG_OR;
             keywords["print"] = Type::PRINT;
             keywords["return"] = Type::RETURN;
             keywords["super"] = Type::SUPER;
@@ -147,6 +147,12 @@ namespace rift
                 case '\r': break;
                 case '\t': break;
                 case '\n': line++; break;
+
+                case '?': twoChar(Type::QUESTION, Type::NULLISH_COAL, c); break;
+                case ':': addToken(TokenType::COLON, ":");break;
+
+                case '&': twoChar(Type::BIT_AND, Type::LOG_AND, c); break;
+                case '|': twoChar(Type::BIT_OR, Type::LOG_OR, c); break;
 
                 default:
                     if (isDigit(c)) num();
