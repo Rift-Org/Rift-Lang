@@ -112,7 +112,7 @@ namespace rift
         Token Visitor::visit_assign(const Assign& expr) const
         {
             auto name = castString(expr.name);
-            env::getInstance().setEnv(name, expr.value->accept(*this));
+            env::getInstance().setEnv(name, expr.value->accept(*this), expr.name.type == TokenType::C_IDENTIFIER);
             return env::getInstance().getEnv(name);;
         }
 
@@ -363,7 +363,7 @@ namespace rift
                 toks.push_back(decl.expr->accept(*this));
             } else {
                 auto niltok = Token(TokenType::NIL, "null", nullptr, decl.identifier.line);
-                env::getInstance().setEnv(decl.identifier.lexeme, niltok);
+                env::getInstance().setEnv(decl.identifier.lexeme, niltok, decl.identifier.type == TokenType::C_IDENTIFIER);
                 toks.push_back(niltok);
             }
             return toks;

@@ -32,7 +32,7 @@ namespace rift
             this->source = source;
             this->tokens = std::vector<Token>();
 
-            keywords = std::unordered_map<std::string, Type>();
+            keywords = {};
             keywords["and"] = Type::LOG_AND;
             keywords["class"] = Type::CLASS;
             keywords["false"] = Type::FALSE;
@@ -48,6 +48,7 @@ namespace rift
             keywords["super"] = Type::SUPER;
             keywords["this"] = Type::THIS;
             keywords["true"] = Type::TRUE;
+            keywords["mut!"] = Type::CONST;
             keywords["mut"] = Type::VAR;
             keywords["while"] = Type::WHILE;
         }

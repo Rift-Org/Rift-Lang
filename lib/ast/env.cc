@@ -31,12 +31,17 @@ namespace rift
             return values.at(name);
         }
 
-        void Environment::setEnv(const str_t& name, const Token& value)
+        void Environment::setEnv(const str_t& name, const Token& value, bool is_const)
         {
             if (!values.contains(name) && child != nullptr) {
-                child->setEnv(name, value);
+                child->setEnv(name, value, is_const);
             } else {
-                values[name] = value;
+                if (values.contains(name) && const_keys.contains(name)) {
+                    error::report(0, "Environment", "Cannot reassign a constant variable", values.at(name), std::exception());
+                } else {
+                    values[name] = value;
+                    if (is_const) const_keys.insert(name);
+                }
             }
         }
 

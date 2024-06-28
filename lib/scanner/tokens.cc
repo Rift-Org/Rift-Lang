@@ -67,7 +67,9 @@ std::string Token::convertTypeString(TokenType type) {
         case THIS: return "THIS";
         case TRUE: return "TRUE";
         case VAR: return "VAR";
+        case CONST: return "CONST";
         case WHILE: return "WHILE";
+        case C_IDENTIFIER: return "C_IDENTIFIER";
         case IGNORE: return "IGNORE";
         case EOFF: return "EOFF";
     }
@@ -209,7 +211,7 @@ std::any Token::getLiteral() const
 
 #pragma mark - Operators
 
-bool Token::operator==(const Token &token)
+bool Token::operator==(const Token &token) const
 {
     return this->type == token.type;
 }

@@ -50,7 +50,7 @@ namespace rift
         class DeclVar: public Decl
         {
             public:
-                DeclVar(const Token&identifier): identifier(identifier), expr(nullptr) {};
+                DeclVar(const Token &identifier): identifier(identifier), expr(nullptr) {};
                 DeclVar(const Token &identifier, std::unique_ptr<Expr> expr): identifier(identifier), expr(std::move(expr)) {};
                 Tokens accept(const Visitor &visitor) const override { return visitor.visit_decl_var(*this); }
 

@@ -85,8 +85,8 @@ namespace rift
                 /// @note rules in order of precedence <Decl>
                 /// @example var x = 1;
                 std::unique_ptr<DeclStmt> declaration_statement();
-                /// @example var x = 1;
-                std::unique_ptr<DeclVar> declaration_variable();
+                /// @example mut x = 1; mut! x = 5;
+                std::unique_ptr<DeclVar> declaration_variable(bool mut);
 
                 /// @example while(true) print("hi");
                 std::unique_ptr<For> for_();
@@ -100,6 +100,8 @@ namespace rift
                 void synchronize();
                 /// @brief returns any statements that might be executed 
                 std::unique_ptr<Stmt> ret_stmt();
+                /// @brief returns any declarations that might be executed
+                vec_prog ret_decl();
         };
 
         class ParserException : public ReaderException

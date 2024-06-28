@@ -62,6 +62,7 @@ namespace rift
 
             // Literals
             IDENTIFIER,
+            C_IDENTIFIER,
             STRINGLITERAL,
             NUMERICLITERAL,
 
@@ -80,6 +81,7 @@ namespace rift
             THIS,
             TRUE,
             VAR,
+            CONST,
             WHILE,
             
             IGNORE,
@@ -130,7 +132,7 @@ namespace rift
                 << ", Line=" << token.line << ")"*/;
                 return os;
             }
-            bool operator==(const Token &token);
+            bool operator==(const Token &token) const;
 
             std::any getLiteral() const;
         };

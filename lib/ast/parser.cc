@@ -295,9 +295,10 @@ namespace rift
             return std::make_unique<DeclStmt>(std::move(stmt));
         }
 
-        std::unique_ptr<DeclVar> Parser::declaration_variable()
+        std::unique_ptr<DeclVar> Parser::declaration_variable(bool mut)
         {
             // make sure there is an identifier
+            auto tok_t = mut ? TokenType::IDENTIFIER : TokenType::C_IDENTIFIER;
             auto idt = consume(Token(TokenType::IDENTIFIER, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected variable name")));
             prevance();
             // make sure the identifier is not already declared
@@ -305,18 +306,20 @@ namespace rift
             ///       this also checks if any outer block has already declared this variable
             if (env::getInstance().getEnv(castString(idt)) != Token())
                 rift::error::report(line, "declaration_variable", "🛑 Variable '" + castString(idt) + "' already declared at line: " + castNumberString(idt.line), idt, ParserException("Variable '" + castString(idt) + "' already declared"));
-            env::getInstance().setEnv(castString(idt), idt);
+            env::getInstance().setEnv(castString(idt), idt, idt.type == TokenType::C_IDENTIFIER);
 
             if(peekNext() == Token(TokenType::EQUAL, "=", "", line)) {
                 auto expr = assignment();
                 consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable assignment")));
+                idt.type = tok_t;
                 return std::make_unique<DeclVar>(idt, std::move(expr));
+            } else if (!mut) {
+                rift::error::report(line, "declaration_variable", "🛑 Constants must be defined", idt, ParserException("Constants must be defined"));
             }
 
             idt = consume(Token(TokenType::IDENTIFIER, "", "", line), std::unique_ptr<ParserException>(new ParserException("Expected variable name")));
             consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable declaration")));
-            // return std::make_unique<DeclVar>(idt, std::unique_ptr<Literal>(new Literal(Token(TokenType::NIL, "nil", "", line))));
-            return std::make_unique<DeclVar>(idt);
+            return std::unique_ptr<DeclVar>(new DeclVar(Token(tok_t, idt.lexeme, idt.literal, idt.line)));
         }
 
         std::unique_ptr<For> Parser::for_()
@@ -326,7 +329,9 @@ namespace rift
 
             // first ;
             if (match({Token(TokenType::VAR, "", "", line)})) {
-                _for->decl = std::move(declaration_variable());
+                _for->decl = std::move(declaration_variable(true));
+            } else if (match({Token(TokenType::CONST, "", "", line)}))  {
+                _for->decl = std::move(declaration_variable(false));
             } else if(peek(Token(TokenType::IDENTIFIER, "", "", line))) {
                 _for->stmt_l = std::move(ret_stmt());
             }
@@ -339,9 +344,8 @@ namespace rift
             consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after for second statement")));
 
             // third ;
-            if(peek(Token(TokenType::IDENTIFIER, "", "", line))) {
+            if(peek(Token(TokenType::IDENTIFIER, "", "", line)))
                 _for->stmt_r = std::move(ret_stmt());
-            }
             consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after for")));
 
             if (match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
@@ -355,21 +359,34 @@ namespace rift
 
         #pragma mark - Program / Block Parsing
 
+        vec_prog Parser::ret_decl()
+        {
+            vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
+            if (consume (Token(TokenType::VAR, "", "", line))) {
+                auto test = declaration_variable(true);
+                decls->emplace_back(std::move(test));
+            } else if (consume (Token(TokenType::CONST, "", "", line))) {
+                auto test = declaration_variable(false);
+                decls->emplace_back(std::move(test));
+            } else if (consume (Token(TokenType::FOR, "", "", line)))  {
+                decls->emplace_back(for_());
+            } else if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
+                auto inner_decls = std::move(block()->decls);
+                decls->insert(decls->end(), std::make_move_iterator(inner_decls->begin()), std::make_move_iterator(inner_decls->end()));
+            } else {
+                decls->emplace_back(declaration_statement());
+            }
+            return decls;
+        }
+
         std::unique_ptr<Block> Parser::block()
         {
             vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
 
             env::addChild();
             while (!atEnd() && !peek(Token(TokenType::RIGHT_BRACE, "}", "", line))) {
-                if (match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
-                    auto inner_decls = std::move(block()->decls);
-                    decls->insert(decls->end(), std::make_move_iterator(inner_decls->begin()), std::make_move_iterator(inner_decls->end()));
-                } else if (consume (Token(TokenType::VAR, "", "", line))) {
-                    auto decl = declaration_variable();
-                    decls->push_back(std::move(decl));
-                } else {
-                    decls->push_back(declaration_statement());
-                }
+                auto inner = ret_decl();
+                decls->insert(decls->end(), std::make_move_iterator(inner->begin()), std::make_move_iterator(inner->end()));
             }
             env::removeChild();
 
@@ -384,16 +401,8 @@ namespace rift
             vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
 
             while (!atEnd()) {
-                if (consume (Token(TokenType::VAR, "", "", line))) {
-                    auto test = declaration_variable();
-                    decls->emplace_back(std::move(test)); // GIVING ME UB
-                } else if (consume (Token(TokenType::FOR, "", "", line)))  {
-                    decls->push_back(for_());
-                } else if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
-                    decls->push_back(block());
-                } else {
-                    decls->push_back(declaration_statement());
-                }
+                auto inner = ret_decl();
+                decls->insert(decls->end(), std::make_move_iterator(inner->begin()), std::make_move_iterator(inner->end()));
             }
 
             return std::unique_ptr<Program>(new Program(std::move(decls)));

@@ -17,6 +17,7 @@
 // #include <absl/container/flat_hash_map.h>
 #include <scanner/tokens.hh>
 #include <unordered_map>
+#include <unordered_set>
 #include <iostream>
 
 using Token = rift::scanner::Token;
@@ -71,12 +72,13 @@ namespace rift
                 Environment(Environment *child) : child(child) {}
                 ~Environment() = default;
                 Token getEnv(const str_t& name) const;
-                void setEnv(const str_t& name, const Token& value);
+                void setEnv(const str_t& name, const Token& value, bool is_const);
                 void printState();
                 Environment *child;
             protected:
                 // absl::flat_hash_map<str_t, rift::scanner::Token> values;
                 std::unordered_map<str_t, rift::scanner::Token> values = {};
+                std::unordered_set<str_t> const_keys = {};
         };
     }
 }

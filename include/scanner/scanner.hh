@@ -21,7 +21,7 @@
 #include <stdlib.h>
 // #include <map>
 
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 using namespace rift::reader;
@@ -37,7 +37,7 @@ namespace rift
         {
             std::shared_ptr<std::vector<char>> source;
             std::vector<Token> tokens;
-            std::unordered_map<std::string, Type> keywords;
+            std::map<str_t, Type, std::greater<str_t> > keywords;
 
             Scanner(std::shared_ptr<std::vector<char>> source);
             ~Scanner(){}
