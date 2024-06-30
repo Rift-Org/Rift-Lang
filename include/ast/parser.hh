@@ -69,6 +69,8 @@ namespace rift
                 std::unique_ptr<Expr> factor();
                 /// @example -1, !1
                 std::unique_ptr<Expr> unary();
+                /// @example method();
+                std::unique_ptr<Expr> call();
                 /// @example 1, "string", true, false, nil
                 std::unique_ptr<Expr> primary();
 
@@ -80,6 +82,8 @@ namespace rift
                 std::unique_ptr<StmtPrint> statement_print();
                 /// @example if (1+2) print(3);
                 std::unique_ptr<StmtIf> statement_if();
+                /// @example return 1;
+                std::unique_ptr<StmtReturn> statement_return();
             
 
                 /// @note rules in order of precedence <Decl>
@@ -87,12 +91,20 @@ namespace rift
                 std::unique_ptr<DeclStmt> declaration_statement();
                 /// @example mut x = 1; mut! x = 5;
                 std::unique_ptr<DeclVar> declaration_variable(bool mut);
+                /// @example func test() {}
+                std::unique_ptr<DeclFunc> declaration_func();
 
                 /// @example while(true) print("hi");
                 std::unique_ptr<For> for_();
 
                 /// @example { var x = 1; }
                 std::unique_ptr<Block> block();
+                /// @example func test() {}  or member.method()
+                std::unique_ptr<DeclFunc::Func> function(); 
+                /// @example 1, 2, 3
+                Tokens params();
+                /// @example 1+1, "str", a
+                Exprs args();
                 /// @note program
                 std::unique_ptr<Program> program();
                 

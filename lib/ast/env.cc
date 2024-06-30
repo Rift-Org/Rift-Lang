@@ -14,6 +14,7 @@
 
 #include <ast/env.hh>
 #include <error/error.hh>
+#include <scanner/tokens.hh>
 
 namespace rift
 {
@@ -26,7 +27,7 @@ namespace rift
                 if(child != nullptr)
                     return child->getEnv(name);
 
-                return Token();
+                return Token(rift::scanner::TokenType::NIL, "nil", "nil", -1);
             }
             return values.at(name);
         }

@@ -101,9 +101,13 @@ namespace rift
             std::string text = std::string(source->begin()+start, source->begin()+curr);
             text.erase(std::remove_if(text.begin(), text.end(), ::isspace), text.end());
             if (keywords.find(text)!= keywords.end()) {
-                addToken(keywords.at(text));
+                rift::error::report(line, "identifier", "Invalid Identifier(its a keyword)", Token(), std::exception());
             } else {
-                addToken(Type::IDENTIFIER, text);
+                if (tokens.size() > 0 && tokens.back().type == Type::CONST) {
+                    addToken(Type::C_IDENTIFIER, text);
+                } else {
+                    addToken(Type::IDENTIFIER, text);
+                }
             }
         }
 
@@ -111,7 +115,7 @@ namespace rift
             prevance();
             for (const auto &[k,v] : keywords) {
                 std::vector vec = std::vector(k.begin(), k.end());
-                if (peek_word(vec, k.size()-1)) {
+                if (peek_word(vec, k.size())) {
                     addToken(v);
                     for (size_t i=0; i<k.size(); i++) advance();
                     return true;

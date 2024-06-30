@@ -29,15 +29,19 @@ namespace rift
         ///         RIFT Grammar
         ///         ------------
         /// program        → decl * EOF
-        /// decl           → varDecl | statement
-        /// block          → "{" decl* "}"
+        /// blk            → "{" decl* "}"
         /// for            → "for" "(" (decl|stmt)? ";" expr ";" (stmt)? ")" stmt|blk
-        /// statement      → exprStmt | printStmt | block ";"
+        /// decl           → varDecl | stmt
         /// varDecl        → "mut" IDENTIFIER ( "=" stmt ) ";"
         /// constDecl      → "mut!" IDENTIFIER ( "=" expr ) ";"
+        /// funcDecl       → "func" function ";"
+        /// function       → IDENTIFIER "(" params? ")" blk // TODO: allow stmt to emulate lambdas
+        /// params         → IDENTIFIER ( "," IDENTIFIER )*
+        /// stmt           → exprStmt | printStmt ";"
         /// printStmt      → "print" "(" expression ");"
         /// exprStmt       → expression ";"
-        /// ifStmt         → "if" "(" expression ")" statement|block ( "elif" statment|block )* ( "else" statement|block )?
+        /// ifStmt         → "if" "(" expression ")" stmt|blk ( "elif" statment|blk )* ( "else" stmt|blk )?
+        /// returnStmt     → "return" expression ";"
         /// ternary        → expression "?" expression ":" expression ";"
         /// expression     → equality ";"
         /// assignment     → IDENTIFIER "=" assignment | equality
@@ -46,6 +50,7 @@ namespace rift
         /// term           → factor ( ( "-" | "+" ) factor )* ";"
         /// factor         → unary ( ( "/" | "*" ) unary )* ";"
         /// unary          → ( "!" | "-" ) unary | primary ";"
+        /// call           → primary ( "(" arguments? ")" )* ";"
         /// primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ";"
 
         __DEFAULT_FORWARD_NONE_VA(
@@ -59,20 +64,23 @@ namespace rift
         __DEFAULT_FORWARD_NONE_VA(
             Printer,
             Ternary,
-            For
+            For,
+            Call
         )
 
         __DEFAULT_FORWARD_NONE_VA(
             Stmt, 
             StmtPrint, 
             StmtExpr,
-            StmtIf
+            StmtIf,
+            StmtReturn
         )
 
         __DEFAULT_FORWARD_NONE_VA(
             Decl, 
             DeclStmt, 
-            DeclVar
+            DeclVar,
+            DeclFunc
         )
 
         __DEFAULT_FORWARD_NONE_VA(
@@ -94,16 +102,19 @@ namespace rift
                     virtual Token visit_literal(const Literal& expr) const;
                     virtual Token visit_unary(const Unary& expr) const;
                     virtual Token visit_ternary(const Ternary& expr) const;
+                    virtual Token visit_call(const Call& expr) const;
 
                     /* stmt */
                     /// @note TokenType::IGNORE is used to ignore statements returning void
                     virtual Token visit_expr_stmt(const StmtExpr& stmt) const;
                     virtual Token visit_print_stmt(const StmtPrint& stmt) const;
                     virtual Token visit_if_stmt(const StmtIf& stmt) const;
+                    [[noreturn]] virtual Token visit_return_stmt(const StmtReturn& stmt) const;
 
                     /* decl */
                     virtual Tokens visit_decl_stmt(const DeclStmt& decl) const;
                     virtual Tokens visit_decl_var(const DeclVar& decl) const;
+                    virtual Tokens visit_decl_func(const DeclFunc& decl) const;
                     /* c-flow */
                     virtual Tokens visit_for(const For& decl) const;
                     /* block */

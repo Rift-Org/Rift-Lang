@@ -100,5 +100,28 @@ namespace rift
                 string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
                 #pragma clang diagnostic pop
         };
+
+        class DeclFunc : public Decl
+        {
+            public:
+                typedef struct {
+                    Token name;
+                    Tokens params;
+                    std::unique_ptr<Block> blk;
+                } Func;
+
+                DeclFunc(): func(nullptr) {};
+                DeclFunc(std::unique_ptr<Func> func): func(std::move(func)) {};
+                ~DeclFunc() = default;
+
+                std::unique_ptr<Func> func;
+
+                Tokens accept(const Visitor &visitor) const override { return visitor.visit_decl_func(*this); };
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
+                // must uncomment visit_printer in printer.hh
+                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
+        };
     }
 }

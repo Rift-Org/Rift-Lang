@@ -122,5 +122,20 @@ namespace rift
                 string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
                 #pragma clang diagnostic pop
         };
+
+        class StmtReturn : public Stmt
+        {
+            public:
+                StmtReturn(std::unique_ptr<Expr> expr): expr(std::move(expr)) {};
+                ~StmtReturn() = default;
+                std::unique_ptr<Expr> expr;
+
+                Token accept(const Visitor &visitor) const override { return visitor.visit_return_stmt(*this); };
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
+                // must uncomment visit_printer in printer.hh
+                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
+        };
     }
 }

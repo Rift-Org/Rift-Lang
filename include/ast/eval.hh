@@ -56,5 +56,13 @@ namespace rift
             private:
                 std::string message;
         };
+
+        class StmtReturnException: public std::exception
+        {
+            public:
+                StmtReturnException(Token tok): tok(tok) {};
+                ~StmtReturnException() = default;
+                Token tok;
+        };
     }
 }

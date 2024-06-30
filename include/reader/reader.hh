@@ -79,6 +79,15 @@ namespace rift
                     if (error) rift::error::report(line, "consume", "expected token not found", expected, *error);
                     return T();
                 }
+
+                inline T consume_va (std::vector<T> expected, std::unique_ptr<ReaderException> error) { 
+                    for (const auto& elem: expected) {
+                        auto ret = consume(elem, nullptr);
+                        if (ret != T()) return ret;
+                    }
+                    if (error) rift::error::report(line, "consume", "expected token not found", expected.at(0), *error);
+                    return T();
+                }
                 /// @brief 
                 inline bool consume(T expected) {
                     if(peek(expected)) {
@@ -86,6 +95,7 @@ namespace rift
                     }
                     return false;
                 }
+
                 /// @brief Matches a T from a set of T's{token, character} and advances the cursor
                 inline bool match(std::vector<T> expected) {
                     match_length = 0;

@@ -85,6 +85,7 @@
         "typeindex": "cpp",
         "__tuple": "cpp",
         "*.inc": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "source_location": "cpp"
     }
 }

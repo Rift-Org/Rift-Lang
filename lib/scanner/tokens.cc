@@ -168,7 +168,7 @@ std::any Token::getLiteral() const
 {
     if (type == STRINGLITERAL) {
         return std::any{std::string(lexeme)};
-    } else if (type == IDENTIFIER) {
+    } else if (type == IDENTIFIER || type == C_IDENTIFIER) {
         return std::any{std::string(lexeme)};
     } else if (type == NUMERICLITERAL) {
         return std::any{std::stod(lexeme)};

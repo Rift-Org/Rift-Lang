@@ -32,13 +32,14 @@ namespace rift
         {
             public:
                 /// @note top level
-                static Environment& getInstance() {
-                    static Environment instance;
-                    return instance;
+                static Environment& getInstance(bool parser) {
+                    static Environment eval_instance;
+                    static Environment parser_instance;
+                    return parser ? parser_instance : eval_instance;
                 }
                 /// @brief add a child to the current environment (recursive-checks)
-                static void addChild() {
-                    Environment curr = getInstance();
+                static void addChild(bool parser) {
+                    Environment curr = getInstance(parser);
                     while(curr.child) {
                         std::cout << curr.child << std::endl;
                         curr = curr.child;
@@ -46,9 +47,9 @@ namespace rift
                     curr.child = new Environment();
                 }
                 /// @brief remove the child from the current environment
-                static void removeChild() {
+                static void removeChild(bool parser) {
                     Environment prev;
-                    Environment curr = getInstance();
+                    Environment curr = getInstance(parser);
                     while(curr.child != nullptr) {
                         prev = curr;
                         curr = *curr.child;
@@ -58,14 +59,15 @@ namespace rift
 
                 /// @brief clear all enviroments
                 /// @note usefull for switching from compile-time to runtime
-                static void clear() {
-                    Environment &curr = getInstance();
+                static void clear(bool parser) {
+                    Environment &curr = getInstance(parser);
                     while(curr.child != nullptr) {
                         Environment *tmp = curr.child;
                         curr.child = curr.child->child;
                         delete tmp;
                     }
-                    getInstance().values.clear();
+                    getInstance(parser).values.clear();
+                    getInstance(parser).const_keys.clear();
                 }
 
                 Environment() : child(nullptr) {}

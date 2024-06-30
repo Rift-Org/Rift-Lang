@@ -51,7 +51,8 @@ namespace rift
 
             Eval riftEvaluator;
             riftEvaluator.evaluate(*statements, interactive);
-            rift::ast::Environment::getInstance().printState();
+            rift::ast::Environment::getInstance(true).printState();
+            rift::ast::Environment::getInstance(false).printState();
         }
 
         void Driver::runFile(std::string path)

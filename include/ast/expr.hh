@@ -58,6 +58,22 @@ namespace rift
 
         #pragma mark - Concrete Expressions
 
+        using Exprs = std::vector<std::unique_ptr<Expr>>;
+        class Call : public Expr
+        {
+            public:
+                Call(std::unique_ptr<Expr> name, Exprs&& args): name(std::move(name)), args(std::move(args)) {};
+
+                std::unique_ptr<Expr> name; // expr -> Literal::Identifier
+                Exprs args;
+
+                inline Token accept(const Visitor& visitor) const override { return visitor.visit_call(*this); }
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
+                inline string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
+        };
+
         class Ternary : public Expr
         {
             public:

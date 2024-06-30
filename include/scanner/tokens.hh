@@ -99,7 +99,8 @@ namespace rift
 
             int line;
 
-            Token() : type(TokenType::EOFF), lexeme(""), literal(0), l_type(&typeid(void)), line(0) {}
+            Token() : type(TokenType::NIL), lexeme(""), literal(0), l_type(&typeid(void)), line(0) {}
+            Token(TokenType type) : type(type), lexeme(""), literal(0), l_type(&typeid(void)), line(0) {}
 
             Token(TokenType type, std::string lexeme, std::any literal, int line)
             {
