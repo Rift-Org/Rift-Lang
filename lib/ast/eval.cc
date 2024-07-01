@@ -64,11 +64,11 @@ namespace rift
         {
             Token val = expr.value;
             any literal;
+            Token res = env::getInstance(false).getEnv(castString(val));
             
             if (val.type == TokenType::NIL) 
                 return Token(TokenType::NIL, "nil", nullptr, expr.value.line);
             else if (val.type == TokenType::IDENTIFIER || val.type == TokenType::C_IDENTIFIER) {
-                Token res = env::getInstance(false).getEnv(castString(val));
                 if (res.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(val) + "'");
                 literal = res.getLiteral();
             } else {
@@ -103,6 +103,10 @@ namespace rift
                 return Token(std::any_cast<bool>(literal)?TokenType::TRUE:TokenType::FALSE, std::to_string(std::any_cast<bool>(literal)), std::any_cast<bool>(literal), expr.value.line);
             else if (literal.type() == typeid(std::nullptr_t))
                 return Token(TokenType::NIL, "nil", nullptr, expr.value.line);
+
+            /* Function */
+            else if (res.type == TokenType::FUN)
+                return res;
             else
                 rift::error::runTimeError("Unknown literal type");
             return Token();

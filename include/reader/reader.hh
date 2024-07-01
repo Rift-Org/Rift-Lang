@@ -108,6 +108,16 @@ namespace rift
                     return false;
                 }
 
+                inline T match_consume(std::vector<T> expected) {
+                    match_length = 0;
+                    for (auto &c : expected) {
+                        if (peek(c)) {
+                            return advance();
+                        }
+                    }
+                    return T();
+                }
+
                 /// @brief peeks a word (useful for keywords/identifiers/statements) 
                 inline bool peek_word(std::vector<T> expected, int n) {
                     for (int i=0; i<n; i++) {

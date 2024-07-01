@@ -178,6 +178,8 @@ std::any Token::getLiteral() const
         return std::any{false};
     } else if (type == NIL) {
         return std::any{nullptr};
+    } else if (type == FUN) {
+        return literal;
     }
 
     if (isInteger(lexeme.c_str()))
