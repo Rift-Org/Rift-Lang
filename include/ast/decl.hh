@@ -36,7 +36,15 @@ namespace rift
         {
             public:
                 DeclStmt(std::unique_ptr<Stmt> stmt) : stmt(std::move(stmt)) {};
-                Tokens accept(const Visitor &visitor) const override { return visitor.visit_decl_stmt(*this); }
+                Tokens accept(const Visitor &visitor) const override { 
+                    try {
+                        auto test = visitor.visit_decl_stmt(*this); 
+                        return test;
+                    } catch(...) {
+                        std::cout << "visit_decl_accept" << std::endl;
+                        throw;
+                    }
+                }
 
                 #pragma clang diagnostic push
                 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -71,7 +79,15 @@ namespace rift
                 ~Block() = default;
                 vec_prog decls = nullptr;
 
-                Tokens accept(const Visitor &visitor) const override { return visitor.visit_block_stmt(*this); };
+                Tokens accept(const Visitor &visitor) const override { 
+                    try {
+                        auto test = visitor.visit_block_stmt(*this); 
+                        return test;
+                    } catch(...) {
+                        std::cout << "DGSGDS" << std::endl;
+                        throw;
+                    }
+                };
                 #pragma clang diagnostic push
                 #pragma clang diagnostic ignored "-Wunused-parameter"
                 // must uncomment visit_printer in printer.hh

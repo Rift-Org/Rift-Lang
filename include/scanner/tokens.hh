@@ -51,6 +51,7 @@ namespace rift
             LESS_EQUAL,
             SEPARATOR,
             WHITESPACE,
+            FAT_ARROW,
 
             // Operators
             OPERATOR,

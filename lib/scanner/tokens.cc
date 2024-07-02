@@ -71,6 +71,7 @@ std::string Token::convertTypeString(TokenType type) {
         case WHILE: return "WHILE";
         case C_IDENTIFIER: return "C_IDENTIFIER";
         case IGNORE: return "IGNORE";
+        case FAT_ARROW: return "FAT_ARROW";
         case EOFF: return "EOFF";
     }
 }
@@ -170,9 +171,9 @@ std::any Token::getLiteral() const
         return std::any{std::string(lexeme)};
     } else if (type == IDENTIFIER || type == C_IDENTIFIER) {
         return std::any{std::string(lexeme)};
-    } else if (type == NUMERICLITERAL) {
+    }/* else if (type == NUMERICLITERAL) {
         return std::any{std::stod(lexeme)};
-    } else if (type == TRUE) {
+    }*/ else if (type == TRUE) {
         return std::any{true};
     } else if (type == FALSE) {
         return std::any{false};

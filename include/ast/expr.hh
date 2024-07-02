@@ -58,7 +58,7 @@ namespace rift
 
         #pragma mark - Concrete Expressions
 
-        using Exprs = std::vector<std::unique_ptr<Expr>>;
+        using Exprs = std::unordered_map<std::string, std::unique_ptr<Expr>>;
         class Call : public Expr
         {
             public:

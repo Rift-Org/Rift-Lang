@@ -41,7 +41,7 @@ namespace rift
         /// printStmt      → "print" "(" expression ");"
         /// exprStmt       → expression ";"
         /// ifStmt         → "if" "(" expression ")" stmt|blk ( "elif" statment|blk )* ( "else" stmt|blk )?
-        /// returnStmt     → "return" expression ";"
+        /// returnStmt     → "return" (expression)? ";"
         /// ternary        → expression "?" expression ":" expression ";"
         /// expression     → equality ";"
         /// assignment     → IDENTIFIER "=" assignment | equality
@@ -109,7 +109,7 @@ namespace rift
                     virtual Token visit_expr_stmt(const StmtExpr& stmt) const;
                     virtual Token visit_print_stmt(const StmtPrint& stmt) const;
                     virtual Token visit_if_stmt(const StmtIf& stmt) const;
-                    [[noreturn]] virtual Token visit_return_stmt(const StmtReturn& stmt) const;
+                    virtual Token visit_return_stmt(const StmtReturn& stmt) const;
 
                     /* decl */
                     virtual Tokens visit_decl_stmt(const DeclStmt& decl) const;

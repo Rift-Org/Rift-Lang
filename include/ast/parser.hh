@@ -104,7 +104,7 @@ namespace rift
                 /// @example 1, 2, 3
                 Tokens params();
                 /// @example 1+1, "str", a
-                Exprs args();
+                Exprs args(Tokens params);
                 /// @note program
                 std::unique_ptr<Program> program();
                 

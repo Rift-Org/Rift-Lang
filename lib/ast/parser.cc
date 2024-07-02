@@ -70,10 +70,18 @@ namespace rift
             // since that's the only way to verify between func test() {} and test(); 
             // note the "test()""
             if (peekPrev().type == TokenType::IDENTIFIER && peek() == Token(TokenType::LEFT_PAREN)) {
+                // get function from token, and grab its paramaters so I can plug them in with args
+                auto idt = peekPrev();
+                auto func = env::getInstance(true).getEnv(idt.lexeme);
+                if (func.type != TokenType::FUN) rift::error::report(line, "call", "Expected function", idt, ParserException("Expected function"));
+                Tokens params = std::any_cast<Tokens>(func.literal);
+
                 consume(Token(TokenType::LEFT_PAREN));
-                auto arg = args();
+                auto arg = args(params);
                 consume(Token(TokenType::RIGHT_PAREN));
-                consume(Token(TokenType::SEMICOLON));
+                // another dillema, how do i handle return 3;
+                // do I handle it here or in the return stmt, I choose later
+                // consume(Token(TokenType::SEMICOLON));
                 return std::unique_ptr<Call>(new Call(std::move(expr), std::move(arg)));
             }
 
@@ -242,7 +250,7 @@ namespace rift
                 auto blk = block();
                 if_stmt->blk = std::move(blk);
             } else {
-                std::unique_ptr<Stmt> stmt = ret_stmt();
+                auto stmt = ret_stmt();
                 if_stmt->stmt = std::move(stmt);
             }
             ret->if_stmt = if_stmt;
@@ -431,12 +439,16 @@ namespace rift
             consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after function name")));
             ret->params = params();
             consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after function params")));
-            
+            // give the params (usefull for the call operator)
+            env::getInstance(true).setEnv(idt.lexeme, Token(TokenType::FUN, idt.lexeme, ret->params, idt.line), false);
+
             if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
                 ret->blk = std::move(block());
-            } else {
+            } else if(match({Token(TokenType::FAT_ARROW, "=>", "", line)})) {
                 // TODO: allow stmt to emulate lambdas
                 rift::error::report(line, "function", "Lambdas not implemented yet", peek(), ParserException("Lambdas not implemented yet"));
+            } else {
+                consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after function declaration")));
             }
 
             return ret;
@@ -446,19 +458,26 @@ namespace rift
         Tokens Parser::params()
         {
             Tokens toks = {};
-            while(peek() == Token(TokenType::IDENTIFIER) || peek() == Token(TokenType::C_IDENTIFIER)) {
+            while(peek().type != TokenType::RIGHT_PAREN) {
                 toks.push_back(consume_va({Token(TokenType::IDENTIFIER), Token(TokenType::C_IDENTIFIER)}, std::unique_ptr<ParserException>(new ParserException("Expected parameter name"))));
                 if (!consume(Token(TokenType::COMMA, ",", "", line))) break;
             }
             return toks;
         }
 
-        Exprs Parser::args()
+        Exprs Parser::args(Tokens params)
         {
             Exprs exprs = {};
+            int idx = 0;
             while(peek().type != TokenType::RIGHT_PAREN) {
                 auto exp = expression();
-                exprs.emplace_back(std::move(exp));
+                if (idx >= params.size()) 
+                    rift::error::report(line, "args", "Too many arguments", peek(), ParserException("Too many arguments"));
+                if (exp == nullptr) 
+                    rift::error::report(line, "args", "Expected expression", peek(), ParserException("Expected expression"));
+                
+                exprs.insert({params[idx].lexeme, std::move(exp)});
+                idx++;
             }
             return exprs;
         }

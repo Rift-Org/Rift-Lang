@@ -30,6 +30,7 @@ namespace rift
 {
     namespace ast
     {
+        static Token return_token = Token(TokenType::NIL, "", "", -1);
         class Eval
         {
             public:
@@ -63,6 +64,9 @@ namespace rift
                 StmtReturnException(Token tok): tok(tok) {};
                 ~StmtReturnException() = default;
                 Token tok;
+                const char* what() const noexcept override {
+                    return "Statement Return Exception";
+                }
         };
     }
 }

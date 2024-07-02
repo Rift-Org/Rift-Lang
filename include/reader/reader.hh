@@ -72,7 +72,7 @@ namespace rift
 
 
                 /// @brief Scans a comment and advances the cursor
-                inline void scanComment() { while (peek('\n')) advance();};
+                inline void scanComment() { while (!peek('\n')) advance(); advance(); };
                 /// @brief Consumes a T and advances the cursor (Error if not found)
                 inline T consume (T expected, std::unique_ptr<ReaderException> error) { 
                     if (peek(expected)) return advance();

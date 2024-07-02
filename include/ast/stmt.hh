@@ -130,7 +130,15 @@ namespace rift
                 ~StmtReturn() = default;
                 std::unique_ptr<Expr> expr;
 
-                Token accept(const Visitor &visitor) const override { return visitor.visit_return_stmt(*this); };
+                Token accept(const Visitor &visitor) const override { 
+                    try {
+                        auto ret = visitor.visit_return_stmt(*this);
+                        return ret; 
+                    } catch(...) {
+                        std::cout << "STMTT" << std::endl;
+                        throw;
+                    }
+                };
                 #pragma clang diagnostic push
                 #pragma clang diagnostic ignored "-Wunused-parameter"
                 // must uncomment visit_printer in printer.hh
