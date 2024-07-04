@@ -62,9 +62,9 @@ namespace rift
         class Call : public Expr
         {
             public:
-                Call(std::unique_ptr<Expr> name, Exprs&& args): name(std::move(name)), args(std::move(args)) {};
+                Call(Token name, Exprs&& args): name(name), args(std::move(args)) {};
 
-                std::unique_ptr<Expr> name; // expr -> Literal::Identifier
+                Token name; // expr -> Literal::Identifier
                 Exprs args;
 
                 inline Token accept(const Visitor& visitor) const override { return visitor.visit_call(*this); }

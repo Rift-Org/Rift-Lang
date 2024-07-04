@@ -16,23 +16,28 @@
 #include <error/error.hh>
 #include <scanner/tokens.hh>
 
+
 namespace rift
 {
     namespace ast
     {
-        Token Environment::getEnv(const str_t& name) const
+        class Expr;
+
+        template <typename T>
+        T Environment::getEnv(const str_t& name) const
         {
             if (!values.contains(name)) {
                 
                 if(child != nullptr)
-                    return child->getEnv(name);
+                    return child->getEnv<T>(name);
 
                 return Token(rift::scanner::TokenType::NIL, "nil", "nil", -1);
             }
             return values.at(name);
         }
 
-        void Environment::setEnv(const str_t& name, const Token& value, bool is_const)
+        template <typename T>
+        void Environment::setEnv(const str_t& name, T value, bool is_const)
         {
             if (!values.contains(name) && child != nullptr) {
                 child->setEnv(name, value, is_const);
@@ -56,5 +61,8 @@ namespace rift
                 curr = curr->child;
             }
         }
+
+        template void Environment::setEnv<rift::scanner::Token>(const str_t&, rift::scanner::Token, bool);
+        template rift::scanner::Token Environment::getEnv<rift::scanner::Token>(const str_t&) const;
     }
 }

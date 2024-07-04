@@ -73,8 +73,12 @@ namespace rift
                 Environment() : child(nullptr) {}
                 Environment(Environment *child) : child(child) {}
                 ~Environment() = default;
-                Token getEnv(const str_t& name) const;
-                void setEnv(const str_t& name, const Token& value, bool is_const);
+
+                template <typename T>
+                T getEnv(const str_t& name) const;
+
+                template <typename T>
+                void setEnv(const str_t& name, T value, bool is_const);
                 void printState();
                 Environment *child;
             protected:

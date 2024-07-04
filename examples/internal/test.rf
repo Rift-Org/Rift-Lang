@@ -7,9 +7,12 @@
 //	return 10;
 //}
 //print(test());
-fun fib(n) {
-  if (n <= 1) return n;
-  return fib(n - 2) + fib(n - 1);
+func test() {
+  func _test() {
+	print("Aman");
+  }
+  
+  return _test;
 }
-
-print(fib(2));
+mut y = test();
+y();

@@ -64,7 +64,7 @@ namespace rift
         {
             Token val = expr.value;
             any literal;
-            Token res = env::getInstance(false).getEnv(val.lexeme);
+            Token res = env::getInstance(false).getEnv<Token>(val.lexeme);
             
             if (val.type == TokenType::NIL) 
                 return Token(TokenType::NIL, "nil", nullptr, expr.value.line);
@@ -221,8 +221,8 @@ namespace rift
         Token Visitor::visit_assign(const Assign& expr) const
         {
             auto name = expr.name.lexeme;
-            env::getInstance(false).setEnv(name, expr.value->accept(*this), expr.name.type == TokenType::C_IDENTIFIER);
-            return env::getInstance(false).getEnv(name);
+            env::getInstance(false).setEnv<Token>(name, expr.value->accept(*this), expr.name.type == TokenType::C_IDENTIFIER);
+            return env::getInstance(false).getEnv<Token>(name);
         }
 
         Token Visitor::visit_grouping(const Grouping& expr) const
@@ -271,14 +271,15 @@ namespace rift
 
         Token Visitor::visit_call(const Call& expr) const
         {
-            auto name = expr.name->accept(*this);
+            auto name = env::getInstance(false).getEnv<Token>(expr.name.lexeme);
 
             if (name.type == TokenType::NIL)
                 rift::error::runTimeError("Undefined function '" + name.lexeme + "'");
 
+            Environment tmp_env = env::getInstance(false);
             // map arguments to parameters
             for (const auto& arg : expr.args) {
-                env::getInstance(false).setEnv(arg.first, arg.second->accept(*this), false);
+                env::getInstance(false).setEnv<Token>(arg.first, arg.second->accept(*this), false);
             }
 
             auto blk = std::any_cast<Block*>(name.literal);
@@ -287,6 +288,7 @@ namespace rift
             
             auto tmp = return_token;
             return_token = Token(TokenType::NIL, "", "", -1);
+            env::getInstance(false) = tmp_env;
             return tmp;
         }
 
@@ -399,7 +401,7 @@ namespace rift
                 toks.push_back(decl.expr->accept(*this));
             } else {
                 auto niltok = Token(TokenType::NIL, "null", nullptr, decl.identifier.line);
-                env::getInstance(false).setEnv(decl.identifier.lexeme, niltok, decl.identifier.type == TokenType::C_IDENTIFIER);
+                env::getInstance(false).setEnv<Token>(decl.identifier.lexeme, niltok, decl.identifier.type == TokenType::C_IDENTIFIER);
                 toks.push_back(niltok);
             }
             return toks;
@@ -410,14 +412,14 @@ namespace rift
             auto name = decl.func->name;
             auto params = decl.func->params;
 
-            if (env::getInstance(false).getEnv(name.lexeme).type != TokenType::NIL)
+            if (env::getInstance(false).getEnv<Token>(name.lexeme).type != TokenType::NIL)
                 rift::error::runTimeError("Function '" + name.lexeme + "' already defined");
             
             if (decl.func->blk != nullptr) {
                 auto blk = std::move(decl.func->blk).release();
-                env::getInstance(false).setEnv(castString(name), Token(TokenType::FUN, "function", std::make_any<Block*>(blk), name.line), false);
+                env::getInstance(false).setEnv<Token>(name.lexeme, Token(TokenType::FUN, "function", std::make_any<Block*>(blk), name.line), false);
             } else {
-                env::getInstance(false).setEnv(castString(name), Token(TokenType::NIL, "null", nullptr, name.line), false);
+                env::getInstance(false).setEnv<Token>(name.lexeme, Token(TokenType::NIL, "null", nullptr, name.line), false);
             }
             return {name};
         }

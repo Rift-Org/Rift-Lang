@@ -72,17 +72,18 @@ namespace rift
             if (peekPrev().type == TokenType::IDENTIFIER && peek() == Token(TokenType::LEFT_PAREN)) {
                 // get function from token, and grab its paramaters so I can plug them in with args
                 auto idt = peekPrev();
-                auto func = env::getInstance(true).getEnv(idt.lexeme);
-                if (func.type != TokenType::FUN) rift::error::report(line, "call", "Expected function", idt, ParserException("Expected function"));
-                Tokens params = std::any_cast<Tokens>(func.literal);
+                auto func = env::getInstance(true).getEnv<Token>(idt.lexeme);
+                Tokens params;
+                // std::cout << idt.lexeme << ":" << func.lexeme << std::endl;
 
+                params = std::any_cast<Tokens>(func.literal);
                 consume(Token(TokenType::LEFT_PAREN));
                 auto arg = args(params);
                 consume(Token(TokenType::RIGHT_PAREN));
                 // another dillema, how do i handle return 3;
                 // do I handle it here or in the return stmt, I choose later
                 // consume(Token(TokenType::SEMICOLON));
-                return std::unique_ptr<Call>(new Call(std::move(expr), std::move(arg)));
+                return std::unique_ptr<Call>(new Call(idt, std::move(arg)));
             }
 
             return expr;
@@ -321,14 +322,30 @@ namespace rift
             // make sure the identifier is not already declared
             /// @note this is just a check, the actual declaration is done in the evaluator
             ///       this also checks if any outer block has already declared this variable
-            if (env::getInstance(true).getEnv(castString(idt)).type != TokenType::NIL)
+            if (env::getInstance(true).getEnv<Token>(castString(idt)).type != TokenType::NIL)
                 rift::error::report(line, "declaration_variable", "🛑 Variable '" + castString(idt) + "' already declared at line: " + castNumberString(idt.line), idt, ParserException("Variable '" + castString(idt) + "' already declared"));
-            env::getInstance(true).setEnv(castString(idt), idt, idt.type == TokenType::C_IDENTIFIER);
 
             if(peek() == Token(TokenType::EQUAL, "=", "", line)) {
                 auto expr = assignment();
                 consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable assignment")));
                 idt.type = tok_t;
+
+                auto asgn = dynamic_cast<Assign*>(expr.get());
+                auto val = asgn->value.get();
+
+                // lets do some RTTI checks
+                // was the assignment a function? mut y = test();
+                auto func = dynamic_cast<Call*>(val);
+                if (func != NULL) {
+                    auto val = env::getInstance(true).getEnv<Token>(func->name.lexeme); // value of "test" identifier
+                    std::cout << "TEST[" << idt.lexeme << "," << val << "]" << std::endl;
+                    env::getInstance(true).setEnv(idt.lexeme, val, false);
+                } else {
+
+                }
+                // env::getInstance(true).setEnv(idt.lexeme, Token(tok_t, idt.lexeme, val, idt.line), mut);
+                // tmp->value = std::unique_ptr<Expr>(val);
+                // expr = std::unique_ptr<Expr>(tmp);
                 return std::make_unique<DeclVar>(idt, std::move(expr));
             } else if (!mut) {
                 rift::error::report(line, "declaration_variable", "🛑 Constants must be defined", idt, ParserException("Constants must be defined"));
@@ -408,6 +425,10 @@ namespace rift
             } else {
                 decls->emplace_back(declaration_statement());
             }
+
+            // edge-case (maybe due to mis-design)
+            if (peek() == TokenType::SEMICOLON) consume(TokenType::SEMICOLON);
+
             return decls;
         }
 

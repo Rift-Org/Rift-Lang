@@ -37,7 +37,7 @@ namespace rift
             keywords["class"] = Type::CLASS;
             keywords["false"] = Type::FALSE;
             keywords["for"] = Type::FOR;
-            keywords["fun"] = Type::FUN;
+            keywords["func"] = Type::FUN;
             keywords["if"] = Type::IF;
             keywords["else"] = Type::ELSE;
             keywords["elif"] = Type::ELIF;
