@@ -71,6 +71,8 @@ namespace rift
                 std::unique_ptr<Expr> unary();
                 /// @example method();
                 std::unique_ptr<Expr> call();
+                /// @example var test;
+                std::unique_ptr<Expr> var_expr();
                 /// @example 1, "string", true, false, nil
                 std::unique_ptr<Expr> primary();
 

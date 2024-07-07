@@ -38,32 +38,32 @@ namespace rift
                     return parser ? parser_instance : eval_instance;
                 }
                 /// @brief add a child to the current environment (recursive-checks)
-                static void addChild(bool parser) {
-                    Environment curr = getInstance(parser);
-                    while(curr.child) {
-                        std::cout << curr.child << std::endl;
-                        curr = curr.child;
+                void addChild() {
+                    Environment* curr = this;
+                    while(curr->child) {
+                        curr = curr->child;
                     }
-                    curr.child = new Environment();
+                    curr->child = new Environment();
                 }
                 /// @brief remove the child from the current environment
-                static void removeChild(bool parser) {
+                void removeChild() {
+                    Environment* curr = this;
                     Environment prev;
-                    Environment curr = getInstance(parser);
-                    while(curr.child != nullptr) {
+                    while(curr->child != nullptr) {
                         prev = curr;
-                        curr = *curr.child;
+                        curr = curr->child;
                     }
-                    prev.child = nullptr; // remove the child
+                    // want it to trap for debug info if we ever hit this case
+                    prev.child = nullptr;
                 }
 
                 /// @brief clear all enviroments
                 /// @note usefull for switching from compile-time to runtime
-                static void clear(bool parser) {
-                    Environment &curr = getInstance(parser);
-                    while(curr.child != nullptr) {
-                        Environment *tmp = curr.child;
-                        curr.child = curr.child->child;
+                void clear(bool parser) {
+                    Environment* curr = this;
+                    while(curr->child != nullptr) {
+                        Environment *tmp = curr->child;
+                        curr->child = curr->child->child;
                         delete tmp;
                     }
                     getInstance(parser).values.clear();
@@ -74,11 +74,27 @@ namespace rift
                 Environment(Environment *child) : child(child) {}
                 ~Environment() = default;
 
+                Environment(const Environment& other) {
+                    values = other.values;
+                    const_keys = other.const_keys;
+                    child = other.child;
+                }
+
                 template <typename T>
                 T getEnv(const str_t& name) const;
 
                 template <typename T>
                 void setEnv(const str_t& name, T value, bool is_const);
+
+                Environment* at(int dist) {
+                    Environment *curr = this;
+                    for (int i=0; i<dist; i++) {
+                        if (curr == nullptr) rift::error::runTimeError("went past boundary");
+                        curr = curr->child;
+                    }
+                    return curr;
+                }
+
                 void printState();
                 Environment *child;
             protected:

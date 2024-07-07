@@ -130,15 +130,44 @@ namespace rift
                 ~StmtReturn() = default;
                 std::unique_ptr<Expr> expr;
 
-                Token accept(const Visitor &visitor) const override { 
-                    try {
-                        auto ret = visitor.visit_return_stmt(*this);
-                        return ret; 
-                    } catch(...) {
-                        std::cout << "STMTT" << std::endl;
-                        throw;
-                    }
-                };
+                Token accept(const Visitor &visitor) const override { return visitor.visit_return_stmt(*this); };
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
+                // must uncomment visit_printer in printer.hh
+                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
+        };
+
+        class Block : public Stmt
+        {
+            public:
+                Block(vec_prog decls) : decls(std::move(decls)) {};
+                ~Block() = default;
+                vec_prog decls = nullptr;
+
+                Token accept(const Visitor &visitor) const override { return visitor.visit_block_stmt(*this); };
+                #pragma clang diagnostic push
+                #pragma clang diagnostic ignored "-Wunused-parameter"
+                // must uncomment visit_printer in printer.hh
+                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
+                #pragma clang diagnostic pop
+        };
+
+        class For : public Stmt
+        {
+            public:
+                For(): expr(nullptr), stmt_l(nullptr), stmt_r(nullptr), decl(nullptr), blk(nullptr), stmt_o(nullptr) {};
+                ~For() = default;
+
+                std::unique_ptr<Expr> expr;
+                std::unique_ptr<Stmt> stmt_l;
+                std::unique_ptr<Stmt> stmt_r;
+                std::unique_ptr<Decl> decl;
+
+                std::unique_ptr<Block> blk;
+                std::unique_ptr<Stmt> stmt_o;
+
+                Token accept(const Visitor &visitor) const override { return visitor.visit_for_stmt(*this); };
                 #pragma clang diagnostic push
                 #pragma clang diagnostic ignored "-Wunused-parameter"
                 // must uncomment visit_printer in printer.hh

@@ -132,18 +132,6 @@ namespace rift
                 inline string accept_printer(const Visitor& visitor) const override {return visitor.print_grouping(*this);}
         };
 
-        /// @class Literal
-        /// @param value The value of the literal
-        class Literal: public Expr
-        {
-            public:
-                Literal(Token value): value(value) {};
-                Token value;
-
-                inline Token accept(const Visitor &visitor) const override {return visitor.visit_literal(*this);}
-                inline string accept_printer(const Visitor& visitor) const override {return visitor.print_literal(*this);}
-        };
-
         /// @class Unary
         /// @param op The operator
         /// @param expr The operand
@@ -156,6 +144,30 @@ namespace rift
 
                 inline Token accept(const Visitor& visitor) const override {return visitor.visit_unary(*this);}
                 inline string accept_printer(const Visitor& visitor) const override {return visitor.print_unary(*this);}
+        };
+
+        /// @class VarExpr
+        /// @param value The value of the variable
+        class VarExpr: public Expr
+        {
+            public:
+                VarExpr(Token value): value(value) {};
+                Token value;
+
+                inline Token accept(const Visitor &visitor) const override {return visitor.visit_var_expr(*this);}
+                inline string accept_printer(const Visitor& visitor) const override {return visitor.print_var_expr(*this);}
+        };
+
+        /// @class Literal
+        /// @param value The value of the literal
+        class Literal: public Expr
+        {
+            public:
+                Literal(Token value): value(value) {};
+                Token value;
+
+                inline Token accept(const Visitor &visitor) const override {return visitor.visit_literal(*this);}
+                inline string accept_printer(const Visitor& visitor) const override {return visitor.print_literal(*this);}
         };
     }
 };

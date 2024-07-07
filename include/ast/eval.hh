@@ -30,7 +30,6 @@ namespace rift
 {
     namespace ast
     {
-        static Token return_token = Token(TokenType::NIL, "", "", -1);
         class Eval
         {
             public:
@@ -39,6 +38,10 @@ namespace rift
 
                 /// @brief Evaluates the given *expr/stmt/decl*
                 std::vector<string> evaluate(const Program& expr, bool interactive);
+
+                /// @note resolving
+                static Token lookup(Expr* expr, std::string key);
+                void resolve(Expr* expr, int depth);
 
             private:
                 std::unique_ptr<Visitor> visitor;

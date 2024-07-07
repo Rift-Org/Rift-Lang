@@ -58,6 +58,7 @@ namespace rift
             Binary,
             Grouping,
             Literal,
+            VarExpr,
             Unary
         )
 
@@ -84,6 +85,36 @@ namespace rift
         )
 
         __DEFAULT_FORWARD_NONE_VA(
+            ResolverAssign,
+            ResolverBinary,
+            ResolverGrouping,
+            ResolverLiteral
+        )
+
+        __DEFAULT_FORWARD_NONE_VA(
+            Resolver,
+            ResolverUnary,
+            ResolverTernary,
+            ResolverCall,
+            ResolverVarExpr
+        )
+
+        __DEFAULT_FORWARD_NONE_VA(
+            ResolverStmtExpr,
+            ResolverPrint,
+            ResolverIf,
+            ResolverReturn,
+            ResolverDeclVar
+        )
+
+        __DEFAULT_FORWARD_NONE_VA(
+            ResolverDeclFunc,
+            ResolverDeclStmt,
+            ResolverBlock,
+            ResolverFor
+        )
+
+        __DEFAULT_FORWARD_NONE_VA(
             Program,
             Block
         )
@@ -100,6 +131,7 @@ namespace rift
                     virtual Token visit_binary(const Binary& expr) const;
                     virtual Token visit_grouping(const Grouping& expr) const;
                     virtual Token visit_literal(const Literal& expr) const;
+                    virtual Token visit_var_expr(const VarExpr& expr) const;
                     virtual Token visit_unary(const Unary& expr) const;
                     virtual Token visit_ternary(const Ternary& expr) const;
                     virtual Token visit_call(const Call& expr) const;
@@ -110,15 +142,14 @@ namespace rift
                     virtual Token visit_print_stmt(const StmtPrint& stmt) const;
                     virtual Token visit_if_stmt(const StmtIf& stmt) const;
                     virtual Token visit_return_stmt(const StmtReturn& stmt) const;
+                    virtual Token visit_block_stmt(const Block& block) const;
+                    virtual Token visit_for_stmt(const For& decl) const;
 
                     /* decl */
                     virtual Tokens visit_decl_stmt(const DeclStmt& decl) const;
                     virtual Tokens visit_decl_var(const DeclVar& decl) const;
                     virtual Tokens visit_decl_func(const DeclFunc& decl) const;
-                    /* c-flow */
-                    virtual Tokens visit_for(const For& decl) const;
-                    /* block */
-                    virtual Tokens visit_block_stmt(const Block& block) const;
+
                     /* prgm */
                     virtual Tokens visit_program(const Program& prgm) const;
 
@@ -129,6 +160,7 @@ namespace rift
                     virtual string print_grouping(const Grouping& expr) const;
                     virtual string print_unary(const Unary& expr) const;
                     virtual string print_literal(const Literal& expr) const;
+                    virtual string print_var_expr(const VarExpr& expr) const;
 
                     /* stmt */
                     // virtual void print_expr_stmt(const StmtExpr& expr) const;
@@ -137,9 +169,36 @@ namespace rift
 
                     /* virtual void print_program(const Program& prgm) const; */
 
+                /* Resolver */
+                    /* expr */
+                        virtual Token resolve_assign(const ResolverAssign& expr) const;
+                        virtual Token resolve_binary(const ResolverBinary& expr) const;
+                        virtual Token resolve_grouping(const ResolverGrouping& expr) const;
+                        virtual Token resolve_literal(const ResolverLiteral& expr) const;
+                        virtual Token resolve_unary(const ResolverUnary& expr) const;
+                        virtual Token resolve_ternary(const ResolverTernary& expr) const;
+                        virtual Token resolve_call(const ResolverCall& expr) const;
+                        virtual Token resolve_var_expr(const ResolverVarExpr& expr) const;
+
+                    /* stmt */
+                        virtual Token resolve_expr_stmt(const ResolverStmtExpr& stmt) const;
+                        virtual Token resolve_print_stmt(const ResolverPrint& stmt) const;
+                        virtual Token resolve_if_stmt(const ResolverIf& stmt) const;
+                        virtual Token resolve_return_stmt(const ResolverReturn& stmt) const;
+                        virtual Token resolve_block_stmt(const ResolverBlock& block) const;
+                        virtual Token resolve_for_stmt(const ResolverFor& decl) const;
+
+                    /* decl */
+                        virtual Tokens resolve_decl_stmt(const ResolverDeclStmt& decl) const;
+                        virtual Tokens resolve_decl_var(const ResolverDeclVar& decl) const;
+                        virtual Tokens resolve_decl_func(const ResolverDeclFunc& decl) const;
+
+                    /* prgm */
+                        virtual Tokens resolve_program(const Program& prgm) const;
                 
 
                 virtual ~Visitor() = default;
+                friend class Resolver;
         };
 
         /// @class Accept

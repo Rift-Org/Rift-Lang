@@ -36,15 +36,7 @@ namespace rift
         {
             public:
                 DeclStmt(std::unique_ptr<Stmt> stmt) : stmt(std::move(stmt)) {};
-                Tokens accept(const Visitor &visitor) const override { 
-                    try {
-                        auto test = visitor.visit_decl_stmt(*this); 
-                        return test;
-                    } catch(...) {
-                        std::cout << "visit_decl_accept" << std::endl;
-                        throw;
-                    }
-                }
+                Tokens accept(const Visitor &visitor) const override { return visitor.visit_decl_stmt(*this); }
 
                 #pragma clang diagnostic push
                 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -72,57 +64,13 @@ namespace rift
                 std::unique_ptr<Expr> expr;
         };
 
-        class Block : public Decl
-        {
-            public:
-                Block(vec_prog decls) : decls(std::move(decls)) {};
-                ~Block() = default;
-                vec_prog decls = nullptr;
-
-                Tokens accept(const Visitor &visitor) const override { 
-                    try {
-                        auto test = visitor.visit_block_stmt(*this); 
-                        return test;
-                    } catch(...) {
-                        std::cout << "DGSGDS" << std::endl;
-                        throw;
-                    }
-                };
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
-        };
-
-        class For : public Decl
-        {
-            public:
-                For(): expr(nullptr), stmt_l(nullptr), stmt_r(nullptr), decl(nullptr), blk(nullptr), stmt_o(nullptr) {};
-                ~For() = default;
-
-                std::unique_ptr<Expr> expr;
-                std::unique_ptr<Stmt> stmt_l;
-                std::unique_ptr<Stmt> stmt_r;
-                std::unique_ptr<Decl> decl;
-
-                std::unique_ptr<Block> blk;
-                std::unique_ptr<Stmt> stmt_o;
-
-                Tokens accept(const Visitor &visitor) const override { return visitor.visit_for(*this); };
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
-        };
-
         class DeclFunc : public Decl
         {
             public:
                 typedef struct {
                     Token name;
                     Tokens params;
+                    Environment closure;
                     std::unique_ptr<Block> blk;
                 } Func;
 

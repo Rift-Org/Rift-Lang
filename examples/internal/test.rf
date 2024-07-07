@@ -7,12 +7,16 @@
 //	return 10;
 //}
 //print(test());
-func test() {
-  func _test() {
-	print("Aman");
+func makeCounter() {
+  mut i = 0;
+  func count() {
+	i = i + 1;
+	print(i);
   }
   
-  return _test;
+  return count;
 }
-mut y = test();
-y();
+
+mut counter = makeCounter();
+counter();
+counter();

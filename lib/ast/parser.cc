@@ -22,12 +22,12 @@
 
 using namespace rift::scanner;
 
-using env = rift::ast::Environment;
-
 namespace rift
 {
     namespace ast
     {
+
+        static Environment* curr_env = &rift::ast::Environment::getInstance(true);
 
         #pragma mark - Public API
 
@@ -55,11 +55,17 @@ namespace rift
                 return std::unique_ptr<Literal>(new Literal(peekPrev(1)));
             if (match({Token(TokenType::STRINGLITERAL, "", "", line)}))
                 return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
-            if (match({Token(TokenType::IDENTIFIER, "", "", line)}))
-                return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
-            if (match({Token(TokenType::C_IDENTIFIER, "", "", line)}))
-                return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
             return nullptr;
+        }
+
+        std::unique_ptr<Expr> Parser::var_expr()
+        {
+            if (match({Token(TokenType::IDENTIFIER, "", "", line)}))
+                return std::unique_ptr<VarExpr>(new VarExpr(Token(peekPrev(1))));
+            if (match({Token(TokenType::C_IDENTIFIER, "", "", line)}))
+                return std::unique_ptr<VarExpr>(new VarExpr(Token(peekPrev(1))));
+            else
+                return primary();
         }
 
         std::unique_ptr<Expr> Parser::call()
@@ -72,7 +78,7 @@ namespace rift
             if (peekPrev().type == TokenType::IDENTIFIER && peek() == Token(TokenType::LEFT_PAREN)) {
                 // get function from token, and grab its paramaters so I can plug them in with args
                 auto idt = peekPrev();
-                auto func = env::getInstance(true).getEnv<Token>(idt.lexeme);
+                auto func = curr_env->getEnv<Token>(idt.lexeme);
                 Tokens params;
                 // std::cout << idt.lexeme << ":" << func.lexeme << std::endl;
 
@@ -214,6 +220,10 @@ namespace rift
                 stmt = statement_if();
             } else if (consume(Token(TokenType::RETURN))) {
                 stmt = statement_return();
+            } else if (consume (Token(TokenType::FOR, "", "", line)))  {
+                stmt = for_();
+            } else if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
+                stmt = block();
             } else {
                 stmt = statement_expression();
             }
@@ -296,6 +306,23 @@ namespace rift
             return ret;
         }
 
+        std::unique_ptr<Block> Parser::block()
+        {
+            vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
+
+            curr_env->addChild();
+            while (!atEnd() && !peek(Token(TokenType::RIGHT_BRACE, "}", "", line))) {
+                auto inner = ret_decl();
+                decls->insert(decls->end(), std::make_move_iterator(inner->begin()), std::make_move_iterator(inner->end()));
+            }
+            curr_env->removeChild();
+
+            if (!match({Token(TokenType::RIGHT_BRACE, "}", "", line)})) 
+                rift::error::report(line, "statement_block", "Expected '}' after block", peek(), ParserException("Expected '}' after block"));
+
+            return std::unique_ptr<Block>(new Block(std::move(decls)));
+        }
+
         std::unique_ptr<StmtReturn> Parser::statement_return()
         {
             auto expr = expression();
@@ -322,7 +349,7 @@ namespace rift
             // make sure the identifier is not already declared
             /// @note this is just a check, the actual declaration is done in the evaluator
             ///       this also checks if any outer block has already declared this variable
-            if (env::getInstance(true).getEnv<Token>(castString(idt)).type != TokenType::NIL)
+            if (curr_env->getEnv<Token>(castString(idt)).type != TokenType::NIL)
                 rift::error::report(line, "declaration_variable", "🛑 Variable '" + castString(idt) + "' already declared at line: " + castNumberString(idt.line), idt, ParserException("Variable '" + castString(idt) + "' already declared"));
 
             if(peek() == Token(TokenType::EQUAL, "=", "", line)) {
@@ -337,11 +364,11 @@ namespace rift
                 // was the assignment a function? mut y = test();
                 auto func = dynamic_cast<Call*>(val);
                 if (func != NULL) {
-                    auto val = env::getInstance(true).getEnv<Token>(func->name.lexeme); // value of "test" identifier
+                    auto val = curr_env->getEnv<Token>(func->name.lexeme); // value of "test" identifier
                     std::cout << "TEST[" << idt.lexeme << "," << val << "]" << std::endl;
-                    env::getInstance(true).setEnv(idt.lexeme, val, false);
+                    curr_env->setEnv(idt.lexeme, val, false);
                 } else {
-
+                    // more checks and setEnv's...
                 }
                 // env::getInstance(true).setEnv(idt.lexeme, Token(tok_t, idt.lexeme, val, idt.line), mut);
                 // tmp->value = std::unique_ptr<Expr>(val);
@@ -415,11 +442,6 @@ namespace rift
             } else if (consume (Token(TokenType::CONST, "", "", line))) {
                 auto test = declaration_variable(false);
                 decls->emplace_back(std::move(test));
-            } else if (consume (Token(TokenType::FOR, "", "", line)))  {
-                decls->emplace_back(for_());
-            } else if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
-                auto inner_decls = std::move(block()->decls);
-                decls->insert(decls->end(), std::make_move_iterator(inner_decls->begin()), std::make_move_iterator(inner_decls->end()));
             } else if (match({Token(TokenType::FUN)})) {
                 decls->emplace_back(declaration_func());
             } else {
@@ -432,23 +454,6 @@ namespace rift
             return decls;
         }
 
-        std::unique_ptr<Block> Parser::block()
-        {
-            vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
-
-            env::addChild(true);
-            while (!atEnd() && !peek(Token(TokenType::RIGHT_BRACE, "}", "", line))) {
-                auto inner = ret_decl();
-                decls->insert(decls->end(), std::make_move_iterator(inner->begin()), std::make_move_iterator(inner->end()));
-            }
-            env::removeChild(true);
-
-            if (!match({Token(TokenType::RIGHT_BRACE, "}", "", line)})) 
-                rift::error::report(line, "statement_block", "Expected '}' after block", peek(), ParserException("Expected '}' after block"));
-
-            return std::unique_ptr<Block>(new Block(std::move(decls)));
-        }
-
         #pragma mark - Functions / Methods
 
         std::unique_ptr<DeclFunc::Func> Parser::function()
@@ -456,12 +461,13 @@ namespace rift
             std::unique_ptr<DeclFunc::Func> ret = std::make_unique<DeclFunc::Func>();
             auto idt = consume_va({Token(TokenType::IDENTIFIER), Token(TokenType::C_IDENTIFIER)}, std::unique_ptr<ParserException>(new ParserException("Expected function name")));
             ret->name = idt;
+            ret->closure = new Environment(Environment::getInstance(true)); // might be useless since alloc done at runtime too
 
             consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after function name")));
             ret->params = params();
             consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after function params")));
             // give the params (usefull for the call operator)
-            env::getInstance(true).setEnv(idt.lexeme, Token(TokenType::FUN, idt.lexeme, ret->params, idt.line), false);
+            curr_env->setEnv(idt.lexeme, Token(TokenType::FUN, idt.lexeme, ret->params, idt.line), false);
 
             if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
                 ret->blk = std::move(block());
@@ -515,7 +521,7 @@ namespace rift
                 decls->insert(decls->end(), std::make_move_iterator(inner->begin()), std::make_move_iterator(inner->end()));
             }
 
-            env::getInstance(true).clear(true);
+            // Environment::getInstance(true).clear(true);
             return std::unique_ptr<Program>(new Program(std::move(decls)));
         }
 

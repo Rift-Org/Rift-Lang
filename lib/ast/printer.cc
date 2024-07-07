@@ -76,6 +76,13 @@ namespace rift
             return printer->group(v);
         }
 
+        string Visitor::print_var_expr(const VarExpr& expr) const 
+        {
+            Token val = expr.value;
+            std::any literal = val.getLiteral();
+            return "";
+        }
+
         string Visitor::print_literal(const Literal& expr) const
         {
             Token val = expr.value;

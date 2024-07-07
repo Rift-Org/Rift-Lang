@@ -18,17 +18,39 @@
 #include <utils/macros.hh>
 #include <ast/env.hh>
 
-using env = rift::ast::Environment;
-
 namespace rift
 {
     namespace ast
     {
+        
+        #pragma mark - Static Variables
+
+        static Token return_token = Token(TokenType::NIL, "", "", -1);
+        static Environment* curr_env = &rift::ast::Environment::getInstance(false);
+        static std::unordered_map<Expr*, int> locals = {};
+
+
         #pragma mark - Eval
 
         Eval::Eval()
         {
             this->visitor = std::unique_ptr<Visitor>(new Visitor());
+        }
+
+        Token Eval::lookup(Expr* expr, std::string key)
+        {
+            if (locals.find(expr) != locals.end()) {
+                auto depth = locals[expr];
+                return curr_env->at(depth)->getEnv<Token>(key);
+            } else {
+                // return curr_env->getEnv<Token>(key);
+                Environment::getInstance(false).getEnv<Token>(key);
+            }   
+        }
+
+        void Eval::resolve(Expr* expr, int depth)
+        {
+            locals.insert({expr, depth});
         }
 
         std::vector<std::string> Eval::evaluate(const Program& expr, bool interactive)
@@ -63,17 +85,7 @@ namespace rift
         Token Visitor::visit_literal(const Literal& expr) const
         {
             Token val = expr.value;
-            any literal;
-            Token res = env::getInstance(false).getEnv<Token>(val.lexeme);
-            
-            if (val.type == TokenType::NIL) 
-                return Token(TokenType::NIL, "nil", nullptr, expr.value.line);
-            else if (val.type == TokenType::IDENTIFIER || val.type == TokenType::C_IDENTIFIER) {
-                if (res.type == TokenType::NIL) rift::error::runTimeError("Undefined variable '" + castString(val) + "'");
-                literal = res.getLiteral();
-            } else {
-                literal = val.getLiteral();
-            }
+            any literal = val.getLiteral();
 
             if (literal.type() == typeid(std::string)) 
                 return Token(TokenType::STRINGLITERAL, std::any_cast<std::string>(literal), 0, expr.value.line);
@@ -105,11 +117,21 @@ namespace rift
                 return Token(TokenType::NIL, "nil", nullptr, expr.value.line);
 
             /* Function */
-            else if (res.type == TokenType::FUN)
-                return Token(TokenType::FUN, val.lexeme, literal, expr.value.line);
+            // else if (res.type == TokenType::FUN)
+            //     return Token(TokenType::FUN, val.lexeme, literal, expr.value.line);
             else
                 rift::error::runTimeError("Unknown literal type");
             return Token();
+        }
+
+        Token Visitor::visit_var_expr(const VarExpr& expr) const
+        {
+            Token val = expr.value;
+            any literal;
+
+            // Token res = curr_env->getEnv<Token>(val.lexeme);
+            VarExpr& expr_ref = const_cast<VarExpr&>(expr);
+            return Eval::lookup(&expr_ref, val.lexeme);
         }
 
         Token Visitor::visit_binary(const Binary& expr) const
@@ -221,8 +243,21 @@ namespace rift
         Token Visitor::visit_assign(const Assign& expr) const
         {
             auto name = expr.name.lexeme;
-            env::getInstance(false).setEnv<Token>(name, expr.value->accept(*this), expr.name.type == TokenType::C_IDENTIFIER);
-            return env::getInstance(false).getEnv<Token>(name);
+            auto val = expr.value->accept(*this);
+
+            const Expr* const_expr = &expr;
+            Expr* expr_ptr = const_cast<Expr*>(const_expr);
+            
+            if (locals.find(expr_ptr) != locals.end()) {
+                auto depth = locals[expr_ptr];
+                curr_env->at(depth)->setEnv<Token>(expr.name.lexeme, val, false);
+            } else {
+                // curr_env->setEnv<Token>(expr.name.lexeme, val, false);
+                // couldnt find it in locals so must be in globals
+                Environment::getInstance(false).setEnv<Token>(expr.name.lexeme, val, false);
+            }   
+
+            return val;
         }
 
         Token Visitor::visit_grouping(const Grouping& expr) const
@@ -271,24 +306,29 @@ namespace rift
 
         Token Visitor::visit_call(const Call& expr) const
         {
-            auto name = env::getInstance(false).getEnv<Token>(expr.name.lexeme);
+            auto name = curr_env->getEnv<Token>(expr.name.lexeme);
 
             if (name.type == TokenType::NIL)
                 rift::error::runTimeError("Undefined function '" + name.lexeme + "'");
 
-            Environment tmp_env = env::getInstance(false);
+            // set new env with closure
+            auto func = std::any_cast<DeclFunc::Func*>(name.literal);
+            // curr_env = new Environment(func->closure);
+
+
             // map arguments to parameters
             for (const auto& arg : expr.args) {
-                env::getInstance(false).setEnv<Token>(arg.first, arg.second->accept(*this), false);
+                curr_env->setEnv<Token>(arg.first, arg.second->accept(*this), false);
             }
 
-            auto blk = std::any_cast<Block*>(name.literal);
+            auto res = func->blk->accept(*this);
 
-            auto res = blk->accept(*this);
-            
+            // cleanup
             auto tmp = return_token;
             return_token = Token(TokenType::NIL, "", "", -1);
-            env::getInstance(false) = tmp_env;
+            // delete curr_env;
+            // curr_env = &rift::ast::Environment::getInstance(false);
+
             return tmp;
         }
 
@@ -354,29 +394,38 @@ namespace rift
 
         #pragma mark - Program / Block Visitor
 
-        Tokens Visitor::visit_block_stmt(const Block& block) const
+        Token Visitor::visit_block_stmt(const Block& block) const
         {
             Tokens toks = {};
 
-            env::addChild(false); // add scope
+            curr_env->addChild(); // add scope
             for (auto it=block.decls->begin(); it!=block.decls->end(); it++) {
                     if (return_token.line != -1) break; // -1 = no return
                     auto its = (*it)->accept(*this);
                     toks.insert(toks.end(), its.begin(), its.end());
             }
-            env::removeChild(false); // remove scope
+            curr_env->removeChild(); // remove scope
 
-            return toks;
+            return return_token;
         }
 
-        Tokens Visitor::visit_program(const Program& prgm) const
+        Token Visitor::visit_for_stmt(const For& decl) const
         {
             Tokens toks = {};
-            for (auto it=prgm.decls->begin(); it!=prgm.decls->end(); it++) {
-                auto its = (*it)->accept(*this);
-                toks.insert(toks.end(), its.begin(), its.end());
+            if (decl.decl != nullptr) decl.decl->accept(*this);
+            else if (decl.stmt_l != nullptr) decl.stmt_l->accept(*this);
+
+            while(truthy(decl.expr->accept(*this))) {
+                if(decl.stmt_o != nullptr) toks.push_back(decl.stmt_o->accept(*this));
+                else if (decl.blk != nullptr) {
+                    auto bk = decl.blk->accept(*this);
+                    toks.push_back(bk);
+                }
+                else rift::error::runTimeError("For statement should have a statement or block");
+
+                if (decl.stmt_r != nullptr) decl.stmt_r->accept(*this);
             }
-            return toks;
+            return return_token;
         }
 
         #pragma mark - Decl Visitors
@@ -384,12 +433,7 @@ namespace rift
         Tokens Visitor::visit_decl_stmt(const DeclStmt& decl) const
         {
             std::vector<Token> toks;
-            try {
-                toks.push_back(decl.stmt->accept(*this));
-            } catch(...) {
-                std::cout << "visit_decl" << std::endl;
-                throw;
-            }
+            toks.push_back(decl.stmt->accept(*this));
             return toks;
         }
 
@@ -401,7 +445,7 @@ namespace rift
                 toks.push_back(decl.expr->accept(*this));
             } else {
                 auto niltok = Token(TokenType::NIL, "null", nullptr, decl.identifier.line);
-                env::getInstance(false).setEnv<Token>(decl.identifier.lexeme, niltok, decl.identifier.type == TokenType::C_IDENTIFIER);
+                curr_env->setEnv<Token>(decl.identifier.lexeme, niltok, decl.identifier.type == TokenType::C_IDENTIFIER);
                 toks.push_back(niltok);
             }
             return toks;
@@ -411,34 +455,29 @@ namespace rift
         {
             auto name = decl.func->name;
             auto params = decl.func->params;
+            decl.func->closure = new Environment(Environment::getInstance(false)); // grab a copy of global env
 
-            if (env::getInstance(false).getEnv<Token>(name.lexeme).type != TokenType::NIL)
+            // quick check
+            if (curr_env->getEnv<Token>(name.lexeme).type != TokenType::NIL)
                 rift::error::runTimeError("Function '" + name.lexeme + "' already defined");
-            
+
             if (decl.func->blk != nullptr) {
-                auto blk = std::move(decl.func->blk).release();
-                env::getInstance(false).setEnv<Token>(name.lexeme, Token(TokenType::FUN, "function", std::make_any<Block*>(blk), name.line), false);
+                curr_env->setEnv<Token>(name.lexeme, Token(TokenType::FUN, name.lexeme, decl.func.get(), name.line), false);
             } else {
-                env::getInstance(false).setEnv<Token>(name.lexeme, Token(TokenType::NIL, "null", nullptr, name.line), false);
+                // rift::error::runTimeError("Function '" + name.lexeme + "' should have a block (no support for lambdas yet)");
+                // this is just a declaration for now, will add stmt when support fat arrow lambdas
+                curr_env->setEnv<Token>(name.lexeme, Token(TokenType::NIL, "null", nullptr, name.line), false);
             }
             return {name};
         }
 
-        Tokens Visitor::visit_for(const For& decl) const
+        #pragma mark - Program
+        Tokens Visitor::visit_program(const Program& prgm) const
         {
             Tokens toks = {};
-            if (decl.decl != nullptr) decl.decl->accept(*this);
-            else if (decl.stmt_l != nullptr) decl.stmt_l->accept(*this);
-
-            while(truthy(decl.expr->accept(*this))) {
-                if(decl.stmt_o != nullptr) toks.push_back(decl.stmt_o->accept(*this));
-                else if (decl.blk != nullptr) {
-                    auto bk = decl.blk->accept(*this);
-                    toks.insert(toks.begin(), bk.begin(), bk.end());
-                }
-                else rift::error::runTimeError("For statement should have a statement or block");
-
-                if (decl.stmt_r != nullptr) decl.stmt_r->accept(*this);
+            for (auto it=prgm.decls->begin(); it!=prgm.decls->end(); it++) {
+                auto its = (*it)->accept(*this);
+                toks.insert(toks.end(), its.begin(), its.end());
             }
             return toks;
         }
