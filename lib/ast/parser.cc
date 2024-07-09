@@ -40,35 +40,54 @@ namespace rift
             }
         }
 
+        ////////////////////////////////////////////////////////////////////////
         #pragma mark - Expressions Parsing
+        ////////////////////////////////////////////////////////////////////////
 
-        std::unique_ptr<Expr> Parser::primary()
+        std::unique_ptr<Expr<Token>> Parser::primary()
         {
             if (match({Token(TokenType::FALSE, "false", "", line)}))
-                return std::unique_ptr<Literal>(new Literal(Token(TokenType::FALSE, "false", "", line)));
+                return std::unique_ptr<Expr<Token>>(new Literal<Token>(Token(TokenType::FALSE, "false", "", line)));
             if (match({Token(TokenType::TRUE, "true", "", line)}))
-                return std::unique_ptr<Literal>(new Literal(Token(TokenType::TRUE, "true", "", line)));
+                return std::unique_ptr<Expr<Token>>(new Literal<Token>(Token(TokenType::TRUE, "true", "", line)));
             if (match({Token(TokenType::NIL, "nil", "", line)}))
-                return std::unique_ptr<Literal>(new Literal(Token(TokenType::NIL, "nil", "", line)));
+                return std::unique_ptr<Expr<Token>>(new Literal<Token>(Token(TokenType::NIL, "nil", "", line)));
 
             if (match({Token(TokenType::NUMERICLITERAL, "", "", line)}))
-                return std::unique_ptr<Literal>(new Literal(peekPrev(1)));
+                return std::unique_ptr<Expr<Token>>(new Literal<Token>(peekPrev(1)));
             if (match({Token(TokenType::STRINGLITERAL, "", "", line)}))
-                return std::unique_ptr<Literal>(new Literal(Token(peekPrev(1))));
+                return std::unique_ptr<Expr<Token>>(new Literal<Token>(Token(peekPrev(1))));
             return nullptr;
         }
 
-        std::unique_ptr<Expr> Parser::var_expr()
+        std::unique_ptr<Expr<Token>> Parser::var_expr()
         {
             if (match({Token(TokenType::IDENTIFIER, "", "", line)}))
-                return std::unique_ptr<VarExpr>(new VarExpr(Token(peekPrev(1))));
+                return std::unique_ptr<Expr<Token>>(new VarExpr<Token>(Token(peekPrev(1))));
             if (match({Token(TokenType::C_IDENTIFIER, "", "", line)}))
-                return std::unique_ptr<VarExpr>(new VarExpr(Token(peekPrev(1))));
+                return std::unique_ptr<Expr<Token>>(new VarExpr<Token>(Token(peekPrev(1))));
             else
                 return primary();
         }
 
-        std::unique_ptr<Expr> Parser::call()
+        Call<Token>::Exprs Parser::args(Tokens params)
+        {
+            Call<Token>::Exprs exprs = {};
+            int idx = 0;
+            while(peek().type != TokenType::RIGHT_PAREN) {
+                auto exp = expression();
+                if (idx >= params.size()) 
+                    rift::error::report(line, "args", "Too many arguments", peek(), ParserException("Too many arguments"));
+                if (exp == nullptr) 
+                    rift::error::report(line, "args", "Expected expression", peek(), ParserException("Expected expression"));
+                
+                exprs.insert({params[idx].lexeme, std::move(exp)});
+                idx++;
+            }
+            return exprs;
+        }
+
+        std::unique_ptr<Expr<Token>> Parser::call()
         {
             auto expr = primary();
 
@@ -89,32 +108,32 @@ namespace rift
                 // another dillema, how do i handle return 3;
                 // do I handle it here or in the return stmt, I choose later
                 // consume(Token(TokenType::SEMICOLON));
-                return std::unique_ptr<Call>(new Call(idt, std::move(arg)));
+                return std::unique_ptr<Expr<Token>>(new Call<Token>(idt, std::move(arg)));
             }
 
             return expr;
         }
 
-        std::unique_ptr<Expr> Parser::unary()
+        std::unique_ptr<Expr<Token>> Parser::unary()
         {
             if (match({Token(TokenType::BANG, "!", "", line)})) {
                 auto op = peekPrev();
                 auto right = unary();
                 if (right == nullptr) rift::error::report(line, "unary", "Expected expression after unary operator", op, ParserException("Expected expression after unary operator"));
-                return std::unique_ptr<Unary>(new Unary(op, std::move(right)));
+                return std::unique_ptr<Expr<Token>>(new Unary<Token>(op, std::move(right)));
             }
 
             if (match({Token(TokenType::MINUS, "-", "", line)})) {
                 auto op = peekPrev();
                 auto right = unary();
                 if (right == nullptr) rift::error::report(line, "unary", "Expected expression after unary operator", op, ParserException("Expected expression after unary operator"));
-                return std::unique_ptr<Unary>(new Unary(op, std::move(right)));
+                return std::unique_ptr<Expr<Token>>(new Unary<Token>(op, std::move(right)));
             }
 
             return call();
         }
 
-        std::unique_ptr<Expr> Parser::factor()
+        std::unique_ptr<Expr<Token>> Parser::factor()
         {
             auto expr = unary();
 
@@ -123,13 +142,13 @@ namespace rift
                 auto right = unary();
                 if (expr == nullptr) rift::error::report(line, "factor", "Expected number before factor operator", op, ParserException("Expected number before factor operator"));
                 if (right == nullptr) rift::error::report(line, "factor", "Expected number after factor operator", op, ParserException("Expected number after factor operator"));
-                expr = std::unique_ptr<Binary>(new Binary(std::move(expr), op, std::move(right)));
+                expr = std::unique_ptr<Expr<Token>>(new Binary<Token>(std::move(expr), op, std::move(right)));
             }
 
             return expr;
         }
 
-        std::unique_ptr<Expr> Parser::term()
+        std::unique_ptr<Expr<Token>> Parser::term()
         {
             auto expr = factor();
 
@@ -138,13 +157,13 @@ namespace rift
                 auto right = factor();
                 if (expr == nullptr) rift::error::report(line, "term", "Expected number before term operator", op, ParserException("Expected number before term operator"));
                 if (right == nullptr) rift::error::report(line, "term", "Expected number after term operator", op, ParserException("Expected number after term operator"));
-                expr = std::unique_ptr<Binary>(new Binary(std::move(expr), op, std::move(right)));
+                expr = std::unique_ptr<Expr<Token>>(new Binary<Token>(std::move(expr), op, std::move(right)));
             }
 
             return expr;
         }
 
-        std::unique_ptr<Expr> Parser::comparison()
+        std::unique_ptr<Expr<Token>> Parser::comparison()
         {
             auto expr = term();
 
@@ -153,13 +172,13 @@ namespace rift
                 auto right = term();
                 if (expr == nullptr) rift::error::report(line, "comparison", "Expected expression before comparison operator", op, ParserException("Expected expression before comparison operator"));
                 if (right == nullptr) rift::error::report(line, "comparison", "Expected expression after comparison operator", op, ParserException("Expected expression after comparison operator"));
-                expr = std::unique_ptr<Binary>(new Binary(std::move(expr), op, std::move(right)));
+                expr = std::unique_ptr<Expr<Token>>(new Binary<Token>(std::move(expr), op, std::move(right)));
             }
 
             return expr;
         }
 
-        std::unique_ptr<Expr> Parser::equality()
+        std::unique_ptr<Expr<Token>> Parser::equality()
         {
             auto expr = comparison();
 
@@ -169,13 +188,13 @@ namespace rift
                 auto right = comparison();
                 if (expr == nullptr) rift::error::report(line, "equality", "Expected expression before equality operator", op, ParserException("Expected expression before equality operator"));
                 if (right == nullptr) rift::error::report(line, "equality", "Expected expression after equality operator", op, ParserException("Expected expression after equality operator"));
-                expr = std::unique_ptr<Binary>(new Binary(std::move(expr), op, std::move(right)));
+                expr = std::unique_ptr<Expr<Token>>(new Binary<Token>(std::move(expr), op, std::move(right)));
             }
 
             return expr;
         };
 
-        std::unique_ptr<Expr> Parser::ternary()
+        std::unique_ptr<Expr<Token>> Parser::ternary()
         {
             auto expr = equality();
 
@@ -183,13 +202,13 @@ namespace rift
                 auto left = equality();
                 consume(Token(TokenType::COLON, ":", "", line), std::unique_ptr<ParserException>(new ParserException("Expected a colon while expecting a ternary operator")));
                 auto right = equality();
-                return std::unique_ptr<Ternary>(new Ternary(std::move(expr),std::move(left),std::move(right)));
+                return std::unique_ptr<Expr<Token>>(new Ternary<Token>(std::move(expr),std::move(left),std::move(right)));
             }
 
             return expr;
         }
 
-        std::unique_ptr<Expr> Parser::assignment()
+        std::unique_ptr<Expr<Token>> Parser::assignment()
         {
             if(match({Token(TokenType::EQUAL)})) {
                 auto idt = peekPrev(2);
@@ -197,23 +216,25 @@ namespace rift
                 if (expr == nullptr) 
                     rift::error::report(line, "assignment", "Expected expression after assignment operator", peekPrev(), ParserException("Expected expression after assignment operator"));
 
-                return std::unique_ptr<Assign>(new Assign(idt, std::move(expr)));
+                return std::unique_ptr<Expr<Token>>(new Assign<Token>(idt, std::move(expr)));
             }
 
             return ternary();
         }
 
-        std::unique_ptr<Expr> Parser::expression()
+        std::unique_ptr<Expr<Token>> Parser::expression()
         {
             auto ret = assignment();
             return ret;
         }
 
+        ////////////////////////////////////////////////////////////////////////
         #pragma mark - Statements Parsing
+        ////////////////////////////////////////////////////////////////////////
 
-        std::unique_ptr<Stmt> Parser::ret_stmt()
+        std::unique_ptr<Stmt<void>> Parser::ret_stmt()
         {
-            std::unique_ptr<Stmt> stmt;
+            std::unique_ptr<Stmt<void>> stmt;
             if (consume (Token(TokenType::PRINT, "", "", line))) {
                 stmt = statement_print();
             } else if (consume(Token(TokenType::IF, "if", "if", line))) {
@@ -221,45 +242,46 @@ namespace rift
             } else if (consume(Token(TokenType::RETURN))) {
                 stmt = statement_return();
             } else if (consume (Token(TokenType::FOR, "", "", line)))  {
-                stmt = for_();
+                stmt = statement_for();
             } else if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
-                stmt = block();
+                stmt = statement_block();
             } else {
                 stmt = statement_expression();
             }
             return stmt;
         }
 
-        std::unique_ptr<StmtExpr> Parser::statement_expression()
+        std::unique_ptr<Stmt<void>> Parser::statement_expression()
         {
             auto expr = expression();
-            return std::unique_ptr<StmtExpr>(new StmtExpr(std::move(expr)));
+            return std::unique_ptr<Stmt<void>>(new StmtExpr<void>(std::move(expr)));
         }
 
-        std::unique_ptr<StmtPrint> Parser::statement_print()
+        std::unique_ptr<Stmt<void>> Parser::statement_print()
         {
             consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after print")));
             auto expr = expression();
             consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after print")));
             consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after print statement")));
-            return std::unique_ptr<StmtPrint>(new StmtPrint(expr));
+            return std::unique_ptr<Stmt<void>>(new StmtPrint<void>(expr));
         }
 
-        std::unique_ptr<StmtIf> Parser::statement_if()
+        std::unique_ptr<Stmt<void>> Parser::statement_if()
         {
-            std::unique_ptr<StmtIf> ret = std::make_unique<StmtIf>();
+            std::unique_ptr<Stmt<void>> ret = std::make_unique<Stmt<void>>();
             consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after if")));
             auto expr = expression();
             consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after if")));
             
             /// if stmt
-            StmtIf::Stmt* if_stmt= new StmtIf::Stmt(std::move(expr));
+            StmtIf<void>::Stmt* if_stmt= new StmtIf<void>::Stmt(std::move(expr));
 
             // block vs stmt
             if (peek() == Token(TokenType::LEFT_BRACE, "{", "", line)) {
                 consume(Token(TokenType::LEFT_BRACE, "{", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '{' after if block")));
-                auto blk = block();
-                if_stmt->blk = std::move(blk);
+                auto blk = statement_block();
+                // if_stmt->blk = std::move(blk);
+                if_stmt->blk = static_cast<std::unique_ptr<Block<void>>>(std::move(blk));
             } else {
                 auto stmt = ret_stmt();
                 if_stmt->stmt = std::move(stmt);
@@ -268,15 +290,15 @@ namespace rift
 
             /// elif stmts
             if (peek() == Token(TokenType::ELIF, "elif", "elif", line)) {
-                std::vector<StmtIf::Stmt*> elif_stmts = {};
+                std::vector<StmtIf<void>::Stmt*> elif_stmts = {};
 
                 while (consume(Token(TokenType::ELIF, "elif", "elif", line))) {
                     auto expr = expression();
-                    StmtIf::Stmt* curr = new StmtIf::Stmt(std::move(expr));
+                    StmtIf<void>::Stmt* curr = new StmtIf<void>::Stmt(std::move(expr));
                      // block vs stmt
                     if (peek() == Token(TokenType::LEFT_BRACE, "{", "", line)) {
                         consume(Token(TokenType::LEFT_BRACE, "{", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '{' after elif block")));
-                        auto blk = block();
+                        auto blk = statement_block();
                         curr->blk = std::move(blk);
                     } else {
                         std::unique_ptr<Stmt> stmt = ret_stmt();
@@ -290,14 +312,14 @@ namespace rift
 
             /// else stmt
             if (consume(Token(TokenType::ELSE, "else", "else", line))) {
-                StmtIf::Stmt* else_stmt = new StmtIf::Stmt();
+                StmtIf<void>::Stmt* else_stmt = new StmtIf<void>::Stmt();
                 // block vs stmt
                 if (peek() == Token(TokenType::LEFT_BRACE, "{", "", line)) {
                     consume(Token(TokenType::LEFT_BRACE, "{", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '{' after else block")));
                     auto blk = block();
                     else_stmt->blk = std::move(blk);
                 } else {
-                    std::unique_ptr<Stmt> stmt = ret_stmt();
+                    std::unique_ptr<Stmt<void>> stmt = ret_stmt();
                     else_stmt->stmt = std::move(stmt);
                 }
                 ret->else_stmt = else_stmt;
@@ -306,7 +328,7 @@ namespace rift
             return ret;
         }
 
-        std::unique_ptr<Block> Parser::block()
+        std::unique_ptr<Block> Parser::statement_block()
         {
             vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
 
@@ -330,7 +352,9 @@ namespace rift
             return std::unique_ptr<StmtReturn>(new StmtReturn(std::move(expr)));
         }
 
+        ////////////////////////////////////////////////////////////////////////
         #pragma mark - Declarations Parsing
+        ////////////////////////////////////////////////////////////////////////
 
         std::unique_ptr<DeclStmt> Parser::declaration_statement()
         {
@@ -386,7 +410,7 @@ namespace rift
             return std::unique_ptr<DeclVar>(new DeclVar(Token(tok_t, idt.lexeme, idt.literal, idt.line)));
         }
 
-        std::unique_ptr<For> Parser::for_()
+        std::unique_ptr<For> Parser::statement_for()
         {
             std::unique_ptr<For> _for = std::make_unique<For>();
             consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after for")));
@@ -431,7 +455,9 @@ namespace rift
             return _func;
         }
 
+        ////////////////////////////////////////////////////////////////////////
         #pragma mark - Program / Block Parsing
+        ////////////////////////////////////////////////////////////////////////
 
         vec_prog Parser::ret_decl()
         {
@@ -454,7 +480,26 @@ namespace rift
             return decls;
         }
 
-        #pragma mark - Functions / Methods
+        ////////////////////////////////////////////////////////////////////////
+        #pragma mark - Application
+        ////////////////////////////////////////////////////////////////////////
+
+        std::unique_ptr<Program> Parser::program()
+        {
+            vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
+
+            while (!atEnd()) {
+                auto inner = ret_decl();
+                decls->insert(decls->end(), std::make_move_iterator(inner->begin()), std::make_move_iterator(inner->end()));
+            }
+
+            // Environment::getInstance(true).clear(true);
+            return std::unique_ptr<Program>(new Program(std::move(decls)));
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        # pragma mark - Utilities
+        ////////////////////////////////////////////////////////////////////////
 
         std::unique_ptr<DeclFunc::Func> Parser::function()
         {
@@ -491,41 +536,6 @@ namespace rift
             }
             return toks;
         }
-
-        Exprs Parser::args(Tokens params)
-        {
-            Exprs exprs = {};
-            int idx = 0;
-            while(peek().type != TokenType::RIGHT_PAREN) {
-                auto exp = expression();
-                if (idx >= params.size()) 
-                    rift::error::report(line, "args", "Too many arguments", peek(), ParserException("Too many arguments"));
-                if (exp == nullptr) 
-                    rift::error::report(line, "args", "Expected expression", peek(), ParserException("Expected expression"));
-                
-                exprs.insert({params[idx].lexeme, std::move(exp)});
-                idx++;
-            }
-            return exprs;
-        }
-
-
-        #pragma mark - Application
-
-        std::unique_ptr<Program> Parser::program()
-        {
-            vec_prog decls = std::make_unique<std::vector<std::unique_ptr<Decl>>>();
-
-            while (!atEnd()) {
-                auto inner = ret_decl();
-                decls->insert(decls->end(), std::make_move_iterator(inner->begin()), std::make_move_iterator(inner->end()));
-            }
-
-            // Environment::getInstance(true).clear(true);
-            return std::unique_ptr<Program>(new Program(std::move(decls)));
-        }
-
-        # pragma mark - Utilities
 
         void Parser::synchronize()
         {

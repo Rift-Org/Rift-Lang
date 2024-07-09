@@ -22,48 +22,55 @@ namespace rift
 {
     namespace ast
     {
-        class Decl: public Accept<Tokens>
+        __DEFAULT_FORWARD_VA(
+            DeclStmt,
+            DeclVar,
+            DeclFunc
+        );
+
+        /// @class Visitor
+        /// @brief Visitor pattern for expressions
+        template <typename T>
+        class DeclVisitor
         {
-            public:
-                virtual Tokens accept(const Visitor &visitor) const = 0;
-                virtual ~Decl() = default;
-                friend class Visitor;
-                friend class DeclStmt;
-                friend class DeclVar;
+            virtual T visit_decl_stmt(const DeclStmt<T>& decl) const;
+            virtual T visit_decl_var(const DeclVar<T>& decl) const;
+            virtual T visit_decl_func(const DeclFunc<T>& decl) const;
         };
 
+        /// @class Decl
+        /// @brief Declarations acceptor
+        template <typename T>
+        class Decl: public Accept
+        {
+            public:
+                virtual T accept(const Visitor &visitor) const = 0;
+                virtual ~Decl() = default;
+        };
+
+        template <typename T>
         class DeclStmt: public Decl
         {
             public:
                 DeclStmt(std::unique_ptr<Stmt> stmt) : stmt(std::move(stmt)) {};
-                Tokens accept(const Visitor &visitor) const override { return visitor.visit_decl_stmt(*this); }
-
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) const override { return visitor.visit_decl_stmt(*this); }
 
                 std::unique_ptr<Stmt> stmt;
         };
 
+        template <typename T>
         class DeclVar: public Decl
         {
             public:
                 DeclVar(const Token &identifier): identifier(identifier), expr(nullptr) {};
                 DeclVar(const Token &identifier, std::unique_ptr<Expr> expr): identifier(identifier), expr(std::move(expr)) {};
-                Tokens accept(const Visitor &visitor) const override { return visitor.visit_decl_var(*this); }
-
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) const override { return visitor.visit_decl_var(*this); }
 
                 const Token& identifier;
                 std::unique_ptr<Expr> expr;
         };
 
+        template <typename T>
         class DeclFunc : public Decl
         {
             public:
@@ -80,12 +87,7 @@ namespace rift
 
                 std::unique_ptr<Func> func;
 
-                Tokens accept(const Visitor &visitor) const override { return visitor.visit_decl_func(*this); };
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) const override { return visitor.visit_decl_func(*this); };
         };
     }
 }

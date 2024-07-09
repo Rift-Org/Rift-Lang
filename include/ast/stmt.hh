@@ -28,18 +28,42 @@ namespace rift
         // template <typename T = void>
         // class StmtVisitor;
 
-        __DEFAULT_FORWARD_NONE_VA(
+        __DEFAULT_FORWARD_VA(
             StmtExpr,
             StmtPrint,
-            StmtVar
+            StmtIf,
+            StmtReturn,
+            Block,
+            For
         );
 
-    
+        /// @class Visitor
+        /// @brief Visitor pattern for expressions
+        template <typename T>
+        class StmtVisitor
+        {
+            public:
+                /// @example [start, end] = [end, start];
+                virtual T visit_expr_stmt(const StmtExpr<T>& stmt) const;
+                /// @example  print(x);
+                virtual T visit_print_stmt(const StmtPrint<T>& stmt) const;
+                /// @example  if (cond) {stmt}
+                virtual T visit_if_stmt(const StmtIf<T>& stmt) const;
+                /// @example  return x;
+                virtual T visit_return_stmt(const StmtReturn<T>& stmt) const;
+                /// @example  { x = 3; }
+                virtual T visit_block_stmt(const Block<T>& block) const;
+                /// @example for i in arr {} 
+                virtual T visit_for_stmt(const For<T>& decl) const;
+        };
+
+        /// @class Stmt
+        /// @tparam T 
+        template <typename T>
         class Stmt: public rift::ast::Accept<Token>
         {
             public:
-                virtual Token accept(const Visitor &visitor) const = 0;
-                virtual string accept_printer(const Visitor& visitor) const = 0;
+                virtual T accept(const Visitor &visitor) const = 0;
                 virtual ~Stmt() = default;
         };
         
@@ -58,49 +82,41 @@ namespace rift
         /// function range2(start, end) {
         ///   start > end && ([start, end] = [end, start]);
         /// }
+        template <typename T>
         class StmtExpr: public Stmt
         {
             public:
-                StmtExpr(std::unique_ptr<Expr> expr) : expr(std::move(expr)) {};
+                StmtExpr(std::unique_ptr<Expr<Token>> expr) : expr(std::move(expr)) {};
                 ~StmtExpr() = default;
-                std::unique_ptr<Expr> expr;
+                std::unique_ptr<Expr<Token>> expr;
 
 
-                Token accept(const Visitor &visitor) const override { return visitor.visit_expr_stmt(*this); };
-                
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) const override { return visitor.visit_expr_stmt(*this); };
         };
 
+        template <typename T>
         class StmtPrint : public Stmt
         {
             public:
-                StmtPrint(std::unique_ptr<Expr>& expr) : expr(std::move(expr)) {};
+                StmtPrint(std::unique_ptr<Expr<Token>>& expr) : expr(std::move(expr)) {};
                 ~StmtPrint() = default;
-                std::unique_ptr<Expr> expr;
+                std::unique_ptr<Expr<Token>> expr;
 
-                Token accept(const Visitor &visitor) const override { return visitor.visit_print_stmt(*this); };
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) const override { return visitor.visit_print_stmt(*this); };
         };
 
+        template <typename T>
         class StmtIf : public Stmt
         {
             public:
                 struct Stmt {
                     public:
                         Stmt() : expr(nullptr), stmt(nullptr), blk(nullptr) {};
-                        Stmt(std::unique_ptr<Expr> expr): expr(std::move(expr)), stmt(nullptr), blk(nullptr) {}
-                        Stmt(std::unique_ptr<Expr> expr, std::unique_ptr<rift::ast::Stmt> stmt): expr(std::move(expr)), stmt(std::move(stmt)) {}
-                        Stmt(std::unique_ptr<Expr> expr, std::unique_ptr<Block> blk): expr(std::move(expr)), blk(std::move(blk)) {}
+                        Stmt(std::unique_ptr<Expr<Token>> expr): expr(std::move(expr)), stmt(nullptr), blk(nullptr) {}
+                        Stmt(std::unique_ptr<Expr<Token>> expr, std::unique_ptr<rift::ast::Stmt> stmt): expr(std::move(expr)), stmt(std::move(stmt)) {}
+                        Stmt(std::unique_ptr<Expr<Token>> expr, std::unique_ptr<Block> blk): expr(std::move(expr)), blk(std::move(blk)) {}
 
-                        std::unique_ptr<Expr> expr;
+                        std::unique_ptr<Expr<Token>> expr;
                         std::unique_ptr<rift::ast::Stmt> stmt;
                         std::unique_ptr<Block> blk;
                 };
@@ -115,14 +131,10 @@ namespace rift
                 Stmt* else_stmt;
                 std::vector<Stmt*> elif_stmts;
 
-                Token accept(const Visitor &visitor) const override { return visitor.visit_if_stmt(*this); };
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) const override { return visitor.visit_if_stmt(*this); };
         };
 
+        template <typename T>
         class StmtReturn : public Stmt
         {
             public:
@@ -130,14 +142,10 @@ namespace rift
                 ~StmtReturn() = default;
                 std::unique_ptr<Expr> expr;
 
-                Token accept(const Visitor &visitor) const override { return visitor.visit_return_stmt(*this); };
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) const override { return visitor.visit_return_stmt(*this); };
         };
 
+        template <typename T>
         class Block : public Stmt
         {
             public:
@@ -145,14 +153,10 @@ namespace rift
                 ~Block() = default;
                 vec_prog decls = nullptr;
 
-                Token accept(const Visitor &visitor) const override { return visitor.visit_block_stmt(*this); };
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) const override { return visitor.visit_block_stmt(*this); };
         };
 
+        template <typename T>
         class For : public Stmt
         {
             public:
@@ -167,12 +171,7 @@ namespace rift
                 std::unique_ptr<Block> blk;
                 std::unique_ptr<Stmt> stmt_o;
 
-                Token accept(const Visitor &visitor) const override { return visitor.visit_for_stmt(*this); };
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                // must uncomment visit_printer in printer.hh
-                string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) const override { return visitor.visit_for_stmt(*this); };
         };
     }
 }

@@ -126,48 +126,14 @@ namespace rift
         {
             public:
                 /* Evaluator */
-                    /* expr */
-                    virtual Token visit_assign(const Assign& expr) const;
-                    virtual Token visit_binary(const Binary& expr) const;
-                    virtual Token visit_grouping(const Grouping& expr) const;
-                    virtual Token visit_literal(const Literal& expr) const;
-                    virtual Token visit_var_expr(const VarExpr& expr) const;
-                    virtual Token visit_unary(const Unary& expr) const;
-                    virtual Token visit_ternary(const Ternary& expr) const;
-                    virtual Token visit_call(const Call& expr) const;
 
                     /* stmt */
                     /// @note TokenType::IGNORE is used to ignore statements returning void
-                    virtual Token visit_expr_stmt(const StmtExpr& stmt) const;
-                    virtual Token visit_print_stmt(const StmtPrint& stmt) const;
-                    virtual Token visit_if_stmt(const StmtIf& stmt) const;
-                    virtual Token visit_return_stmt(const StmtReturn& stmt) const;
-                    virtual Token visit_block_stmt(const Block& block) const;
-                    virtual Token visit_for_stmt(const For& decl) const;
 
                     /* decl */
-                    virtual Tokens visit_decl_stmt(const DeclStmt& decl) const;
-                    virtual Tokens visit_decl_var(const DeclVar& decl) const;
-                    virtual Tokens visit_decl_func(const DeclFunc& decl) const;
 
                     /* prgm */
                     virtual Tokens visit_program(const Program& prgm) const;
-
-
-                /* Printer */
-                    /* expr */
-                    virtual string print_binary(const Binary& expr) const;
-                    virtual string print_grouping(const Grouping& expr) const;
-                    virtual string print_unary(const Unary& expr) const;
-                    virtual string print_literal(const Literal& expr) const;
-                    virtual string print_var_expr(const VarExpr& expr) const;
-
-                    /* stmt */
-                    // virtual void print_expr_stmt(const StmtExpr& expr) const;
-                    // virtual void print_print_stmt(const StmtPrint& expr) const;
-                    // virtual void print_var_stmt(const StmtVar& expr) const;
-
-                    /* virtual void print_program(const Program& prgm) const; */
 
                 /* Resolver */
                     /* expr */

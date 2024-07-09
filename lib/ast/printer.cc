@@ -21,24 +21,26 @@ namespace rift
 {
     namespace ast
     {
+
+        /// only one printer available (alleivate dependencies<workaround>)
+        static Printer* printer = new Printer();
+
         #pragma mark - Printer
 
         Printer::Printer()
         {
-            // this->visitor = std::unique_ptr<Visitor>(new Visitor());
-            this->visitor = std::make_unique<const Visitor>();
         }
 
-        string Printer::print(Expr *expr) const
+        string Printer::print(Expr<string> *expr) const
         {
-            return expr->accept_printer(*this->visitor);
+            return expr->accept(*this);
         }
 
         string Printer::parenthesize(string name, vec expr) const
         {
             string result = "(" + name;
             for (auto &e : expr)
-                result += " " + e->accept_printer(*this->visitor);
+                result += " " + e->accept(*this);
             result += ")";
             return result;
         }
@@ -47,43 +49,45 @@ namespace rift
         {
             string result = "[";
             for (auto &e : expr)
-                result += " " + e->accept_printer(*this->visitor);
+                result += " " + e->accept(*this);
             result += "]";
             return result;
         }
 
-        #pragma mark - Visitor
+        ////////////////////////////////////////////////////////////////////////
+        #pragma mark - Expressions
+        ////////////////////////////////////////////////////////////////////////
 
-        string Visitor::print_binary(const Binary& expr) const
+        string Printer::visit_binary(const Binary<string>& expr) const
         {
-            vec v;
+            Printer::vec v;
             v.push_back(expr.left.get());
             v.push_back(expr.right.get());
-            return printer->parenthesize(expr.op.lexeme, v);
+            return parenthesize(expr.op.lexeme, v);
         }
 
-        string Visitor::print_unary(const Unary& expr) const
+        string Printer::visit_unary(const Unary<string>& expr) const
         {
-            vec v;
+            Printer::vec v;
             v.push_back(expr.expr.get());
             return printer->parenthesize(expr.op.lexeme, v);
         }
 
-        string Visitor::print_grouping(const Grouping& expr) const
+        string Printer::visit_grouping(const Grouping<string>& expr) const
         {
-            vec v;
+            Printer::vec v;
             v.push_back(expr.expr.get());
             return printer->group(v);
         }
 
-        string Visitor::print_var_expr(const VarExpr& expr) const 
+        string Printer::visit_var_expr(const VarExpr<string>& expr) const 
         {
             Token val = expr.value;
             std::any literal = val.getLiteral();
             return "";
         }
 
-        string Visitor::print_literal(const Literal& expr) const
+        string Printer::visit_literal(const Literal<string>& expr) const
         {
             Token val = expr.value;
             std::any literal = val.getLiteral();
@@ -102,6 +106,73 @@ namespace rift
             else if (literal.type() == typeid(const char*))
                 return std::string(std::any_cast<const char*>(literal));
 
+            return "";
+        }
+
+        string Printer::visit_ternary(const Ternary<string>& expr) const
+        {
+            Printer::vec v;
+            v.push_back(expr.condition.get());
+            v.push_back(expr.left.get());
+            v.push_back(expr.right.get());
+            return parenthesize("?:", v);
+        }
+
+        string Printer::visit_call(const Call<string>& expr) const
+        {
+            return "";
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        #pragma mark - Statements
+        ////////////////////////////////////////////////////////////////////////
+
+        string Printer::visit_expr_stmt(const StmtExpr<string>& stmt) const
+        {
+            return parenthesize("expr_stmt", {stmt.expr.get()});
+        }
+
+        string Printer::visit_print_stmt(const StmtPrint<string>& stmt) const
+        {
+            return parenthesize("print", {stmt.expr.get()});
+        }
+
+        string Printer::visit_if_stmt(const StmtIf<string>& stmt) const
+        {
+            return "";
+        }
+
+        string Printer::visit_return_stmt(const StmtReturn<string>& stmt) const
+        {
+            return "";
+        }
+
+        string Printer::visit_block_stmt(const Block<string>& block) const
+        {
+            return "";
+        }
+
+        string Printer::visit_for_stmt(const For<string>& decl) const
+        {
+            return "";
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        #pragma mark - Declarations
+        ////////////////////////////////////////////////////////////////////////
+
+        string Printer::visit_decl_stmt(const DeclStmt<string>& decl) const
+        {
+            return "";
+        }
+
+        string Printer::visit_decl_var(const DeclVar<string>& decl) const
+        {
+            return "";
+        }
+
+        string Printer::visit_decl_func(const DeclFunc<string>& decl) const
+        {
             return "";
         }
     }

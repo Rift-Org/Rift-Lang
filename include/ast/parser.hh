@@ -54,40 +54,44 @@ namespace rift
                 /// @note rules in order of precedence <Expr>
 
                 /// @example 1 + 2 * 3
-                std::unique_ptr<Expr> expression();
+                std::unique_ptr<Expr<Token>> expression();
                 /// @example 1==1 ? print("hi") : print("else")
-                std::unique_ptr<Expr> ternary();
+                std::unique_ptr<Expr<Token>> ternary();
                 /// @example identifier = 1 + 3
-                std::unique_ptr<Expr> assignment();
+                std::unique_ptr<Expr<Token>> assignment();
                 /// @example 1 == 1, 1 != 2
-                std::unique_ptr<Expr> equality();
+                std::unique_ptr<Expr<Token>> equality();
                 /// @example 1 > 2, 1 <= 2
-                std::unique_ptr<Expr> comparison();
+                std::unique_ptr<Expr<Token>> comparison();
                 /// @example 1 + 2, 1 - 2
-                std::unique_ptr<Expr> term();
+                std::unique_ptr<Expr<Token>> term();
                 /// @example 1 * 2, 1 / 2
-                std::unique_ptr<Expr> factor();
+                std::unique_ptr<Expr<Token>> factor();
                 /// @example -1, !1
-                std::unique_ptr<Expr> unary();
+                std::unique_ptr<Expr<Token>> unary();
                 /// @example method();
-                std::unique_ptr<Expr> call();
+                std::unique_ptr<Expr<Token>> call();
                 /// @example var test;
-                std::unique_ptr<Expr> var_expr();
+                std::unique_ptr<Expr<Token>> var_expr();
                 /// @example 1, "string", true, false, nil
-                std::unique_ptr<Expr> primary();
+                std::unique_ptr<Expr<Token>> primary();
 
                 /// @note rules in order of precedence <Stmt>
 
                 /// @example function();
-                std::unique_ptr<StmtExpr> statement_expression();
+                std::unique_ptr<Stmt<void>> statement_expression();
                 /// @example print(1 + 2);
-                std::unique_ptr<StmtPrint> statement_print();
+                std::unique_ptr<Stmt<void>> statement_print();
                 /// @example if (1+2) print(3);
-                std::unique_ptr<StmtIf> statement_if();
+                std::unique_ptr<Stmt<void>> statement_if();
                 /// @example return 1;
-                std::unique_ptr<StmtReturn> statement_return();
-            
+                std::unique_ptr<Stmt<void>> statement_return();
+                /// @example { var x = 1; }
+                std::unique_ptr<Block<void>> statement_block();
+                /// @example while(true) print("hi");
+                std::unique_ptr<Stmt<void>> statement_for();
 
+            
                 /// @note rules in order of precedence <Decl>
                 /// @example var x = 1;
                 std::unique_ptr<DeclStmt> declaration_statement();
@@ -96,26 +100,23 @@ namespace rift
                 /// @example func test() {}
                 std::unique_ptr<DeclFunc> declaration_func();
 
-                /// @example while(true) print("hi");
-                std::unique_ptr<For> for_();
+                /// @brief returns any statements that might be executed 
+                std::unique_ptr<Stmt<void>> ret_stmt();
+                /// @brief returns any declarations that might be executed
+                vec_prog ret_decl();
 
-                /// @example { var x = 1; }
-                std::unique_ptr<Block> block();
+
                 /// @example func test() {}  or member.method()
                 std::unique_ptr<DeclFunc::Func> function(); 
                 /// @example 1, 2, 3
                 Tokens params();
                 /// @example 1+1, "str", a
-                Exprs args(Tokens params);
+                Call<Token>::Exprs args(Tokens params);
                 /// @note program
                 std::unique_ptr<Program> program();
                 
                 /// @brief Syncronizes the parser to avoid error-cascading
                 void synchronize();
-                /// @brief returns any statements that might be executed 
-                std::unique_ptr<Stmt> ret_stmt();
-                /// @brief returns any declarations that might be executed
-                vec_prog ret_decl();
         };
 
         class ParserException : public ReaderException

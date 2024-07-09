@@ -64,41 +64,53 @@ namespace rift
         class ResolverBinary: public Resolver<Token>
         {
             public:
-                ResolverBinary(Binary &expr) : expr(expr) {};
-
-                Binary &expr;
-                Token accept(const Visitor &visitor) const override { return visitor.resolve_binary(*this); }
+                ResolverBinary(std::unique_ptr<Resolver> left, std::unique_ptr<Resolver> right) : left(std::move(left)), right(std::move(right)) {};
                 ~ResolverBinary() = default;
+
+                std::unique_ptr<Resolver> left;
+                std::unique_ptr<Resolver> right;
+                Token accept(const Visitor &visitor) const override { return visitor.resolve_binary(*this); }
         };
 
         class ResolverGrouping: public Resolver<Token>
         {
             public:
-                ResolverGrouping(Grouping &expr) : expr(expr) {};
-
-                Grouping &expr;
-                Token accept(const Visitor &visitor) const override { return visitor.resolve_grouping(*this); }
+                ResolverGrouping(std::unique_ptr<Resolver> expr) : expr(std::move(expr)) {};
                 ~ResolverGrouping() = default;
+
+                std::unique_ptr<Resolver> expr;
+                Token accept(const Visitor &visitor) const override { return visitor.resolve_grouping(*this); }
+        };
+
+        class ResolverLiteral: public Resolver<Token>
+        {
+            public:
+                ResolverLiteral() = default;
+                ~ResolverLiteral() = default;
+
+                Token accept(const Visitor &visitor) const override { return visitor.resolve_literal(*this); }
         };
 
         class ResolverUnary: public Resolver<Token>
         {
             public:
-                ResolverUnary(Unary &expr) : expr(expr) {};
-
-                Unary &expr;
-                Token accept(const Visitor &visitor) const override { return visitor.resolve_unary(*this); }
+                ResolverUnary(std::unique_ptr<Resolver> expr) : expr(std::move(expr)) {};
                 ~ResolverUnary() = default;
+
+                std::unique_ptr<Resolver> expr;
+                Token accept(const Visitor &visitor) const override { return visitor.resolve_unary(*this); }
         };
 
         class ResolverTernary: public Resolver<Token>
         {
             public:
-                ResolverTernary(Ternary &expr) : expr(expr) {};
-
-                Ternary &expr;
-                Token accept(const Visitor &visitor) const override { return visitor.resolve_ternary(*this); }
+                ResolverTernary(std::unique_ptr<Resolver> condition, std::unique_ptr<Resolver> left, std::unique_ptr<Resolver> right) : condition(std::move(condition)), left(std::move(left)), right(std::move(right)) {};
                 ~ResolverTernary() = default;
+
+                std::unique_ptr<Resolver> condition;
+                std::unique_ptr<Resolver> left;
+                std::unique_ptr<Resolver> right;
+                Token accept(const Visitor &visitor) const override { return visitor.resolve_ternary(*this); }
         };
 
         class ResolverCall: public Resolver<Token>
@@ -119,16 +131,6 @@ namespace rift
                 VarExpr &expr;
                 Token accept(const Visitor &visitor) const override { return visitor.resolve_var_expr(*this); }
                 ~ResolverVarExpr() = default;
-        };
-
-        class ResolverLiteral: public Resolver<Token>
-        {
-            public:
-                ResolverLiteral(Literal &expr) : expr(expr) {};
-
-                Literal &expr;
-                Token accept(const Visitor &visitor) const override { return visitor.resolve_literal(*this); }
-                ~ResolverLiteral() = default;
         };
 
         // STATEMENTS
@@ -246,7 +248,6 @@ namespace rift
             private:
                 string message;
         };
-
 
     }
 }

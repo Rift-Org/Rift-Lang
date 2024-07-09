@@ -67,40 +67,50 @@ namespace rift
 
         #pragma mark - EXPRESSIONS
 
-        Token Visitor::resolve_assign(const ResolverAssign& expr) const
+        Token Visitor::resolve_literal(const ResolverLiteral& expr) const
         {
-            visit_assign(expr.expr);
-            Resolve::resolveLocal(&expr.expr, expr.expr.name);
+            return Token();
+        }
+
+        Token Visitor::resolve_unary(const ResolverUnary& expr) const
+        {
+            expr.expr->accept(*this);
+            return Token();
         }
 
         Token Visitor::resolve_binary(const ResolverBinary& expr) const
         {
-            visit_binary(expr.expr);
+            expr.left->accept(*this);
+            expr.right->accept(*this);
+            return Token();
+        }
+
+        Token Visitor::resolve_grouping(const ResolverGrouping& expr) const
+        {
+            expr.expr->accept(*this);
+            return Token();
+        }
+
+        Token Visitor::resolve_ternary(const ResolverTernary& expr) const
+        {
+            if(truthy(expr.condition->accept(*this))) {
+                expr.left->accept(*this);
+            } else {
+                expr.right->accept(*this);
+            }
+
+            return Token();
+        }
+
+        Token Visitor::resolve_assign(const ResolverAssign& expr) const
+        {
+            // visit_assign(expr.expr.);
+            Resolve::resolveLocal(&expr.expr, expr.expr.name);
         }
 
         Token Visitor::resolve_call(const ResolverCall& expr) const
         {
             visit_call(expr.expr);
-        }
-
-        Token Visitor::resolve_grouping(const ResolverGrouping& expr) const
-        {
-            visit_grouping(expr.expr);
-        }
-
-        Token Visitor::resolve_unary(const ResolverUnary& expr) const
-        {
-            visit_unary(expr.expr);
-        }
-
-        Token Visitor::resolve_ternary(const ResolverTernary& expr) const
-        {
-            visit_ternary(expr.expr);
-        }
-
-        Token Visitor::resolve_literal(const ResolverLiteral& expr) const
-        {
-            visit_literal(expr.expr);
         }
 
         Token Visitor::resolve_var_expr(const ResolverVarExpr& expr) const

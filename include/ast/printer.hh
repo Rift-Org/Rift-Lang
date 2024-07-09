@@ -16,8 +16,9 @@
 
 #include <string>
 #include <vector>
-// #include <ast/grmr.hh>
 #include <ast/expr.hh>
+#include <ast/stmt.hh>
+#include <ast/decl.hh>
 
 /// not in use now
 /// need futher re-evaluation
@@ -28,27 +29,46 @@ namespace rift
 {
     namespace ast
     {
-        using vec = std::vector<Expr*>;
         using string = std::string;
         // using ExprStr  = rift::ast::Expr<string>;
         // using VisitStr = rift::ast::Visitor<string>;
 
         /// @class Printer
         /// @brief This class is used to print the expression.
-        class Printer
+        class Printer: public ExprVisitor<string>, public StmtVisitor<string>, public DeclVisitor<string>
         {
             public:
+                using vec = std::vector<Expr<string>*>;
                 Printer();
                 ~Printer() = default;
-                friend class Visitor;
 
                 /// Prints the given expression string.
                 /// @param expr The expression to print.
                 /// @return string representation of the expression.
-                string print(Expr *expr) const;
+                string print(Expr<string> *expr) const;
 
-                std::unique_ptr<const Visitor> visitor;
-                
+                // expressions
+                string visit_assign(const Assign<string>& expr) const override;
+                string visit_binary(const Binary<string>& expr) const override;
+                string visit_grouping(const Grouping<string>& expr) const override;
+                string visit_literal(const Literal<string>& expr) const override;
+                string visit_var_expr(const VarExpr<string>& expr) const override;
+                string visit_unary(const Unary<string>& expr) const override;
+                string visit_ternary(const Ternary<string>& expr) const override;
+                string visit_call(const Call<string>& expr) const override;
+
+                // statements
+                string visit_expr_stmt(const StmtExpr<string>& stmt) const override;
+                string visit_print_stmt(const StmtPrint<string>& stmt) const override;
+                string visit_if_stmt(const StmtIf<string>& stmt) const override;
+                string visit_return_stmt(const StmtReturn<string>& stmt) const override;
+                string visit_block_stmt(const Block<string>& block) const override;
+                string visit_for_stmt(const For<string>& decl) const override;
+
+                // declarations
+                string visit_decl_stmt(const DeclStmt<string>& decl) const override;
+                string visit_decl_var(const DeclVar<string>& decl) const override;
+                string visit_decl_func(const DeclFunc<string>& decl) const override;
             protected:
 
                 /// @brief  Wraps the given expression in parentheses.
@@ -62,8 +82,5 @@ namespace rift
                 /// @return The wrapped expression.
                 string group(vec expr) const;
         };
-
-        /// only one printer available (alleivate dependencies<workaround>)
-        static Printer* printer = new Printer();
     }
 }
