@@ -19,6 +19,7 @@
 #include <ast/expr.hh>
 #include <ast/stmt.hh>
 #include <ast/decl.hh>
+#include <ast/prgm.hh>
 
 /// not in use now
 /// need futher re-evaluation
@@ -35,7 +36,8 @@ namespace rift
 
         /// @class Printer
         /// @brief This class is used to print the expression.
-        class Printer: public ExprVisitor<string>, public StmtVisitor<string>, public DeclVisitor<string>
+        class Printer: public ExprVisitor<string>, public StmtVisitor<string>, 
+                       public DeclVisitor<string>, public ProgramVisitor<string>
         {
             public:
                 using vec = std::vector<Expr<string>*>;
@@ -69,6 +71,9 @@ namespace rift
                 string visit_decl_stmt(const DeclStmt<string>& decl) const override;
                 string visit_decl_var(const DeclVar<string>& decl) const override;
                 string visit_decl_func(const DeclFunc<string>& decl) const override;
+
+                // program
+                string visit_program(const Program<string>& prgm) const override;
             protected:
 
                 /// @brief  Wraps the given expression in parentheses.

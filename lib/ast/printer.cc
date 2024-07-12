@@ -175,6 +175,15 @@ namespace rift
         {
             return "";
         }
+
+        ////////////////////////////////////////////////////////////////////////
+        #pragma mark - Program
+        ////////////////////////////////////////////////////////////////////////
+
+        string Printer::visit_program(const Program<string>& prgm) const
+        {
+            return {};
+        }
     }
 }
 

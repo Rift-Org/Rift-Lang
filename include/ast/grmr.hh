@@ -119,7 +119,6 @@ namespace rift
             Block
         )
 
-        using vec_prog = std::unique_ptr<std::vector<std::unique_ptr<Decl>>>;
         /// @class Visitor 
         /// @brief implementation of the statements and expressions
         class Visitor

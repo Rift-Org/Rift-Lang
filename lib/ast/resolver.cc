@@ -54,7 +54,7 @@ namespace rift
                 scope[name.lexeme] = true;
             }
 
-            void resolveLocal(Expr* expr, Token name)
+            void resolveLocal(Expr<Token>* expr, Token name)
             {
                 for (int i = scopes.size() - 1; i >= 0; i--) {
                     if (scopes[i].find(name.lexeme) != scopes[i].end()) {
@@ -65,33 +65,35 @@ namespace rift
             }
         }
 
+        ////////////////////////////////////////////////////////////////////////
         #pragma mark - EXPRESSIONS
+        ////////////////////////////////////////////////////////////////////////
 
-        Token Visitor::resolve_literal(const ResolverLiteral& expr) const
+        Token Resolver::visit_literal(const Literal<Token>& expr) const
         {
             return Token();
         }
 
-        Token Visitor::resolve_unary(const ResolverUnary& expr) const
+        Token Resolver::visit_unary(const Unary<Token>& expr) const
         {
             expr.expr->accept(*this);
             return Token();
         }
 
-        Token Visitor::resolve_binary(const ResolverBinary& expr) const
+        Token Resolver::visit_binary(const Binary<Token>& expr) const
         {
             expr.left->accept(*this);
             expr.right->accept(*this);
             return Token();
         }
 
-        Token Visitor::resolve_grouping(const ResolverGrouping& expr) const
+        Token Resolver::visit_grouping(const Grouping<Token>& expr) const
         {
             expr.expr->accept(*this);
             return Token();
         }
 
-        Token Visitor::resolve_ternary(const ResolverTernary& expr) const
+        Token Resolver::visit_ternary(const Ternary<Token>& expr) const
         {
             if(truthy(expr.condition->accept(*this))) {
                 expr.left->accept(*this);
@@ -102,105 +104,112 @@ namespace rift
             return Token();
         }
 
-        Token Visitor::resolve_assign(const ResolverAssign& expr) const
+        Token Resolver::visit_assign(const Assign<Token>& expr) const
         {
             // visit_assign(expr.expr.);
-            Resolve::resolveLocal(&expr.expr, expr.expr.name);
+            // Assign<Token>* assign = const_cast<Assign<Token>*>(&expr);
+            Resolve::resolveLocal(static_cast<Expr<Token>*>(&expr), expr.name);
         }
 
-        Token Visitor::resolve_call(const ResolverCall& expr) const
+        Token Resolver::visit_call(const Call<Token>& expr) const
         {
-            visit_call(expr.expr);
+            visit_call(expr);
         }
 
-        Token Visitor::resolve_var_expr(const ResolverVarExpr& expr) const
+        Token Resolver::visit_var_expr(const VarExpr<Token>& expr) const
         {
             if (!Resolve::scopes.empty() && 
-                Resolve::scopes.back().find(expr.expr.value.lexeme)!=Resolve::scopes.back().end() &&
-                Resolve::scopes.back().find(expr.expr.value.lexeme)->second == false) {
-                error::report(expr.expr.value.line, "resolve_var_expr", "Cannot read local variable in its own initializer.", expr.expr.value, ResolverException("Cannot read local variable in its own initializer."));
+                Resolve::scopes.back().find(expr.value.lexeme)!=Resolve::scopes.back().end() &&
+                Resolve::scopes.back().find(expr.value.lexeme)->second == false) {
+                error::report(expr.value.line, "resolve_var_expr", "Cannot read local variable in its own initializer.", expr.value, ResolverException("Cannot read local variable in its own initializer."));
             }
-            Resolve::resolveLocal(&expr.expr, expr.expr.value);
+            Resolve::resolveLocal(&expr, expr.value);
         }
 
+        ////////////////////////////////////////////////////////////////////////
         #pragma mark -  STATEMENTS
+        ////////////////////////////////////////////////////////////////////////
 
-        Token Visitor::resolve_expr_stmt(const ResolverStmtExpr& stmt) const
+        Token Resolver::visit_expr_stmt(const StmtExpr<Token>& stmt) const
         {
-            visit_expr_stmt(stmt.stmt);
+            visit_expr_stmt(stmt);
         }
 
-        Token Visitor::resolve_print_stmt(const ResolverPrint& stmt) const
+        Token Resolver::visit_print_stmt(const StmtPrint<Token>& stmt) const
         {
-            visit_print_stmt(stmt.stmt);
+            visit_print_stmt(stmt);
         }
 
-        Token Visitor::resolve_if_stmt(const ResolverIf& stmt) const
+        Token Resolver::visit_if_stmt(const StmtIf<Token>& stmt) const
         {
-            visit_if_stmt(stmt.stmt);
+            visit_if_stmt(stmt);
         }
 
-        Token Visitor::resolve_return_stmt(const ResolverReturn& stmt) const
+        Token Resolver::visit_return_stmt(const StmtReturn<Token>& stmt) const
         {
-            visit_return_stmt(stmt.stmt);
+            visit_return_stmt(stmt);
             // maybe set return token to NIL
         }
 
-        Token Visitor::resolve_block_stmt(const ResolverBlock& block) const
+        Token Resolver::visit_block_stmt(const Block<Token>& block) const
         {
             Resolve::beginScope();
-            visit_block_stmt(block.block);
+            visit_block_stmt(block);
             Resolve::endScope();
         }
 
-        Token Visitor::resolve_for_stmt(const ResolverFor& stmt) const
+        Token Resolver::visit_for_stmt(const For<Token>& stmt) const
         {
             // visit_for_stmt(stmt.stmt);
             // resolve(stmt.condition);
             // resolve(stmt.body);
         }
 
+        ////////////////////////////////////////////////////////////////////////
         #pragma mark - DECLARATIONS
+        ////////////////////////////////////////////////////////////////////////
 
-        Tokens Visitor::resolve_decl_var(const ResolverDeclVar& decl) const
+        Tokens Resolver::visit_decl_var(const DeclVar<Token>& decl) const
         {
-            Resolve::declare(decl.decl.identifier);
-            if (decl.decl.expr != nullptr) {
-                visit_decl_var(decl.decl);
+            Resolve::declare(decl.identifier);
+            if (decl.expr != nullptr) {
+                visit_decl_var(decl);
             }
-            Resolve::define(decl.decl.identifier);
+            Resolve::define(decl.identifier);
         }
 
-        Tokens Visitor::resolve_decl_func(const ResolverDeclFunc& decl) const
+        Tokens Resolver::visit_decl_func(const DeclFunc<Token>& decl) const
         {
-            Resolve::declare(decl.decl.func->name);
-            Resolve::define(decl.decl.func->name);
+            Resolve::declare(decl.func->name);
+            Resolve::define(decl.func->name);
 
             // resolve params
             Resolve::beginScope();   
-            for (auto param: decl.decl.func->params) {
+            for (auto param: decl.func->params) {
                 Resolve::declare(param);
                 Resolve::define(param);
             }
 
             // resolve block (cant initate abstract class ResolverBlock)
-            if (decl.decl.func->blk != nullptr) {
+            if (decl.func->blk != nullptr) {
                 Resolve::beginScope();
-                visit_block_stmt(*decl.decl.func->blk);
+                visit_block_stmt(*decl.func->blk);
                 Resolve::endScope();
             }
 
             Resolve::endScope();
         }
 
-        Tokens Visitor::resolve_decl_stmt(const ResolverDeclStmt& decl) const
+        Tokens Resolver::visit_decl_stmt(const DeclStmt<Token>& decl) const
         {
             // visit_decl_stmt(decl.decl);
         }
 
+        ////////////////////////////////////////////////////////////////////////
         #pragma mark - PROGRAM
+        ////////////////////////////////////////////////////////////////////////
 
-        Tokens Visitor::resolve_program(const Program& prgm) const
+        Tokens Resolver::visit_program(const Program<Tokens>& prgm) const
         {
             // for (auto decl: prgm.decls) {
             //     visit_decl_stmt(*decl);

@@ -58,7 +58,7 @@ namespace rift
         };
 
         /// @class Stmt
-        /// @tparam T 
+        /// @tparam T <Token,Tokens,void>
         template <typename T>
         class Stmt: public rift::ast::Accept<Token>
         {
@@ -117,8 +117,8 @@ namespace rift
                         Stmt(std::unique_ptr<Expr<Token>> expr, std::unique_ptr<Block> blk): expr(std::move(expr)), blk(std::move(blk)) {}
 
                         std::unique_ptr<Expr<Token>> expr;
-                        std::unique_ptr<rift::ast::Stmt> stmt;
-                        std::unique_ptr<Block> blk;
+                        std::unique_ptr<rift::ast::Stmt<T>> stmt;
+                        std::unique_ptr<Block<T>> blk;
                 };
 
             public:
@@ -138,9 +138,9 @@ namespace rift
         class StmtReturn : public Stmt
         {
             public:
-                StmtReturn(std::unique_ptr<Expr> expr): expr(std::move(expr)) {};
+                StmtReturn(std::unique_ptr<Expr<Token>> expr): expr(std::move(expr)) {};
                 ~StmtReturn() = default;
-                std::unique_ptr<Expr> expr;
+                std::unique_ptr<Expr<Token>> expr;
 
                 T accept(const Visitor &visitor) const override { return visitor.visit_return_stmt(*this); };
         };
@@ -149,7 +149,11 @@ namespace rift
         class Block : public Stmt
         {
             public:
-                Block(vec_prog decls) : decls(std::move(decls)) {};
+                using vec_prog = std::vector<std::unique_ptr<Decl<Token>>>;
+                Block(vec_prog decls) : decls(decls) {};
+                Block() : decls(nullptr) {}
+                Block(Block other) { decls = other.decls; }
+                Block(std::vector<std::unique_ptr<Decl<Token>>> other_decls) {  }
                 ~Block() = default;
                 vec_prog decls = nullptr;
 
@@ -162,14 +166,17 @@ namespace rift
             public:
                 For(): expr(nullptr), stmt_l(nullptr), stmt_r(nullptr), decl(nullptr), blk(nullptr), stmt_o(nullptr) {};
                 ~For() = default;
-
-                std::unique_ptr<Expr> expr;
-                std::unique_ptr<Stmt> stmt_l;
-                std::unique_ptr<Stmt> stmt_r;
-                std::unique_ptr<Decl> decl;
-
-                std::unique_ptr<Block> blk;
-                std::unique_ptr<Stmt> stmt_o;
+                                                    // for
+                                                    // 1)
+                std::unique_ptr<Decl<Token>> decl;  //    mut i = 0; 
+                std::unique_ptr<Stmt<void>> stmt_l; //    i = 0;
+                                                    // 2)
+                std::unique_ptr<Expr<Token>> expr;  //    i < 10;
+                                                    // 3)
+                std::unique_ptr<Stmt<void>> stmt_r; //    i+=1;
+                                                    // 4)
+                std::unique_ptr<Block<void>> blk;   //    {}
+                std::unique_ptr<Stmt<void>> stmt_o; //    todo: used for lambdas <future impl>
 
                 T accept(const Visitor &visitor) const override { return visitor.visit_for_stmt(*this); };
         };

@@ -23,24 +23,28 @@ namespace rift
 {
     namespace ast
     {
-        class Stmt;
+        __DEFAULT_FORWARD_VA(
+            Program
+        )
 
-        class Program : public Accept<Tokens>
+        template <typename T>
+        class ProgramVisitor
+        {
+            virtual T visit_program(const Program<T>& prgm) const;
+        };
+        template <typename T>
+        class Program
         {
             public:
-                Program(vec_prog decls) : decls(std::move(decls)) {}
+                using vec_t = std::vector<std::unique_ptr<Decl<Token>>>;
+                Program(vec_t decls) : decls(std::move(decls)) {}
                 virtual ~Program() = default;
-                friend class Visitor;
+                friend class Eval;
 
-                Tokens accept(const Visitor &visitor) const override { return visitor.visit_program(*this); }
-
-                #pragma clang diagnostic push
-                #pragma clang diagnostic ignored "-Wunused-parameter"
-                std::string accept_printer(const Visitor& visitor) const override { return "unimplemented"; }
-                #pragma clang diagnostic pop
+                T accept(const Visitor &visitor) { return visitor.visit_program(*this); }
 
             protected:
-                vec_prog decls = nullptr;
+                vec_t decls = {};
         };
     }
 }

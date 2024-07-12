@@ -30,18 +30,45 @@ namespace rift
 {
     namespace ast
     {
-        class Eval
+        class Eval : public ExprVisitor<Token>, StmtVisitor<Token>, 
+                            DeclVisitor<Token>, ProgramVisitor<Tokens>
         {
             public:
                 Eval();
                 ~Eval() = default;
 
-                /// @brief Evaluates the given *expr/stmt/decl*
-                std::vector<string> evaluate(const Program& expr, bool interactive);
+                // expressions
+                Token visit_assign(const Assign<Token>& expr) const override;
+                Token visit_binary(const Binary<Token>& expr) const override;
+                Token visit_grouping(const Grouping<Token>& expr) const override;
+                Token visit_literal(const Literal<Token>& expr) const override;
+                Token visit_var_expr(const VarExpr<Token>& expr) const override;
+                Token visit_unary(const Unary<Token>& expr) const override;
+                Token visit_ternary(const Ternary<Token>& expr) const override;
+                Token visit_call(const Call<Token>& expr) const override;
 
-                /// @note resolving
-                static Token lookup(Expr* expr, std::string key);
-                void resolve(Expr* expr, int depth);
+                // statements
+                Token visit_expr_stmt(const StmtExpr<Token>& stmt) const override;
+                Token visit_print_stmt(const StmtPrint<Token>& stmt) const override;
+                Token visit_if_stmt(const StmtIf<Token>& stmt) const override;
+                Token visit_return_stmt(const StmtReturn<Token>& stmt) const override;
+                Token visit_block_stmt(const Block<Token>& block) const override;
+                Token visit_for_stmt(const For<Token>& decl) const override;
+
+                // declarations
+                Token visit_decl_stmt(const DeclStmt<Token>& decl) const override;
+                Token visit_decl_var(const DeclVar<Token>& decl) const override;
+                Token visit_decl_func(const DeclFunc<Token>& decl) const override;
+
+                // program
+                Tokens visit_program(const Program<Tokens>& prgm) const override;
+
+                /// @brief Evaluates the given *expr/stmt/decl*
+                std::vector<string> evaluate(const Program<Tokens>& expr, bool interactive);
+
+                /// @note Resolver API
+                static Token lookup(Expr<Token>* expr, std::string key);
+                void resolve(Expr<Token>* expr, int depth);
 
             private:
                 std::unique_ptr<Visitor> visitor;

@@ -41,7 +41,7 @@ namespace rift
         /// @class Decl
         /// @brief Declarations acceptor
         template <typename T>
-        class Decl: public Accept
+        class Decl
         {
             public:
                 virtual T accept(const Visitor &visitor) const = 0;
@@ -52,10 +52,10 @@ namespace rift
         class DeclStmt: public Decl
         {
             public:
-                DeclStmt(std::unique_ptr<Stmt> stmt) : stmt(std::move(stmt)) {};
+                DeclStmt(std::unique_ptr<Stmt<void>> stmt) : stmt(std::move(stmt)) {};
                 T accept(const Visitor &visitor) const override { return visitor.visit_decl_stmt(*this); }
 
-                std::unique_ptr<Stmt> stmt;
+                std::unique_ptr<Stmt<void>> stmt;
         };
 
         template <typename T>
@@ -63,11 +63,11 @@ namespace rift
         {
             public:
                 DeclVar(const Token &identifier): identifier(identifier), expr(nullptr) {};
-                DeclVar(const Token &identifier, std::unique_ptr<Expr> expr): identifier(identifier), expr(std::move(expr)) {};
+                DeclVar(const Token &identifier, std::unique_ptr<Expr<Token>> expr): identifier(identifier), expr(std::move(expr)) {};
                 T accept(const Visitor &visitor) const override { return visitor.visit_decl_var(*this); }
 
                 const Token& identifier;
-                std::unique_ptr<Expr> expr;
+                std::unique_ptr<Expr<Token>> expr;
         };
 
         template <typename T>
@@ -78,7 +78,7 @@ namespace rift
                     Token name;
                     Tokens params;
                     Environment closure;
-                    std::unique_ptr<Block> blk;
+                    std::unique_ptr<Block<void>> blk;
                 } Func;
 
                 DeclFunc(): func(nullptr) {};

@@ -27,7 +27,7 @@ namespace rift
 
         static Token return_token = Token(TokenType::NIL, "", "", -1);
         static Environment* curr_env = &rift::ast::Environment::getInstance(false);
-        static std::unordered_map<Expr*, int> locals = {};
+        static std::unordered_map<Expr<Token>*, int> locals = {};
 
 
         #pragma mark - Eval
@@ -37,7 +37,7 @@ namespace rift
             this->visitor = std::unique_ptr<Visitor>(new Visitor());
         }
 
-        Token Eval::lookup(Expr* expr, std::string key)
+        Token Eval::lookup(Expr<Token>* expr, std::string key)
         {
             if (locals.find(expr) != locals.end()) {
                 auto depth = locals[expr];
@@ -48,9 +48,9 @@ namespace rift
             }   
         }
 
-        void Eval::resolve(Expr* expr, int depth)
+        void Eval::resolve(Expr<Token>* expr, int depth)
         {
-            locals.insert({expr, depth});
+            locals[expr] = depth;
         }
 
         std::vector<std::string> Eval::evaluate(const Program& expr, bool interactive)
@@ -82,7 +82,7 @@ namespace rift
 
         #pragma mark - Eval Visitor
 
-        Token Visitor::visit_literal(const Literal& expr) const
+        Token Eval::visit_literal(const Literal<Token>& expr) const
         {
             Token val = expr.value;
             any literal = val.getLiteral();
@@ -124,17 +124,17 @@ namespace rift
             return Token();
         }
 
-        Token Visitor::visit_var_expr(const VarExpr& expr) const
+        Token Eval::visit_var_expr(const VarExpr<Token>& expr) const
         {
             Token val = expr.value;
             any literal;
 
             // Token res = curr_env->getEnv<Token>(val.lexeme);
-            VarExpr& expr_ref = const_cast<VarExpr&>(expr);
+            VarExpr<Token>& expr_ref = const_cast<VarExpr<Token>&>(expr);
             return Eval::lookup(&expr_ref, val.lexeme);
         }
 
-        Token Visitor::visit_binary(const Binary& expr) const
+        Token Eval::visit_binary(const Binary<Token>& expr) const
         {
             Token left;
             Token right;
@@ -240,13 +240,13 @@ namespace rift
             return Token();
         }
 
-        Token Visitor::visit_assign(const Assign& expr) const
+        Token Eval::visit_assign(const Assign<Token>& expr) const
         {
             auto name = expr.name.lexeme;
             auto val = expr.value->accept(*this);
 
-            const Expr* const_expr = &expr;
-            Expr* expr_ptr = const_cast<Expr*>(const_expr);
+            const Expr<Token>* const_expr = &expr;
+            Expr<Token>* expr_ptr = const_cast<Expr<Token>*>(const_expr);
             
             if (locals.find(expr_ptr) != locals.end()) {
                 auto depth = locals[expr_ptr];
@@ -260,12 +260,12 @@ namespace rift
             return val;
         }
 
-        Token Visitor::visit_grouping(const Grouping& expr) const
+        Token Eval::visit_grouping(const Grouping<Token>& expr) const
         {
             return expr.expr.get()->accept(*this);
         }
 
-        Token Visitor::visit_unary(const Unary& expr) const
+        Token Eval::visit_unary(const Unary<Token>& expr) const
         {
             Token right = expr.expr.get()->accept(*this);
             bool res = false;
@@ -295,7 +295,7 @@ namespace rift
             return Token();
         }
 
-        Token Visitor::visit_ternary(const Ternary& expr) const
+        Token Eval::visit_ternary(const Ternary<Token>& expr) const
         {
             Token cond = expr.condition->accept(*this);
 
@@ -304,7 +304,7 @@ namespace rift
             return Token(expr.right->accept(*this));
         }
 
-        Token Visitor::visit_call(const Call& expr) const
+        Token Eval::visit_call(const Call<Token>& expr) const
         {
             auto name = curr_env->getEnv<Token>(expr.name.lexeme);
 
@@ -312,7 +312,7 @@ namespace rift
                 rift::error::runTimeError("Undefined function '" + name.lexeme + "'");
 
             // set new env with closure
-            auto func = std::any_cast<DeclFunc::Func*>(name.literal);
+            auto func = std::any_cast<DeclFunc<Token>::Func*>(name.literal);
             // curr_env = new Environment(func->closure);
 
 
@@ -334,12 +334,12 @@ namespace rift
 
         #pragma mark - Stmt Visitors
 
-        Token Visitor::visit_expr_stmt(const StmtExpr& stmt) const
+        Token Eval::visit_expr_stmt(const StmtExpr<Token>& stmt) const
         {
             return stmt.expr->accept(*this);
         }
 
-        Token Visitor::visit_print_stmt(const StmtPrint& stmt) const
+        Token Eval::visit_print_stmt(const StmtPrint<Token>& stmt) const
         {
             Token val = stmt.expr->accept(*this);
             std::string res = castAnyString(val);
@@ -349,7 +349,7 @@ namespace rift
             return val;
         }
 
-        Token Visitor::visit_if_stmt(const StmtIf& stmt) const
+        Token Eval::visit_if_stmt(const StmtIf<Token>& stmt) const
         {
             auto if_stmt = stmt.if_stmt;
             // if stmt
@@ -386,7 +386,7 @@ namespace rift
             return Token();
         }
 
-        Token Visitor::visit_return_stmt(const StmtReturn& stmt) const
+        Token Eval::visit_return_stmt(const StmtReturn<Token>& stmt) const
         {
             return_token = stmt.expr->accept(*this);
             return return_token;
@@ -394,22 +394,21 @@ namespace rift
 
         #pragma mark - Program / Block Visitor
 
-        Token Visitor::visit_block_stmt(const Block& block) const
+        Token Eval::visit_block_stmt(const Block<Token>& block) const
         {
             Tokens toks = {};
 
             curr_env->addChild(); // add scope
-            for (auto it=block.decls->begin(); it!=block.decls->end(); it++) {
+            for (auto it=block.decls.begin(); it!=block.decls.end(); it++) {
                     if (return_token.line != -1) break; // -1 = no return
-                    auto its = (*it)->accept(*this);
-                    toks.insert(toks.end(), its.begin(), its.end());
+                    toks.push_back((*it)->accept(*this));
             }
             curr_env->removeChild(); // remove scope
 
             return return_token;
         }
 
-        Token Visitor::visit_for_stmt(const For& decl) const
+        Token Eval::visit_for_stmt(const For<Token>& decl) const
         {
             Tokens toks = {};
             if (decl.decl != nullptr) decl.decl->accept(*this);
@@ -430,14 +429,14 @@ namespace rift
 
         #pragma mark - Decl Visitors
 
-        Tokens Visitor::visit_decl_stmt(const DeclStmt& decl) const
+        Tokens rift::ast::Eval::visit_decl_stmt(const rift::ast::DeclStmt<Token> &decl) const
         {
             std::vector<Token> toks;
             toks.push_back(decl.stmt->accept(*this));
             return toks;
         }
 
-        Tokens Visitor::visit_decl_var(const DeclVar& decl) const
+        Tokens Eval::visit_decl_var(const DeclVar<Token>& decl) const
         {
             // check performed in parser, undefined variables are CT errors
             Tokens toks;
@@ -451,7 +450,7 @@ namespace rift
             return toks;
         }
 
-        Tokens Visitor::visit_decl_func(const DeclFunc& decl) const
+        Tokens Eval::visit_decl_func(const DeclFunc<Token>& decl) const
         {
             auto name = decl.func->name;
             auto params = decl.func->params;
@@ -472,12 +471,12 @@ namespace rift
         }
 
         #pragma mark - Program
-        Tokens Visitor::visit_program(const Program& prgm) const
+
+        Tokens Eval::visit_program(const Program<Tokens>& prgm) const
         {
             Tokens toks = {};
-            for (auto it=prgm.decls->begin(); it!=prgm.decls->end(); it++) {
-                auto its = (*it)->accept(*this);
-                toks.insert(toks.end(), its.begin(), its.end());
+            for (auto it=prgm.decls.begin(); it!=prgm.decls.end(); it++) {
+                toks.push_back((*it)->accept(*this));
             }
             return toks;
         }

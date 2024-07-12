@@ -126,7 +126,7 @@ namespace rift
                 Token name;
                 std::unique_ptr<Expr> value;
 
-                inline T accept(const ExprVisitor& visitor) const override { return visitor.visit_assign(*this); }
+                virtual inline T accept(const ExprVisitor& visitor) const override { return visitor.visit_assign(*this); }
         };
 
         /// @class Binary
