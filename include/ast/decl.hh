@@ -33,9 +33,10 @@ namespace rift
         template <typename T>
         class DeclVisitor
         {
-            virtual T visit_decl_stmt(const DeclStmt<T>& decl) const;
-            virtual T visit_decl_var(const DeclVar<T>& decl) const;
-            virtual T visit_decl_func(const DeclFunc<T>& decl) const;
+            public:
+                virtual T visit_decl_stmt(const DeclStmt<T>& decl) const;
+                virtual T visit_decl_var(const DeclVar<T>& decl) const;
+                virtual T visit_decl_func(const DeclFunc<T>& decl) const;
         };
 
         /// @class Decl
@@ -44,34 +45,34 @@ namespace rift
         class Decl
         {
             public:
-                virtual T accept(const Visitor &visitor) const = 0;
+                virtual T accept(const DeclVisitor<T> &visitor) const = 0;
                 virtual ~Decl() = default;
         };
 
         template <typename T>
-        class DeclStmt: public Decl
+        class DeclStmt: public Decl<T>
         {
             public:
                 DeclStmt(std::unique_ptr<Stmt<void>> stmt) : stmt(std::move(stmt)) {};
-                T accept(const Visitor &visitor) const override { return visitor.visit_decl_stmt(*this); }
+                T accept(const DeclVisitor<T> &visitor) const override { return visitor.visit_decl_stmt(*this); }
 
                 std::unique_ptr<Stmt<void>> stmt;
         };
 
         template <typename T>
-        class DeclVar: public Decl
+        class DeclVar: public Decl<T>
         {
             public:
                 DeclVar(const Token &identifier): identifier(identifier), expr(nullptr) {};
                 DeclVar(const Token &identifier, std::unique_ptr<Expr<Token>> expr): identifier(identifier), expr(std::move(expr)) {};
-                T accept(const Visitor &visitor) const override { return visitor.visit_decl_var(*this); }
+                T accept(const DeclVisitor<T> &visitor) const override { return visitor.visit_decl_var(*this); }
 
                 const Token& identifier;
                 std::unique_ptr<Expr<Token>> expr;
         };
 
         template <typename T>
-        class DeclFunc : public Decl
+        class DeclFunc : public Decl<T>
         {
             public:
                 typedef struct {
@@ -87,7 +88,7 @@ namespace rift
 
                 std::unique_ptr<Func> func;
 
-                T accept(const Visitor &visitor) const override { return visitor.visit_decl_func(*this); };
+                T accept(const DeclVisitor<T> &visitor) const override { return visitor.visit_decl_func(*this); };
         };
     }
 }

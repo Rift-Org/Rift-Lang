@@ -129,12 +129,20 @@ namespace rift
 
         string Printer::visit_expr_stmt(const StmtExpr<string>& stmt) const
         {
-            return parenthesize("expr_stmt", {stmt.expr.get()});
+            auto res = stmt.expr.get();
+            Token tok = res->accept(*this);
+            vec v = {}; // i hate this language...
+            v.push_back(std::make_unique<Literal<string>>(tok).get());
+            return parenthesize("expr_stmt", v);
         }
 
         string Printer::visit_print_stmt(const StmtPrint<string>& stmt) const
         {
-            return parenthesize("print", {stmt.expr.get()});
+            auto res = stmt.expr.get();
+            Token tok = res->accept(*this);
+            vec v = {}; // i hate this language...
+            v.push_back(std::make_unique<Literal<string>>(tok).get());
+            return parenthesize("print", v);
         }
 
         string Printer::visit_if_stmt(const StmtIf<string>& stmt) const

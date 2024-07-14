@@ -32,11 +32,6 @@ namespace rift
 
         #pragma mark - Eval
 
-        Eval::Eval()
-        {
-            this->visitor = std::unique_ptr<Visitor>(new Visitor());
-        }
-
         Token Eval::lookup(Expr<Token>* expr, std::string key)
         {
             if (locals.find(expr) != locals.end()) {
@@ -53,12 +48,12 @@ namespace rift
             locals[expr] = depth;
         }
 
-        std::vector<std::string> Eval::evaluate(const Program& expr, bool interactive)
+        std::vector<string> Eval::evaluate(std::unique_ptr<Program<Tokens>>& prgm, bool interactive)
         {
             std::vector<std::string> res;
 
             try {
-                auto toks = expr.accept(*visitor.get());
+                auto toks = prgm->accept(*this);
                 for (const auto& tok : toks) {
                     any val = tok.getLiteral();
                     if (isNumber(tok)) {
@@ -321,7 +316,7 @@ namespace rift
                 curr_env->setEnv<Token>(arg.first, arg.second->accept(*this), false);
             }
 
-            auto res = func->blk->accept(*this);
+            func->blk->accept(*this);
 
             // cleanup
             auto tmp = return_token;
@@ -415,11 +410,8 @@ namespace rift
             else if (decl.stmt_l != nullptr) decl.stmt_l->accept(*this);
 
             while(truthy(decl.expr->accept(*this))) {
-                if(decl.stmt_o != nullptr) toks.push_back(decl.stmt_o->accept(*this));
-                else if (decl.blk != nullptr) {
-                    auto bk = decl.blk->accept(*this);
-                    toks.push_back(bk);
-                }
+                if(decl.stmt_o != nullptr) decl.stmt_o->accept(*this);
+                else if (decl.blk != nullptr) decl.blk->accept(*this);
                 else rift::error::runTimeError("For statement should have a statement or block");
 
                 if (decl.stmt_r != nullptr) decl.stmt_r->accept(*this);
@@ -429,28 +421,25 @@ namespace rift
 
         #pragma mark - Decl Visitors
 
-        Tokens rift::ast::Eval::visit_decl_stmt(const rift::ast::DeclStmt<Token> &decl) const
+        Token rift::ast::Eval::visit_decl_stmt(const rift::ast::DeclStmt<Token> &decl) const
         {
-            std::vector<Token> toks;
-            toks.push_back(decl.stmt->accept(*this));
-            return toks;
+            decl.stmt->accept(*this);
+            return Token();
         }
 
-        Tokens Eval::visit_decl_var(const DeclVar<Token>& decl) const
+        Token Eval::visit_decl_var(const DeclVar<Token>& decl) const
         {
             // check performed in parser, undefined variables are CT errors
-            Tokens toks;
             if (decl.expr != nullptr) {
-                toks.push_back(decl.expr->accept(*this));
+                return decl.expr->accept(*this);
             } else {
-                auto niltok = Token(TokenType::NIL, "null", nullptr, decl.identifier.line);
-                curr_env->setEnv<Token>(decl.identifier.lexeme, niltok, decl.identifier.type == TokenType::C_IDENTIFIER);
-                toks.push_back(niltok);
+                // declaration just set it to a nil token
+                curr_env->setEnv<Token>(decl.identifier.lexeme, Token(), decl.identifier.type == TokenType::C_IDENTIFIER);
+                return Token();
             }
-            return toks;
         }
 
-        Tokens Eval::visit_decl_func(const DeclFunc<Token>& decl) const
+        Token Eval::visit_decl_func(const DeclFunc<Token>& decl) const
         {
             auto name = decl.func->name;
             auto params = decl.func->params;
@@ -460,7 +449,7 @@ namespace rift
             if (curr_env->getEnv<Token>(name.lexeme).type != TokenType::NIL)
                 rift::error::runTimeError("Function '" + name.lexeme + "' already defined");
 
-            if (decl.func->blk != nullptr) {
+            if (decl.func->blk) {
                 curr_env->setEnv<Token>(name.lexeme, Token(TokenType::FUN, name.lexeme, decl.func.get(), name.line), false);
             } else {
                 // rift::error::runTimeError("Function '" + name.lexeme + "' should have a block (no support for lambdas yet)");

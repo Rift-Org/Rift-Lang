@@ -60,10 +60,10 @@ namespace rift
         /// @class Stmt
         /// @tparam T <Token,Tokens,void>
         template <typename T>
-        class Stmt: public rift::ast::Accept<Token>
+        class Stmt
         {
             public:
-                virtual T accept(const Visitor &visitor) const = 0;
+                virtual T accept(const StmtVisitor<T> &visitor) const = 0;
                 virtual ~Stmt() = default;
         };
         
@@ -83,7 +83,7 @@ namespace rift
         ///   start > end && ([start, end] = [end, start]);
         /// }
         template <typename T>
-        class StmtExpr: public Stmt
+        class StmtExpr: public Stmt<T>
         {
             public:
                 StmtExpr(std::unique_ptr<Expr<Token>> expr) : expr(std::move(expr)) {};
@@ -91,30 +91,30 @@ namespace rift
                 std::unique_ptr<Expr<Token>> expr;
 
 
-                T accept(const Visitor &visitor) const override { return visitor.visit_expr_stmt(*this); };
+                T accept(const StmtVisitor<T> &visitor) const override { return visitor.visit_expr_stmt(*this); };
         };
 
         template <typename T>
-        class StmtPrint : public Stmt
+        class StmtPrint : public Stmt<T>
         {
             public:
                 StmtPrint(std::unique_ptr<Expr<Token>>& expr) : expr(std::move(expr)) {};
                 ~StmtPrint() = default;
                 std::unique_ptr<Expr<Token>> expr;
 
-                T accept(const Visitor &visitor) const override { return visitor.visit_print_stmt(*this); };
+                T accept(const StmtVisitor<T> &visitor) const override { return visitor.visit_print_stmt(*this); };
         };
 
         template <typename T>
-        class StmtIf : public Stmt
+        class StmtIf : public Stmt<T>
         {
             public:
                 struct Stmt {
                     public:
                         Stmt() : expr(nullptr), stmt(nullptr), blk(nullptr) {};
                         Stmt(std::unique_ptr<Expr<Token>> expr): expr(std::move(expr)), stmt(nullptr), blk(nullptr) {}
-                        Stmt(std::unique_ptr<Expr<Token>> expr, std::unique_ptr<rift::ast::Stmt> stmt): expr(std::move(expr)), stmt(std::move(stmt)) {}
-                        Stmt(std::unique_ptr<Expr<Token>> expr, std::unique_ptr<Block> blk): expr(std::move(expr)), blk(std::move(blk)) {}
+                        Stmt(std::unique_ptr<Expr<Token>> expr, std::unique_ptr<rift::ast::Stmt<T>> stmt): expr(std::move(expr)), stmt(std::move(stmt)) {}
+                        Stmt(std::unique_ptr<Expr<Token>> expr, std::unique_ptr<Block<T>> blk): expr(std::move(expr)), blk(std::move(blk)) {}
 
                         std::unique_ptr<Expr<Token>> expr;
                         std::unique_ptr<rift::ast::Stmt<T>> stmt;
@@ -131,37 +131,36 @@ namespace rift
                 Stmt* else_stmt;
                 std::vector<Stmt*> elif_stmts;
 
-                T accept(const Visitor &visitor) const override { return visitor.visit_if_stmt(*this); };
+                T accept(const StmtVisitor<T> &visitor) const override { return visitor.visit_if_stmt(*this); };
         };
 
         template <typename T>
-        class StmtReturn : public Stmt
+        class StmtReturn : public Stmt<T>
         {
             public:
                 StmtReturn(std::unique_ptr<Expr<Token>> expr): expr(std::move(expr)) {};
                 ~StmtReturn() = default;
                 std::unique_ptr<Expr<Token>> expr;
 
-                T accept(const Visitor &visitor) const override { return visitor.visit_return_stmt(*this); };
+                T accept(const StmtVisitor<T> &visitor) const override { return visitor.visit_return_stmt(*this); };
         };
 
         template <typename T>
-        class Block : public Stmt
+        class Block : public Stmt<T>
         {
             public:
                 using vec_prog = std::vector<std::unique_ptr<Decl<Token>>>;
-                Block(vec_prog decls) : decls(decls) {};
-                Block() : decls(nullptr) {}
-                Block(Block other) { decls = other.decls; }
-                Block(std::vector<std::unique_ptr<Decl<Token>>> other_decls) {  }
+                Block(vec_prog&& decls) : decls(std::move(decls)) {};
+                Block() = default;
+                Block(const Block<T>& other) { decls = other.decls; }
                 ~Block() = default;
-                vec_prog decls = nullptr;
+                vec_prog decls = {};
 
-                T accept(const Visitor &visitor) const override { return visitor.visit_block_stmt(*this); };
+                T accept(const StmtVisitor<T> &visitor) const override { return visitor.visit_block_stmt(*this); };
         };
 
         template <typename T>
-        class For : public Stmt
+        class For : public Stmt<T>
         {
             public:
                 For(): expr(nullptr), stmt_l(nullptr), stmt_r(nullptr), decl(nullptr), blk(nullptr), stmt_o(nullptr) {};
@@ -178,7 +177,7 @@ namespace rift
                 std::unique_ptr<Block<void>> blk;   //    {}
                 std::unique_ptr<Stmt<void>> stmt_o; //    todo: used for lambdas <future impl>
 
-                T accept(const Visitor &visitor) const override { return visitor.visit_for_stmt(*this); };
+                T accept(const StmtVisitor<T> &visitor) const override { return visitor.visit_for_stmt(*this); };
         };
     }
 }

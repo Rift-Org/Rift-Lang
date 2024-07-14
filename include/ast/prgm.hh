@@ -32,6 +32,7 @@ namespace rift
         {
             virtual T visit_program(const Program<T>& prgm) const;
         };
+
         template <typename T>
         class Program
         {
@@ -41,7 +42,7 @@ namespace rift
                 virtual ~Program() = default;
                 friend class Eval;
 
-                T accept(const Visitor &visitor) { return visitor.visit_program(*this); }
+                T accept(const ProgramVisitor<T> &visitor) { return visitor.visit_program(*this); }
 
             protected:
                 vec_t decls = {};

@@ -47,7 +47,7 @@ namespace rift
 
             std::shared_ptr<std::vector<Token>> tokensPtr = std::make_shared<std::vector<Token>>(riftScanner.tokens);
             Parser riftParser(tokensPtr);
-            std::unique_ptr<Program> statements = riftParser.parse(); 
+            std::unique_ptr<Program<Tokens>> statements = riftParser.parse(); 
 
             Eval riftEvaluator;
             riftEvaluator.evaluate(*statements, interactive);

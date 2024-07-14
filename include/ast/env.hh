@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <iostream>
+#include <error/error.hh>
 
 using Token = rift::scanner::Token;
 using str_t = std::string;

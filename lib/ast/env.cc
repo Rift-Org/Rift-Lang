@@ -65,7 +65,7 @@ namespace rift
         template void Environment::setEnv<rift::scanner::Token>(const str_t&, rift::scanner::Token, bool);
         template rift::scanner::Token Environment::getEnv<rift::scanner::Token>(const str_t&) const;
 
-        template void Environment::setEnv<rift::ast::Expr*>(const str_t&, rift::ast::Expr*, bool);
-        template rift::ast::Expr* Environment::getEnv<rift::ast::Expr*>(const str_t&) const;
+        // template void Environment::setEnv<rift::ast::Expr*>(const str_t&, rift::ast::Expr*, bool);
+        // template rift::ast::Expr* Environment::getEnv<rift::ast::Expr*>(const str_t&) const;
     }
 }

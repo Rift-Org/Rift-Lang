@@ -86,15 +86,16 @@ namespace rift
         class Expr
         {
             public:
-                virtual T accept(const ExprVisitor& visitor) const = 0;
+                virtual T accept(const ExprVisitor<T>& visitor) const = 0;
                 virtual ~Expr() = default;
+                virtual Expr& operator=(const Expr&other) = default;
         };
         
 
         #pragma mark - Concrete Expressions
 
         template <typename T>
-        class Call : public Expr
+        class Call : public Expr<T>
         {
             public:
                 using Exprs = std::unordered_map<std::string, std::unique_ptr<Expr<T>>>;
@@ -103,30 +104,30 @@ namespace rift
                 Token name; // expr -> Literal::Identifier
                 Exprs args;
 
-                inline T accept(const ExprVisitor& visitor) const override { return visitor.visit_call(*this); }
+                inline T accept(const ExprVisitor<T>& visitor) const override { return visitor.visit_call(*this); }
         };
 
         template <typename T>
-        class Ternary : public Expr
+        class Ternary : public Expr<T>
         {
             public:
-                Ternary(std::unique_ptr<Expr<Token>> condition, std::unique_ptr<Expr<Token>> left, std::unique_ptr<Expr<Token>> right): condition(std::move(condition)), left(std::move(left)), right(std::move(right)) {};
-                std::unique_ptr<Expr> condition;
-                std::unique_ptr<Expr> left;
-                std::unique_ptr<Expr> right;
+                Ternary(std::unique_ptr<Expr<T>> condition, std::unique_ptr<Expr<T>> left, std::unique_ptr<Expr<T>> right): condition(std::move(condition)), left(std::move(left)), right(std::move(right)) {};
+                std::unique_ptr<Expr<T>> condition;
+                std::unique_ptr<Expr<T>> left;
+                std::unique_ptr<Expr<T>> right;
 
-                inline T accept(const ExprVisitor& visitor) const override { return visitor.visit_ternary(*this); }
+                inline T accept(const ExprVisitor<T>& visitor) const override { return visitor.visit_ternary(*this); }
         };
 
         template <typename T>
-        class Assign : public Expr
+        class Assign : public Expr<T>
         {
             public:
-                Assign(Token name, std::unique_ptr<Expr<Token>> value): name(name), value(std::move(value)) {};
+                Assign(Token name, std::unique_ptr<Expr<T>> value): name(name), value(std::move(value)) {};
                 Token name;
-                std::unique_ptr<Expr> value;
+                std::unique_ptr<Expr<T>> value;
 
-                virtual inline T accept(const ExprVisitor& visitor) const override { return visitor.visit_assign(*this); }
+                virtual inline T accept(const ExprVisitor<T>& visitor) const override { return visitor.visit_assign(*this); }
         };
 
         /// @class Binary
@@ -135,65 +136,65 @@ namespace rift
         /// @param right The right operand
         // template <typename T = Token, typename V = Token>
         template <typename T>
-        class Binary : public Expr
+        class Binary : public Expr<T>
         {
             public:
-                Binary(std::unique_ptr<Expr<Token>> left, Token op, std::unique_ptr<Expr<Token>> right): op(op), left(std::move(left)), right(std::move(right)) {};
+                Binary(std::unique_ptr<Expr<T>> left, Token op, std::unique_ptr<Expr<T>> right): op(op), left(std::move(left)), right(std::move(right)) {};
                 Token op;
-                std::unique_ptr<Expr> left;
-                std::unique_ptr<Expr> right;
+                std::unique_ptr<Expr<T>> left;
+                std::unique_ptr<Expr<T>> right;
 
-                inline T accept(const ExprVisitor& visitor) const override { return visitor.visit_binary(*this); }
+                inline T accept(const ExprVisitor<T>& visitor) const override { return visitor.visit_binary(*this); }
         };
 
         /// @class Grouping
         /// @param expr The subexpression
         template <typename T>
-        class Grouping : public Expr
+        class Grouping : public Expr<T>
         {
             public:
-                Grouping(std::unique_ptr<Expr> expr): expr(std::move(expr)) {};
-                std::unique_ptr<Expr> expr;
+                Grouping(std::unique_ptr<Expr<T>> expr): expr(std::move(expr)) {};
+                std::unique_ptr<Expr<T>> expr;
 
-                inline T accept(const ExprVisitor& visitor) const override {return visitor.visit_grouping(*this);}
+                inline T accept(const ExprVisitor<T>& visitor) const override {return visitor.visit_grouping(*this);}
         };
 
         /// @class Unary
         /// @param op The operator
         /// @param expr The operand
         template <typename T>
-        class Unary : public Expr
+        class Unary : public Expr<T>
         {
             public:
                 Unary(Token op, std::unique_ptr<Expr<T>> expr): op(op), expr(std::move(expr)) {};
                 Token op;
-                std::unique_ptr<Expr> expr;
+                std::unique_ptr<Expr<T>> expr;
 
-                inline T accept(const ExprVisitor& visitor) const override {return visitor.visit_unary(*this);}
+                inline T accept(const ExprVisitor<T>& visitor) const override {return visitor.visit_unary(*this);}
         };
 
         /// @class VarExpr
         /// @param value The value of the variable
         template <typename T>
-        class VarExpr: public Expr
+        class VarExpr: public Expr<T>
         {
             public:
                 VarExpr(Token value): value(value) {};
                 Token value;
 
-                inline T accept(const ExprVisitor &visitor) const override {return visitor.visit_var_expr(*this);}
+                inline T accept(const ExprVisitor<T> &visitor) const override {return visitor.visit_var_expr(*this);}
         };
 
         /// @class Literal
         /// @param value The value of the literal
         template <typename T>
-        class Literal: public Expr
+        class Literal: public Expr<T>
         {
             public:
                 Literal(Token value): value(value) {};
                 Token value;
 
-                inline T accept(const ExprVisitor &visitor) const override {return visitor.visit_literal(*this);}
+                inline T accept(const ExprVisitor<T> &visitor) const override {return visitor.visit_literal(*this);}
         };
     }
 };

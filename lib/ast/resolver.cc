@@ -54,7 +54,7 @@ namespace rift
                 scope[name.lexeme] = true;
             }
 
-            void resolveLocal(Expr<Token>* expr, Token name)
+            void resolveLocal(Expr<rift::scanner::Token>* expr, Token name)
             {
                 for (int i = scopes.size() - 1; i >= 0; i--) {
                     if (scopes[i].find(name.lexeme) != scopes[i].end()) {
@@ -106,9 +106,9 @@ namespace rift
 
         Token Resolver::visit_assign(const Assign<Token>& expr) const
         {
-            // visit_assign(expr.expr.);
-            // Assign<Token>* assign = const_cast<Assign<Token>*>(&expr);
-            Resolve::resolveLocal(static_cast<Expr<Token>*>(&expr), expr.name);
+            visit_assign(expr);
+            Assign<Token>* assign = const_cast<Assign<Token>*>(&expr);
+            Resolve::resolveLocal(assign, expr.name);
         }
 
         Token Resolver::visit_call(const Call<Token>& expr) const
@@ -123,7 +123,7 @@ namespace rift
                 Resolve::scopes.back().find(expr.value.lexeme)->second == false) {
                 error::report(expr.value.line, "resolve_var_expr", "Cannot read local variable in its own initializer.", expr.value, ResolverException("Cannot read local variable in its own initializer."));
             }
-            Resolve::resolveLocal(&expr, expr.value);
+            Resolve::resolveLocal(const_cast<VarExpr<Token>*>(&expr), expr.value);
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -169,7 +169,13 @@ namespace rift
         #pragma mark - DECLARATIONS
         ////////////////////////////////////////////////////////////////////////
 
-        Tokens Resolver::visit_decl_var(const DeclVar<Token>& decl) const
+        Token Resolver::visit_decl_stmt(const DeclStmt<Token> &decl) const
+        {
+            visit_decl_stmt(decl);
+            return Token();
+        }
+
+        Token Resolver::visit_decl_var(const DeclVar<Token>& decl) const
         {
             Resolve::declare(decl.identifier);
             if (decl.expr != nullptr) {
@@ -178,13 +184,14 @@ namespace rift
             Resolve::define(decl.identifier);
         }
 
-        Tokens Resolver::visit_decl_func(const DeclFunc<Token>& decl) const
+        Token Resolver::visit_decl_func(const DeclFunc<Token>& decl) const
         {
             Resolve::declare(decl.func->name);
             Resolve::define(decl.func->name);
 
             // resolve params
             Resolve::beginScope();   
+
             for (auto param: decl.func->params) {
                 Resolve::declare(param);
                 Resolve::define(param);
@@ -199,12 +206,6 @@ namespace rift
 
             Resolve::endScope();
         }
-
-        Tokens Resolver::visit_decl_stmt(const DeclStmt<Token>& decl) const
-        {
-            // visit_decl_stmt(decl.decl);
-        }
-
         ////////////////////////////////////////////////////////////////////////
         #pragma mark - PROGRAM
         ////////////////////////////////////////////////////////////////////////

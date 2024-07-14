@@ -136,6 +136,8 @@ namespace rift
             }
             bool operator==(const Token &token) const;
 
+            virtual Token& operator=(const Token& other) = default;
+
             std::any getLiteral() const;
         };
 

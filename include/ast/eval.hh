@@ -34,7 +34,7 @@ namespace rift
                             DeclVisitor<Token>, ProgramVisitor<Tokens>
         {
             public:
-                Eval();
+                Eval() = default;
                 ~Eval() = default;
 
                 // expressions
@@ -64,14 +64,14 @@ namespace rift
                 Tokens visit_program(const Program<Tokens>& prgm) const override;
 
                 /// @brief Evaluates the given *expr/stmt/decl*
-                std::vector<string> evaluate(const Program<Tokens>& expr, bool interactive);
+                std::vector<string> evaluate(std::unique_ptr<Program<Tokens>>& prgm, bool interactive);
 
                 /// @note Resolver API
                 static Token lookup(Expr<Token>* expr, std::string key);
                 void resolve(Expr<Token>* expr, int depth);
 
             private:
-                std::unique_ptr<Visitor> visitor;
+                const std::unique_ptr<ProgramVisitor<Tokens>> visitor;
         };
 
         /// @class EvaluatorException

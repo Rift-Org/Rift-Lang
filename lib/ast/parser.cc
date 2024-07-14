@@ -518,7 +518,7 @@ namespace rift
             ret->params = params();
             consume(Token(TokenType::RIGHT_PAREN, ")", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ')' after function params")));
             // give the params (usefull for the call operator)
-            curr_env->setEnv(idt.lexeme, Token(TokenType::FUN, idt.lexeme, ret->params, idt.line), false);
+            curr_env->setEnv<Token>(idt.lexeme, Token(TokenType::FUN, idt.lexeme, ret->params, idt.line), false);
 
             if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
                 auto blk = dynamic_cast<Block<void>*>(statement_block().get());

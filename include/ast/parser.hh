@@ -24,6 +24,7 @@
 #include <ast/expr.hh>
 #include <ast/stmt.hh>
 #include <ast/decl.hh>
+#include <ast/prgm.hh>
 
 using namespace rift::scanner;
 using namespace rift::reader;
@@ -41,7 +42,7 @@ namespace rift
                 ~Parser() = default;
 
                 /// @brief Parses the tokens and returns an expression
-                std::unique_ptr<Program> parse();
+                std::unique_ptr<Program<Tokens>> parse();
             protected:
                 std::shared_ptr<std::vector<Token>> tokens;
                 std::exception exception;
@@ -101,7 +102,7 @@ namespace rift
                 /// @brief returns any statements that might be executed 
                 std::unique_ptr<Stmt<void>> ret_stmt();
                 /// @brief returns any declarations that might be executed
-                Program::vec_t ret_decl();
+                Program<Tokens>::vec_t ret_decl();
 
 
                 /// @example func test() {}  or member.method()
@@ -111,7 +112,7 @@ namespace rift
                 /// @example 1+1, "str", a
                 Call<Token>::Exprs args(Tokens params);
                 /// @note program
-                std::unique_ptr<Program> program();
+                std::unique_ptr<Program<Tokens>> program();
                 
                 /// @brief Syncronizes the parser to avoid error-cascading
                 void synchronize();
