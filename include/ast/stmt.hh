@@ -153,13 +153,28 @@ namespace rift
         {
             public:
                 using vec_prog = std::vector<std::unique_ptr<Decl<Token>>>;
-                Block(vec_prog&& decls) : decls(std::move(decls)) {};
-                Block() = default;
-                Block(const Block<T>& other) { decls = other.decls; }
-                ~Block() = default;
                 vec_prog decls = {};
 
+                Block() = default;
+                ~Block() = default;
+                Block(vec_prog&& decls) : decls(std::move(decls)) {};
+                Block(const Block<T>& other) { decls = other.decls; }
+
                 T accept(const StmtVisitor<T> &visitor) const override { return visitor.visit_block_stmt(*this); };
+
+                Block &operator=(const Block<T> &other)
+                {
+                    if (this != &other)
+                    {
+                        decls.clear();
+                        decls.reserve(other.decls.size());
+                        for (const auto &decl : other.decls)
+                        {
+                            decls.push_back(decl ? decl->clone() : nullptr);
+                        }
+                    }
+                    return *this;
+                }
         };
 
         template <typename T>

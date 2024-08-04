@@ -15,6 +15,7 @@
 #pragma once
 
 #include <error/error.hh>
+#include <cstring>
 
 #pragma mark - Forward Declarations
 

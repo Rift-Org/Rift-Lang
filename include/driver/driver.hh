@@ -16,6 +16,7 @@
 #pragma once
 
 // #include <cli/cli.hh>
+#include <cstdio>
 #include <getopt.h>
 #include <readline/readline.h>
 #include <readline/history.h>

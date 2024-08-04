@@ -109,11 +109,13 @@ namespace rift
             visit_assign(expr);
             Assign<Token>* assign = const_cast<Assign<Token>*>(&expr);
             Resolve::resolveLocal(assign, expr.name);
+            return  Token();
         }
 
         Token Resolver::visit_call(const Call<Token>& expr) const
         {
             visit_call(expr);
+            return Token();
         }
 
         Token Resolver::visit_var_expr(const VarExpr<Token>& expr) const
@@ -124,6 +126,7 @@ namespace rift
                 error::report(expr.value.line, "resolve_var_expr", "Cannot read local variable in its own initializer.", expr.value, ResolverException("Cannot read local variable in its own initializer."));
             }
             Resolve::resolveLocal(const_cast<VarExpr<Token>*>(&expr), expr.value);
+            return Token();
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -133,22 +136,26 @@ namespace rift
         Token Resolver::visit_expr_stmt(const StmtExpr<Token>& stmt) const
         {
             visit_expr_stmt(stmt);
+            return Token();
         }
 
         Token Resolver::visit_print_stmt(const StmtPrint<Token>& stmt) const
         {
             visit_print_stmt(stmt);
+            return Token();
         }
 
         Token Resolver::visit_if_stmt(const StmtIf<Token>& stmt) const
         {
             visit_if_stmt(stmt);
+            return Token();
         }
 
         Token Resolver::visit_return_stmt(const StmtReturn<Token>& stmt) const
         {
             visit_return_stmt(stmt);
             // maybe set return token to NIL
+            return Token();
         }
 
         Token Resolver::visit_block_stmt(const Block<Token>& block) const
@@ -156,6 +163,7 @@ namespace rift
             Resolve::beginScope();
             visit_block_stmt(block);
             Resolve::endScope();
+            return Token();
         }
 
         Token Resolver::visit_for_stmt(const For<Token>& stmt) const
@@ -163,6 +171,7 @@ namespace rift
             // visit_for_stmt(stmt.stmt);
             // resolve(stmt.condition);
             // resolve(stmt.body);
+            return Token();
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -182,6 +191,7 @@ namespace rift
                 visit_decl_var(decl);
             }
             Resolve::define(decl.identifier);
+            return Token();
         }
 
         Token Resolver::visit_decl_func(const DeclFunc<Token>& decl) const
@@ -200,12 +210,49 @@ namespace rift
             // resolve block (cant initate abstract class ResolverBlock)
             if (decl.func->blk != nullptr) {
                 Resolve::beginScope();
-                visit_block_stmt(*decl.func->blk);
+                auto blk = *decl.func->blk;
+
+                // Create a new vector to hold the copied declarations
+                Block<Token>::vec_prog copied_decls;
+
+                // Reserve space in the new vector to avoid reallocations
+                copied_decls.reserve(blk.decls.size());
+
+                // Copy each declaration
+                for (const auto &decl : blk.decls)
+                {
+                    if (auto var_decl = dynamic_cast<const DeclVar<Token> *>(decl.get()))
+                    {
+                        copied_decls.push_back(std::make_unique<DeclVar<Token>>(
+                            var_decl->identifier,
+                            var_decl->expr ? std::make_unique<Expr<Token>>(*var_decl->expr) : nullptr));
+                    }
+                    else if (auto func_decl = dynamic_cast<const DeclFunc<Token> *>(decl.get()))
+                    {
+                        auto new_func = std::make_unique<DeclFunc<Token>::Func>();
+                        new_func->name = func_decl->func->name;
+                        new_func->params = func_decl->func->params;
+                        new_func->closure = func_decl->func->closure;
+                        new_func->blk = func_decl->func->blk ? std::make_unique<Block<void>>(*func_decl->func->blk) : nullptr;
+                        copied_decls.push_back(std::make_unique<DeclFunc<Token>>(std::move(new_func)));
+                    }
+                    else if (auto stmt_decl = dynamic_cast<const DeclStmt<Token> *>(decl.get()))
+                    {
+                        copied_decls.push_back(std::make_unique<DeclStmt<Token>>(
+                            stmt_decl->stmt ? std::make_unique<Stmt<void>>(*stmt_decl->stmt) : nullptr));
+                    }
+                }
+
+                Block<Token> new_blk = Block<Token>(std::move(copied_decls));
+                visit_block_stmt(new_blk);
                 Resolve::endScope();
             }
 
             Resolve::endScope();
+
+            return Token();
         }
+
         ////////////////////////////////////////////////////////////////////////
         #pragma mark - PROGRAM
         ////////////////////////////////////////////////////////////////////////
@@ -215,6 +262,7 @@ namespace rift
             // for (auto decl: prgm.decls) {
             //     visit_decl_stmt(*decl);
             // }
+            return Tokens();
         }
     }
 }

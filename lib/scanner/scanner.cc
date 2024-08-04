@@ -44,7 +44,7 @@ namespace rift
             keywords["nil"] = Type::NIL;
             keywords["or"] = Type::LOG_OR;
             keywords["print"] = Type::PRINT;
-            keywords["return"] = Type::RETURN;
+            keywords["return"] = Type::RETURN_TOK;
             keywords["super"] = Type::SUPER;
             keywords["this"] = Type::THIS;
             keywords["true"] = Type::TRUE;

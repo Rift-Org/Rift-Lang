@@ -27,6 +27,7 @@ set( SOURCES
     ast/parser.cc
     ast/printer.cc
     ast/eval.cc
+    ast/resolver.cc
 
     # Driver
     driver/driver.cc
@@ -46,7 +47,7 @@ add_executable(
 target_compile_options(riftlang PRIVATE -Wno-gcc-compat)
 target_compile_definitions(riftlang PRIVATE ABSL_USES_STD_ANY=1)
 
-target_link_libraries(riftlang PRIVATE Readline)
+target_link_libraries(riftlang PRIVATE readline)
 # target_link_libraries(riftlang absl::base absl::strings absl::hash absl::algorithm absl::memory absl::flat_hash_map absl::container_common absl::container_memory)
 
 add_library(riftlib STATIC ${SOURCES})

@@ -239,7 +239,7 @@ namespace rift
                 stmt = statement_print();
             } else if (consume(Token(TokenType::IF, "if", "if", line))) {
                 stmt = statement_if();
-            } else if (consume(Token(TokenType::RETURN))) {
+            } else if (consume(Token(TokenType::RETURN_TOK))) {
                 stmt = statement_return();
             } else if (consume (Token(TokenType::FOR, "", "", line)))  {
                 stmt = statement_for();
@@ -568,7 +568,7 @@ namespace rift
                     case TokenType::IF:
                     case TokenType::WHILE:
                     case TokenType::PRINT:
-                    case TokenType::RETURN:
+                    case TokenType::RETURN_TOK:
                         return;
                     default:
                         break;

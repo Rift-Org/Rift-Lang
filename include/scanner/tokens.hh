@@ -77,7 +77,7 @@ namespace rift
             ELIF,
             NIL,
             PRINT,
-            RETURN,
+            RETURN_TOK, // conflicts with <chardefs.h>
             SUPER,
             THIS,
             TRUE,

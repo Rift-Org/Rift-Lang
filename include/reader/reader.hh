@@ -18,7 +18,8 @@
 #include <error/error.hh>
 #include <exception>
 #include <string>
-
+#include <memory>
+#include <vector>
 namespace rift
 {
     namespace reader
