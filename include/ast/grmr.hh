@@ -17,6 +17,7 @@
 #include <scanner/tokens.hh>
 #include <utils/macros.hh>
 #include <ast/env.hh>
+#include <vector>
 
 using Token = rift::scanner::Token;
 using Tokens = std::vector<Token>;

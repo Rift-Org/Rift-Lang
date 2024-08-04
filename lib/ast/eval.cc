@@ -17,6 +17,7 @@
 #include <error/error.hh>
 #include <utils/macros.hh>
 #include <ast/env.hh>
+#include <vector>
 
 namespace rift
 {

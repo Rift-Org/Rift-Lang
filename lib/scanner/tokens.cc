@@ -16,6 +16,9 @@
 #include <scanner/tokens.hh>
 #include <error/error.hh>
 #include <iostream>
+#include <limits.h>
+#include <string.h>
+#include <cmath>
 
 using namespace rift::scanner;
 
@@ -62,7 +65,7 @@ std::string Token::convertTypeString(TokenType type) {
         case NIL: return "NIL";
         case LOG_OR: return "LOG_OR";
         case PRINT: return "PRINT";
-        case RETURN: return "RETURN";
+        case RETURN_TOK: return "RETURN";
         case SUPER: return "SUPER";
         case THIS: return "THIS";
         case TRUE: return "TRUE";

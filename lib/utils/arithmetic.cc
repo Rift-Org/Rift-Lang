@@ -13,6 +13,7 @@
 /////////////////////////////////////////////////////////////
 
 #include <utils/arithmetic.hh>
+#include <stdexcept>
 
 namespace rift
 {
