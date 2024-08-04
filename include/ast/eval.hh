@@ -30,7 +30,7 @@ namespace rift
 {
     namespace ast
     {
-        class Eval : public ExprVisitor<Token>, StmtVisitor<Token>, 
+        class Eval : public ExprVisitor<Token>, StmtVisitor<void>, 
                             DeclVisitor<Token>, ProgramVisitor<Tokens>
         {
             public:
@@ -48,12 +48,12 @@ namespace rift
                 Token visit_call(const Call<Token>& expr) const override;
 
                 // statements
-                Token visit_expr_stmt(const StmtExpr<Token>& stmt) const override;
-                Token visit_print_stmt(const StmtPrint<Token>& stmt) const override;
-                Token visit_if_stmt(const StmtIf<Token>& stmt) const override;
-                Token visit_return_stmt(const StmtReturn<Token>& stmt) const override;
-                Token visit_block_stmt(const Block<Token>& block) const override;
-                Token visit_for_stmt(const For<Token>& decl) const override;
+                void visit_expr_stmt(const StmtExpr<void>& stmt) const override;
+                void visit_print_stmt(const StmtPrint<void>& stmt) const override;
+                void visit_if_stmt(const StmtIf<void>& stmt) const override;
+                void visit_return_stmt(const StmtReturn<void>& stmt) const override;
+                void visit_block_stmt(const Block<void>& block) const override;
+                void visit_for_stmt(const For<void>& decl) const override;
 
                 // declarations
                 Token visit_decl_stmt(const DeclStmt<Token>& decl) const override;

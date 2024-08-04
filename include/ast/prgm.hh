@@ -30,7 +30,10 @@ namespace rift
         template <typename T>
         class ProgramVisitor
         {
-            virtual T visit_program(const Program<T>& prgm) const;
+            public:
+                ProgramVisitor() = default;
+                virtual ~ProgramVisitor() = default;
+                virtual T visit_program(const Program<T>& prgm) const = 0;
         };
 
         template <typename T>
@@ -38,7 +41,8 @@ namespace rift
         {
             public:
                 using vec_t = std::vector<std::unique_ptr<Decl<Token>>>;
-                Program(vec_t decls) : decls(std::move(decls)) {}
+                // Program(vec_t decls) : decls(std::move(decls)) {}
+                Program(vec_t&& decls): decls(std::move(decls)) {}
                 virtual ~Program() = default;
                 friend class Eval;
 

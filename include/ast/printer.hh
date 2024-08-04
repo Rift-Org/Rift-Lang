@@ -41,7 +41,7 @@ namespace rift
         {
             public:
                 using vec = std::vector<Expr<string>*>;
-                Printer();
+                Printer() = default;
                 ~Printer() = default;
 
                 /// Prints the given expression string.

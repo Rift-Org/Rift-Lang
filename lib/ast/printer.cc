@@ -27,10 +27,6 @@ namespace rift
 
         #pragma mark - Printer
 
-        Printer::Printer()
-        {
-        }
-
         string Printer::print(Expr<string> *expr) const
         {
             return expr->accept(*this);
@@ -123,26 +119,38 @@ namespace rift
             return "";
         }
 
+        string Printer::visit_assign(const Assign<string>& expr) const
+        {
+            // Implement the logic for printing an assignment expression
+            // For example:
+            // Printer::vec v;
+            // v.push_back(expr.value.get());
+            // return parenthesize(expr.name.lexeme + " =", v);
+            return "";
+        }
+
         ////////////////////////////////////////////////////////////////////////
         #pragma mark - Statements
         ////////////////////////////////////////////////////////////////////////
 
         string Printer::visit_expr_stmt(const StmtExpr<string>& stmt) const
         {
-            auto res = stmt.expr.get();
-            Token tok = res->accept(*this);
-            vec v = {}; // i hate this language...
-            v.push_back(std::make_unique<Literal<string>>(tok).get());
-            return parenthesize("expr_stmt", v);
+            // auto res = stmt.expr.get();
+            // Token tok = res->accept(*this);
+            // vec v = {}; // i hate this language...
+            // v.push_back(std::make_unique<Literal<string>>(tok).get());
+            // return parenthesize("expr_stmt", v);
+            return "";
         }
 
         string Printer::visit_print_stmt(const StmtPrint<string>& stmt) const
         {
-            auto res = stmt.expr.get();
-            Token tok = res->accept(*this);
-            vec v = {}; // i hate this language...
-            v.push_back(std::make_unique<Literal<string>>(tok).get());
-            return parenthesize("print", v);
+            // auto res = stmt.expr.get();
+            // Token tok = res->accept(*this);
+            // vec v = {}; // i hate this language...
+            // v.push_back(std::make_unique<Literal<string>>(tok).get());
+            // return parenthesize("print", v);
+            return "";
         }
 
         string Printer::visit_if_stmt(const StmtIf<string>& stmt) const

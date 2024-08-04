@@ -15,6 +15,7 @@
 #pragma once
 
 #include <ast/expr.hh>
+#include <ast/stmt.hh>
 #include <ast/grmr.hh>
 #include <ast/env.hh>
 
@@ -34,9 +35,11 @@ namespace rift
         class DeclVisitor
         {
             public:
-                virtual T visit_decl_stmt(const DeclStmt<T>& decl) const;
-                virtual T visit_decl_var(const DeclVar<T>& decl) const;
-                virtual T visit_decl_func(const DeclFunc<T>& decl) const;
+                DeclVisitor() = default;
+                virtual ~DeclVisitor() = default;
+                virtual T visit_decl_stmt(const DeclStmt<T>& decl) const = 0;
+                virtual T visit_decl_var(const DeclVar<T>& decl) const = 0;
+                virtual T visit_decl_func(const DeclFunc<T>& decl) const = 0;
         };
 
         /// @class Decl

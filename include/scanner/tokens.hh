@@ -120,7 +120,7 @@ namespace rift
                 this->l_type = other.l_type;
             }
 
-            ~Token() { }
+            virtual ~Token() = default;
 
             /// @brief Converts a TokenType to a string
             static std::string convertTypeString(TokenType type);
@@ -135,6 +135,7 @@ namespace rift
                 return os;
             }
             bool operator==(const Token &token) const;
+            bool operator!=(const Token &token) const;
 
             virtual Token& operator=(const Token& other) = default;
 

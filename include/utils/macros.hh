@@ -52,7 +52,7 @@
             class class_name; \
 
 #define __DEFAULT_FORWARD_MULTI(class_name) \
-            template <typename T, typename V> \
+            template <typename T, typename E> \
             class class_name; \
 
 #define __DEFAULT_FORWARD_EACH(...) \

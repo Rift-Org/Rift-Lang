@@ -31,7 +31,7 @@ namespace rift
 
         #pragma mark - Public API
 
-        std::unique_ptr<Program> Parser::parse()
+        std::unique_ptr<Program<Tokens>> Parser::parse()
         {
             try {
                 return program();
@@ -331,7 +331,8 @@ namespace rift
                 ret->else_stmt = else_stmt;
             }
 
-            return std::make_unique<Stmt<void>>(std::move(ret));
+            // return std::make_unique<Stmt<void>>(std::move(ret));
+            return ret;
         }
 
         std::unique_ptr<Stmt<void>> Parser::statement_block()
@@ -348,8 +349,9 @@ namespace rift
             if (!match({Token(TokenType::RIGHT_BRACE, "}", "", line)})) 
                 rift::error::report(line, "statement_block", "Expected '}' after block", peek(), ParserException("Expected '}' after block"));
             
-            auto blk = std::make_unique<Block<void>>(decls);
-            return std::make_unique<Stmt<void>>(blk.get());
+            auto blk = std::make_unique<Block<void>>(std::move(decls));
+            // return std::make_unique<Stmt<void>>(blk.get());
+            return blk;
         }
 
         std::unique_ptr<Stmt<void>> Parser::statement_return()
@@ -357,7 +359,8 @@ namespace rift
             auto expr = expression();
             consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after return statement")));
             auto ret_stmt = std::make_unique<StmtReturn<void>>(std::move(expr));
-            return std::make_unique<Stmt<void>>(std::move(ret_stmt));
+            // return std::make_unique<Stmt<void>>(std::move(ret_stmt));
+            return ret_stmt;
         }
 
         std::unique_ptr<Stmt<void>> Parser::statement_for()
@@ -366,11 +369,8 @@ namespace rift
             consume(Token(TokenType::LEFT_PAREN, "(", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '(' after for")));
 
             // first ;
-            if (match({Token(TokenType::VAR, "", "", line)})) {
-                _for->decl = std::make_unique<Decl<Token>>();
-                // _for->decl = declaration_variable(true);
-            } else if (match({Token(TokenType::CONST, "", "", line)}))  {
-                _for->decl = declaration_variable(false);
+            if (consume_va({Token(TokenType::VAR), Token(TokenType::CONST)}, nullptr) != Token()) {
+                _for->decl = declaration_variable(peekPrev().type == TokenType::VAR);
             } else if(peek(Token(TokenType::IDENTIFIER, "", "", line))) {
                 _for->stmt_l = std::move(ret_stmt());
             }
@@ -394,7 +394,8 @@ namespace rift
                 _for->stmt_o = std::move(ret_stmt());
             }
 
-            return std::make_unique<Stmt<void>>(_for.get());
+            // return std::make_unique<Stmt<void>>(_for.get());
+            return _for;
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -405,7 +406,8 @@ namespace rift
         {
             auto stmt = ret_stmt();
             auto decl_stmt = std::make_unique<DeclStmt<Token>>(std::move(stmt));
-            return std::make_unique<Decl<Token>>(stmt.get());
+            // return std::make_unique<Decl<Token>>(stmt.get());
+            return decl_stmt;
         }
 
         std::unique_ptr<Decl<Token>> Parser::declaration_variable(bool mut)
@@ -444,7 +446,8 @@ namespace rift
                 // tmp->value = std::unique_ptr<Expr>(val);
                 // expr = std::unique_ptr<Expr>(tmp);
                 auto decl_var = std::make_unique<DeclVar<Token>>(idt, std::move(expr));
-                return std::make_unique<Decl<Token>>(decl_var.get());
+                // return std::make_unique<Decl<Token>>(decl_var.get());
+                return decl_var;
             } else if (!mut) {
                 rift::error::report(line, "declaration_variable", "🛑 Constants must be defined", idt, ParserException("Constants must be defined"));
             }
@@ -455,8 +458,9 @@ namespace rift
 
             consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after variable declaration")));
 
-            std::unique_ptr<rift::ast::DeclVar<Token>> decl_var = std::make_unique<DeclVar<Token>>(new DeclVar<Token>(Token(tok_t, idt.lexeme, idt.literal, idt.line)));
-            return std::make_unique<Decl<Token>>(decl_var.get());
+            std::unique_ptr<DeclVar<Token>> decl_var = std::make_unique<DeclVar<Token>>(Token(tok_t, idt.lexeme, idt.literal, idt.line));
+            // return std::make_unique<Decl<Token>>(decl_var.get());
+            return decl_var;
         }
 
         std::unique_ptr<Decl<Token>> Parser::declaration_func() 
@@ -466,12 +470,13 @@ namespace rift
             if (_func->func->blk == nullptr) {
                 consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after function declaration")));
             }
-            return std::make_unique<Decl<Token>>(_func.get());
+            // return std::make_unique<Decl<Token>>(_func.get());
+            return _func;
         }
 
-        Program::vec_t Parser::ret_decl()
+        Program<Tokens>::vec_t Parser::ret_decl()
         {
-            Program::vec_t decls = {};
+            Program<Tokens>::vec_t decls = {};
             if (consume_va({Token(TokenType::VAR), Token(TokenType::CONST)}, nullptr) != Token()) {
                 auto test = declaration_variable(peekPrev().type == TokenType::VAR);
                 decls.emplace_back(std::move(test));
@@ -491,16 +496,16 @@ namespace rift
         #pragma mark - Application
         ////////////////////////////////////////////////////////////////////////
 
-        std::unique_ptr<Program> Parser::program()
+        std::unique_ptr<Program<Tokens>> Parser::program()
         {
-            Program::vec_t decls = {};
+            Program<Tokens>::vec_t decls = {};
 
             while (!atEnd()) {
                 auto inner = ret_decl();
                 decls.insert(decls.end(), std::make_move_iterator(inner.begin()), std::make_move_iterator(inner.end()));
             }
 
-            return std::unique_ptr<Program>(new Program(decls));
+            return std::make_unique<Program<Tokens>>(std::move(decls));
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -521,10 +526,12 @@ namespace rift
             curr_env->setEnv<Token>(idt.lexeme, Token(TokenType::FUN, idt.lexeme, ret->params, idt.line), false);
 
             if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
-                auto blk = dynamic_cast<Block<void>*>(statement_block().get());
+                auto stmt = statement_block();
+                auto blk = dynamic_cast<Block<void>*>(stmt.get());
                 if (!blk)
                     rift::error::report(line, "function", "Expected block", peek(), ParserException("Expected block"));
-                ret->blk = std::make_unique<Block<void>>(blk);
+                // ret->blk = std::make_unique<Block<void>>(blk);
+                ret->blk = std::unique_ptr<Block<void>>(blk);
             } else if(match({Token(TokenType::FAT_ARROW, "=>", "", line)})) {
                 // TODO: allow stmt to emulate lambdas
                 rift::error::report(line, "function", "Lambdas not implemented yet", peek(), ParserException("Lambdas not implemented yet"));

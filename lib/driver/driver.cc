@@ -50,7 +50,7 @@ namespace rift
             std::unique_ptr<Program<Tokens>> statements = riftParser.parse(); 
 
             Eval riftEvaluator;
-            riftEvaluator.evaluate(*statements, interactive);
+            riftEvaluator.evaluate(statements, interactive);
             rift::ast::Environment::getInstance(true).printState();
             rift::ast::Environment::getInstance(false).printState();
         }

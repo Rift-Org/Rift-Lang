@@ -218,3 +218,8 @@ bool Token::operator==(const Token &token) const
 {
     return this->type == token.type;
 }
+
+bool Token::operator!=(const Token &token) const
+{
+    return this->type != token.type;
+}

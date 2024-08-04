@@ -53,41 +53,41 @@ namespace rift
         /// call           → primary ( "(" arguments? ")" )* ";"
         /// primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ";"
 
-        __DEFAULT_FORWARD_VA(
-            Assign,
-            Binary,
-            Grouping,
-            Literal,
-            VarExpr,
-            Unary
-        )
+        // __DEFAULT_FORWARD_VA(
+        //     Assign,
+        //     Binary,
+        //     Grouping,
+        //     Literal,
+        //     VarExpr,
+        //     Unary
+        // )
 
-        __DEFAULT_FORWARD_VA(
-            Printer,
-            Ternary,
-            For,
-            Call
-        )
+        // __DEFAULT_FORWARD_VA(
+        //     Printer,
+        //     Ternary,
+        //     For,
+        //     Call
+        // )
 
-        __DEFAULT_FORWARD_VA(
-            Stmt, 
-            StmtPrint, 
-            StmtExpr,
-            StmtIf,
-            StmtReturn
-        )
+        // __DEFAULT_FORWARD_VA(
+        //     Stmt, 
+        //     StmtPrint, 
+        //     StmtExpr,
+        //     StmtIf,
+        //     StmtReturn
+        // )
 
-        __DEFAULT_FORWARD_VA(
-            Decl, 
-            DeclStmt, 
-            DeclVar,
-            DeclFunc
-        )
+        // __DEFAULT_FORWARD_VA(
+        //     Decl, 
+        //     DeclStmt, 
+        //     DeclVar,
+        //     DeclFunc
+        // )
 
-        __DEFAULT_FORWARD_VA(
-            Program,
-            Block
-        )
+        // __DEFAULT_FORWARD_VA(
+        //     Program,
+        //     Block
+        // )
 
         /// @class Visitor 
         /// @brief implementation of the statements and expressions

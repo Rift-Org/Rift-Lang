@@ -50,22 +50,24 @@ namespace rift
         class ExprVisitor
         {
             public:
+                ExprVisitor() = default;
+                virtual ~ExprVisitor() = default;
                 /// @example x = 1 + 2;
-                virtual T visit_assign(const Assign<T>& expr) const;
+                virtual T visit_assign(const Assign<T>& expr) const = 0;
                 /// @example 1 + 2
-                virtual T visit_binary(const Binary<T>& expr) const;
+                virtual T visit_binary(const Binary<T>& expr) const = 0;
                 /// @example (1 + 2)
-                virtual T visit_grouping(const Grouping<T>& expr) const;
+                virtual T visit_grouping(const Grouping<T>& expr) const = 0;
                 /// @example 1
-                virtual T visit_literal(const Literal<T>& expr) const;
+                virtual T visit_literal(const Literal<T>& expr) const = 0;
                 /// @example x
-                virtual T visit_var_expr(const VarExpr<T>& expr) const;
+                virtual T visit_var_expr(const VarExpr<T>& expr) const = 0;
                 /// @example -1
-                virtual T visit_unary(const Unary<T>& expr) const;
+                virtual T visit_unary(const Unary<T>& expr) const = 0;
                 /// @example (true) ? 1 : 2
-                virtual T visit_ternary(const Ternary<T>& expr) const;
+                virtual T visit_ternary(const Ternary<T>& expr) const = 0;
                 /// @example x = foo(1, 2)
-                virtual T visit_call(const Call<T>& expr) const;
+                virtual T visit_call(const Call<T>& expr) const = 0;
         };
 
         /// @class Expr

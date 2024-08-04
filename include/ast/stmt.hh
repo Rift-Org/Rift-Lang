@@ -16,7 +16,6 @@
 
 #include <ast/expr.hh>
 #include <ast/grmr.hh>
-#include <ast/parser.hh>
 #include <utils/macros.hh>
 
 namespace rift
@@ -37,24 +36,28 @@ namespace rift
             For
         );
 
+        __DEFAULT_FORWARD_VA(Decl);
+
         /// @class Visitor
         /// @brief Visitor pattern for expressions
         template <typename T>
         class StmtVisitor
         {
             public:
+                StmtVisitor() = default;
+                virtual ~StmtVisitor() = default;
                 /// @example [start, end] = [end, start];
-                virtual T visit_expr_stmt(const StmtExpr<T>& stmt) const;
+                virtual T visit_expr_stmt(const StmtExpr<T>& stmt) const = 0;
                 /// @example  print(x);
-                virtual T visit_print_stmt(const StmtPrint<T>& stmt) const;
+                virtual T visit_print_stmt(const StmtPrint<T>& stmt) const = 0;
                 /// @example  if (cond) {stmt}
-                virtual T visit_if_stmt(const StmtIf<T>& stmt) const;
+                virtual T visit_if_stmt(const StmtIf<T>& stmt) const = 0;
                 /// @example  return x;
-                virtual T visit_return_stmt(const StmtReturn<T>& stmt) const;
+                virtual T visit_return_stmt(const StmtReturn<T>& stmt) const = 0;
                 /// @example  { x = 3; }
-                virtual T visit_block_stmt(const Block<T>& block) const;
+                virtual T visit_block_stmt(const Block<T>& block) const = 0;
                 /// @example for i in arr {} 
-                virtual T visit_for_stmt(const For<T>& decl) const;
+                virtual T visit_for_stmt(const For<T>& decl) const = 0;
         };
 
         /// @class Stmt

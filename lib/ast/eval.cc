@@ -39,7 +39,7 @@ namespace rift
                 return curr_env->at(depth)->getEnv<Token>(key);
             } else {
                 // return curr_env->getEnv<Token>(key);
-                Environment::getInstance(false).getEnv<Token>(key);
+                return Environment::getInstance(false).getEnv<Token>(key);
             }   
         }
 
@@ -329,22 +329,22 @@ namespace rift
 
         #pragma mark - Stmt Visitors
 
-        Token Eval::visit_expr_stmt(const StmtExpr<Token>& stmt) const
+        void Eval::visit_expr_stmt(const StmtExpr<void>& stmt) const
         {
-            return stmt.expr->accept(*this);
+            stmt.expr->accept(*this);
         }
 
-        Token Eval::visit_print_stmt(const StmtPrint<Token>& stmt) const
+        void Eval::visit_print_stmt(const StmtPrint<void>& stmt) const
         {
             Token val = stmt.expr->accept(*this);
             std::string res = castAnyString(val);
             if (res.at(0) == '"' && res.at(res.size()-1) == '"') 
                 res = res.substr(1, res.size()-2);
             std::cout << res << std::endl;
-            return val;
+            // return val;
         }
 
-        Token Eval::visit_if_stmt(const StmtIf<Token>& stmt) const
+        void Eval::visit_if_stmt(const StmtIf<void>& stmt) const
         {
             auto if_stmt = stmt.if_stmt;
             // if stmt
@@ -356,7 +356,6 @@ namespace rift
                 if (if_stmt->blk != nullptr) if_stmt->blk->accept(*this);
                 else if (if_stmt->stmt != nullptr) if_stmt->stmt->accept(*this);
                 else rift::error::runTimeError("If statement should have a statement or block");
-                return Token();
             }
 
             // elif stmt
@@ -367,7 +366,6 @@ namespace rift
                     if (elif_stmt->blk != nullptr) elif_stmt->blk->accept(*this);
                     else if (elif_stmt->stmt != nullptr) elif_stmt->stmt->accept(*this);
                     else rift::error::runTimeError("Elif statement should have a statement or block");
-                    return Token();
                 }
             }
 
@@ -378,18 +376,17 @@ namespace rift
                 else if (else_stmt->stmt != nullptr) else_stmt->stmt->accept(*this);
                 else rift::error::runTimeError("Else statement should have a statement or block");
             }
-            return Token();
         }
 
-        Token Eval::visit_return_stmt(const StmtReturn<Token>& stmt) const
+        void Eval::visit_return_stmt(const StmtReturn<void>& stmt) const
         {
             return_token = stmt.expr->accept(*this);
-            return return_token;
+            // return return_token;
         }
 
         #pragma mark - Program / Block Visitor
 
-        Token Eval::visit_block_stmt(const Block<Token>& block) const
+        void Eval::visit_block_stmt(const Block<void>& block) const
         {
             Tokens toks = {};
 
@@ -400,10 +397,10 @@ namespace rift
             }
             curr_env->removeChild(); // remove scope
 
-            return return_token;
+            // return return_token;
         }
 
-        Token Eval::visit_for_stmt(const For<Token>& decl) const
+        void Eval::visit_for_stmt(const For<void>& decl) const
         {
             Tokens toks = {};
             if (decl.decl != nullptr) decl.decl->accept(*this);
@@ -416,7 +413,7 @@ namespace rift
 
                 if (decl.stmt_r != nullptr) decl.stmt_r->accept(*this);
             }
-            return return_token;
+            // return return_token;
         }
 
         #pragma mark - Decl Visitors
