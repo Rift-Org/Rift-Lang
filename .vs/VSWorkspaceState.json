@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\include\\ast",
+    "\\include\\driver",
+    "\\lib",
+    "\\lib\\ast",
+    "\\media",
+    "\\notes",
+    "\\proposals",
+    "\\tests",
+    "\\tests\\mock"
+  ],
+  "SelectedNode": "\\lib\\ast\\env.cc",
+  "PreviewInSolutionExplorer": false
+}
