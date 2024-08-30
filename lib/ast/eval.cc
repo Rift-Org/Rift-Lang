@@ -32,6 +32,9 @@ namespace rift
 
 
         #pragma mark - Eval
+        /*============================================================================*
+        * Eval
+        *============================================================================*/
 
         Token Eval::lookup(Expr<Token>* expr, std::string key)
         {
@@ -77,6 +80,9 @@ namespace rift
         }
 
         #pragma mark - Eval Visitor
+        /*============================================================================*
+        * Eval Visitor
+        *============================================================================*/
 
         Token Eval::visit_literal(const Literal<Token>& expr) const
         {
@@ -329,6 +335,9 @@ namespace rift
         }
 
         #pragma mark - Stmt Visitors
+        /*============================================================================*
+        * Stmt Visitors
+        *============================================================================*/
 
         void Eval::visit_expr_stmt(const StmtExpr<void>& stmt) const
         {
@@ -418,6 +427,9 @@ namespace rift
         }
 
         #pragma mark - Decl Visitors
+        /*============================================================================*
+        * Decl Visitors
+        *============================================================================*/
 
         Token rift::ast::Eval::visit_decl_stmt(const rift::ast::DeclStmt<Token> &decl) const
         {
@@ -458,6 +470,9 @@ namespace rift
         }
 
         #pragma mark - Program
+        /*============================================================================*
+        * Program
+        *============================================================================*/
 
         Tokens Eval::visit_program(const Program<Tokens>& prgm) const
         {

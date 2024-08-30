@@ -168,9 +168,8 @@ namespace rift
                     {
                         decls.clear();
                         decls.reserve(other.decls.size());
-                        for (const auto &decl : other.decls)
-                        {
-                            decls.push_back(decl ? decl->clone() : nullptr);
+                        for (const auto &decl : other.decls) {
+                            decls.push_back(decl);
                         }
                     }
                     return *this;

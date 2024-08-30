@@ -40,13 +40,14 @@
             "name": "(lldb) Launch File",
             "type": "lldb",
             "request": "launch",
-            "program": "${workspaceFolder}/lib/riftlang",
+            "program": "${workspaceFolder}/build/lib/riftlang",
             "args": ["${workspaceFolder}/examples/internal/test.rf"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": true,
             "MIMode": "lldb",
+            // "preLaunchTask": "make"
             "preLaunchTask": "make"
         },
     ]

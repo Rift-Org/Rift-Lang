@@ -2,39 +2,30 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "cmake",
-			"label": "CMake: build",
-			"command": "build",
-			"targets": [
-				"all"
-			],
-			"group": "build",
-			"problemMatcher": [],
-			"detail": "CMake template build task"
-		},
-		// run the program
-		{
 			"type": "shell",
 			"label": "Run",
 			"command": "${workspaceFolder}/lib/riftlang",
-			"args": ["-p"],
+			"args": [
+				"-p"
+			],
 			"problemMatcher": [],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			}
 		},
-
-		// make the program
 		{
 			"type": "shell",
 			"label": "make",
 			"command": "make",
+			"options": {
+				"cwd": "${workspaceFolder}/build"
+			},
 			"problemMatcher": [],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			}
-		},	
+		},
 	]
 }

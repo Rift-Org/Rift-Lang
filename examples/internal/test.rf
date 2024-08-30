@@ -10,13 +10,11 @@
 func makeCounter() {
   mut i = 0;
   func count() {
-	i = i + 1;
-	print(i);
+	  i = i + 1;
+	  print(i);
   }
   
   return count;
 }
 
 mut counter = makeCounter();
-counter();
-counter();

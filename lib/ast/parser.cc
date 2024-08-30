@@ -16,6 +16,7 @@
 #include <ast/stmt.hh>
 #include <error/error.hh>
 #include <memory>
+#include <algorithm>
 #include <ast/prgm.hh>
 #include <ast/env.hh>
 #include <utils/literals.hh>
@@ -89,7 +90,7 @@ namespace rift
 
         std::unique_ptr<Expr<Token>> Parser::call()
         {
-            auto expr = primary();
+            auto expr = var_expr();
 
             // TODO: i have to somehow get the right paren, and then check if there is a semicolon
             // since that's the only way to verify between func test() {} and test(); 
@@ -527,11 +528,11 @@ namespace rift
 
             if(match({Token(TokenType::LEFT_BRACE, "{", "", line)})) {
                 auto stmt = statement_block();
-                auto blk = dynamic_cast<Block<void>*>(stmt.get());
+                Block<void>* blk = dynamic_cast<Block<void>*>(stmt.release());
                 if (!blk)
                     rift::error::report(line, "function", "Expected block", peek(), ParserException("Expected block"));
-                // ret->blk = std::make_unique<Block<void>>(blk);
-                ret->blk = std::unique_ptr<Block<void>>(blk);
+                ret->blk.reset(blk);
+         
             } else if(match({Token(TokenType::FAT_ARROW, "=>", "", line)})) {
                 // TODO: allow stmt to emulate lambdas
                 rift::error::report(line, "function", "Lambdas not implemented yet", peek(), ParserException("Lambdas not implemented yet"));
@@ -539,6 +540,7 @@ namespace rift
                 consume(Token(TokenType::SEMICOLON, ";", "", line), std::unique_ptr<ParserException>(new ParserException("Expected ';' after function declaration")));
             }
 
+            std::cout << "AMAN OUT\n";
             return ret;
         }
 
