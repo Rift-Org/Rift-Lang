@@ -26,7 +26,8 @@ namespace rift
         __DEFAULT_FORWARD_VA(
             DeclStmt,
             DeclVar,
-            DeclFunc
+            DeclFunc,
+            DeclClass
         );
 
         /// @class Visitor
@@ -40,6 +41,7 @@ namespace rift
                 virtual T visit_decl_stmt(const DeclStmt<T>& decl) const = 0;
                 virtual T visit_decl_var(const DeclVar<T>& decl) const = 0;
                 virtual T visit_decl_func(const DeclFunc<T>& decl) const = 0;
+                virtual T visit_decl_class(const DeclClass<T> &decl) const = 0;
         };
 
         /// @class Decl
@@ -92,6 +94,29 @@ namespace rift
                 std::unique_ptr<Func> func;
 
                 T accept(const DeclVisitor<T> &visitor) const override { return visitor.visit_decl_func(*this); };
+        };
+
+        template <typename T>
+        class DeclClass : public Decl<T>
+        {
+            public:
+                DeclClass(Token Tok, DeclClass<T> &Super, std::unordered_map<Token, typename DeclFunc<T>::Func> Methods)
+                                        : identifier(Tok), Super(Super), Methods(std::move(Methods)) {};
+                DeclClass(Token Tok, std::unordered_map<Token, typename DeclFunc<T>::Func> Methods)
+                                        : identifier(Tok), Super(*this), Methods(std::move(Methods)) {};
+                ~DeclClass() = default;
+
+                Token identifier;
+                DeclClass &Super;
+                std::unordered_map<Token, typename DeclFunc<T>::Func> Methods;
+
+                T accept(const DeclVisitor<T> &visitor) const override { return visitor.visit_decl_class(*this); };
+
+            private:
+                DeclFunc<T>::Func findMethod(Token tok) {
+                    if (Methods.find(tok) != Methods.end()) return Methods.at(tok);
+                    return Super.Methods.at(tok);
+                }
         };
     }
 }

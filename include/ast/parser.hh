@@ -98,6 +98,8 @@ namespace rift
                 std::unique_ptr<Decl<Token>> declaration_variable(bool mut);
                 /// @example func test() {}
                 std::unique_ptr<Decl<Token>> declaration_func();
+                /// @example class Test {}
+                std::unique_ptr<Decl<Token>> declaration_class();
 
                 /// @brief returns any statements that might be executed 
                 std::unique_ptr<Stmt<void>> ret_stmt();

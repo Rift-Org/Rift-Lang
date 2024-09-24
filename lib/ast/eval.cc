@@ -469,6 +469,22 @@ namespace rift
             return {name};
         }
 
+        Token Eval::visit_decl_class(const DeclClass<Token>& decl) const
+        {
+            auto tok = decl.identifier;
+            auto name = tok.lexeme;
+            
+            // create class
+            auto class_env = new Environment(Environment::getInstance(false)); // grab a copy of global env
+
+            // check if class already exists
+            if (curr_env->getEnv<Token>(name).type != TokenType::NIL)
+                rift::error::runTimeError("Class '" + name + "' already defined");
+
+            
+            return {};
+        }
+
         #pragma mark - Program
         /*============================================================================*
         * Program

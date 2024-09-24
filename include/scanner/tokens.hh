@@ -144,3 +144,16 @@ namespace rift
 
     }
 }
+
+// in order to use Token as a key in a map, we need to define a hash function
+namespace std
+{
+    template <>
+    struct hash<rift::scanner::Token>
+    {
+        std::size_t operator()(const rift::scanner::Token& token) const
+        {
+            return std::hash<std::string>()(token.lexeme);
+        }
+    };
+}

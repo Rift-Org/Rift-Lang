@@ -65,6 +65,7 @@ namespace rift
                 Token visit_decl_stmt(const DeclStmt<Token>& decl) const override;
                 Token visit_decl_var(const DeclVar<Token>& decl) const override;
                 Token visit_decl_func(const DeclFunc<Token>& decl) const override;
+                Token visit_decl_class(const DeclClass<Token>& decl) const override;
 
                 // program
                 Tokens visit_program(const Program<Tokens>& prgm) const override;

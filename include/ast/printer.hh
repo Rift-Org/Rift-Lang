@@ -71,6 +71,7 @@ namespace rift
                 string visit_decl_stmt(const DeclStmt<string>& decl) const override;
                 string visit_decl_var(const DeclVar<string>& decl) const override;
                 string visit_decl_func(const DeclFunc<string>& decl) const override;
+                string visit_decl_class(const DeclClass<string>& decl) const override;
 
                 // program
                 string visit_program(const Program<string>& prgm) const override;

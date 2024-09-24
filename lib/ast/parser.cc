@@ -475,6 +475,27 @@ namespace rift
             return _func;
         }
 
+        std::unique_ptr<Decl<Token>> Parser::declaration_class()
+        {
+            std::unordered_map<Token, DeclFunc<Token>::Func> methods = {};
+            Token tok = consume_va({Token(TokenType::IDENTIFIER), Token(TokenType::C_IDENTIFIER)}, std::unique_ptr<ParserException>(new ParserException("Expected class name")));
+            std::unique_ptr<DeclClass<Token>> cls = std::make_unique<DeclClass<Token>>(tok, std::move(methods));
+
+            // consume all methods in class
+            // while (!atEnd() && !peek(Token(TokenType::RIGHT_BRACE, "}", "", line))) {
+            //     auto func = function();
+            //     auto _func = func.release(); // unsafe for now will deal with this later
+            //     if (func->name.lexeme == tok.lexeme) {
+            //         rift::error::report(line, "declaration_class", "🛑 Constructor cannot be defined in class", func->name, ParserException("Constructor cannot be defined in class"));
+            //     }
+            //     methods.insert({tok, std::move(*_func)});
+            // }
+
+            consume(Token(TokenType::RIGHT_BRACE, "}", "", line), std::unique_ptr<ParserException>(new ParserException("Expected '}' after class declaration")));
+            // return cls;
+            return nullptr;
+        }
+
         Program<Tokens>::vec_t Parser::ret_decl()
         {
             Program<Tokens>::vec_t decls = {};
@@ -483,6 +504,8 @@ namespace rift
                 decls.emplace_back(std::move(test));
             } else if (match({Token(TokenType::FUN)})) {
                 decls.emplace_back(declaration_func());
+            } else if (match({Token(TokenType::CLASS)})) {
+                decls.emplace_back(declaration_class());
             } else {
                 decls.emplace_back(declaration_statement());
             }

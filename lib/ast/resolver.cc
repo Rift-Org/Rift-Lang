@@ -191,6 +191,13 @@ namespace rift
             return Token();
         }
 
+        Token Resolver::visit_decl_class(const DeclClass<Token>& decl) const
+        {
+            Resolve::declare(decl.identifier);
+            Resolve::define(decl.identifier);
+            return Token();
+        }
+
         Token Resolver::visit_decl_func(const DeclFunc<Token>& decl) const
         {
             Resolve::declare(decl.func->name);

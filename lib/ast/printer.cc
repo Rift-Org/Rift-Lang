@@ -192,6 +192,11 @@ namespace rift
             return "";
         }
 
+        string Printer::visit_decl_class(const DeclClass<string>& decl) const
+        {
+            return "";
+        }
+
         ////////////////////////////////////////////////////////////////////////
         #pragma mark - Program
         ////////////////////////////////////////////////////////////////////////

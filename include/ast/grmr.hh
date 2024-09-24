@@ -36,6 +36,7 @@ namespace rift
         /// varDecl        → "mut" IDENTIFIER ( "=" stmt ) ";"
         /// constDecl      → "mut!" IDENTIFIER ( "=" expr ) ";"
         /// funcDecl       → "func" function ";"
+        /// classDecl      → "class" IDENTIFIER "{" function* "}" ;
         /// function       → IDENTIFIER "(" params? ")" blk // TODO: allow stmt to emulate lambdas
         /// params         → IDENTIFIER ( "," IDENTIFIER )*
         /// stmt           → exprStmt | printStmt ";"
